@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Element Quest 1º ESO</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one-screen quiz card; answer area is either a list of names or the periodic table itself (table layout on wide screens, atomic-number grid on phones) */
+:root{
+  --bg:#eef0f3; --surface:#ffffff; --ink:#1b2129; --muted:#5b6573; --line:#d3d8df;
+  --metal:#dfe6f1; --nonmetal:#e3f0df; --semi:#f3ead6; --noble:#ece2f4;
+  --ok:#1f8a4c; --bad:#c23b2c; --accent:#2f5fb3;
+  --display:"Unbounded",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13171c; --surface:#1d232a; --ink:#e9edf2; --muted:#a2acb8; --line:#333b45;
+  --metal:#24324a; --nonmetal:#233a2b; --semi:#3b3322; --noble:#352a45;
+  --ok:#3dbb72; --bad:#e25c4c; --accent:#7aa3ef; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13171c; --surface:#1d232a; --ink:#e9edf2; --muted:#a2acb8; --line:#333b45;
+  --metal:#24324a; --nonmetal:#233a2b; --semi:#3b3322; --noble:#352a45;
+  --ok:#3dbb72; --bad:#e25c4c; --accent:#7aa3ef; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;
+  -webkit-tap-highlight-color:transparent}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-family:var(--display);font-weight:800;font-size:18px}
+.brand small{display:block;font-family:var(--body);font-weight:400;font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.ghost{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:14px}
+.lead{color:var(--muted);margin:0;line-height:1.5;max-width:65ch}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{padding:8px 14px;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:700}
+.modes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.mode{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;transition:transform .12s}
+.mode:active{transform:scale(.97)}
+.mode b{font-family:var(--display);font-size:15px}
+.mode span{font-size:13.5px;color:var(--muted);line-height:1.4}
+.mode i{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--accent)}
+.best{font-size:13px;color:var(--muted)}
+
+/* Periodic table / tile grid */
+.ptable{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.tile{position:relative;border-radius:8px;border:1px solid var(--line);background:var(--metal);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;padding:2px;transition:opacity .2s}
+.tile .z{position:absolute;top:3px;left:4px;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.tile .s{font-family:var(--display);font-weight:700;font-size:clamp(15px,4.6vw,22px)}
+.tile .n{font-size:9.5px;color:var(--muted);margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile.nonmetal{background:var(--nonmetal)}.tile.semi{background:var(--semi)}.tile.noble{background:var(--noble)}
+.tile.dim{opacity:.3}
+.tile.right{outline:4px solid var(--ok);outline-offset:1px;opacity:1}
+.tile.wrong{outline:4px solid var(--bad);outline-offset:1px}
+.tile.sel{outline:3px solid var(--accent);outline-offset:1px}
+.gnum{display:none}
+@media (min-width:700px){
+  .ptable{grid-template-columns:repeat(18,1fr);gap:4px}
+  .tile{grid-column:var(--g);grid-row:var(--p)}
+  .tile .s{font-size:clamp(14px,2vw,22px)}
+  .gnum{display:block;grid-row:1;text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted);align-self:end}
+  .ptable.hasg .tile{grid-row:calc(var(--p) + 1)}
+}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12.5px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:12px;height:12px;border-radius:3px;border:1px solid var(--line);display:inline-block}
+
+/* Game */
+.hud{display:flex;gap:10px;align-items:center;font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
+.hud .grow{flex:1}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar>div{height:100%;background:var(--accent);width:100%;transition:width .1s linear}
+.prompt{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.q{font-family:var(--display);font-weight:700;font-size:16px;text-align:center}
+.bigsym{font-family:var(--display);font-weight:800;font-size:clamp(44px,13vw,72px);line-height:1}
+.bigname{font-family:var(--display);font-weight:800;font-size:clamp(22px,6.5vw,34px);text-align:center}
+.names{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.names .ans{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-height:46px;padding:8px 10px;font-size:14.5px;line-height:1.25;text-align:left;box-shadow:inset 0 -3px 0 var(--line);word-break:break-word;transition:opacity .2s}
+.names .ans small{display:block;color:var(--muted);font-size:12.5px}
+.names .ans.dim{opacity:.3}
+.names .ans.right{background:var(--ok);border-color:var(--ok);color:#fff}
+.names .ans.right small,.names .ans.wrong small{color:#fff}
+.names .ans.wrong{background:var(--bad);border-color:var(--bad);color:#fff}
+.feedback{border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;border:2px solid;background:var(--surface)}
+.feedback.good{border-color:var(--ok)}.feedback.bad{border-color:var(--bad)}
+.feedback h3{font-size:17px}
+.feedback.good h3{color:var(--ok)}.feedback.bad h3{color:var(--bad)}
+.feedback p{margin:0;line-height:1.45}
+.fact{color:var(--muted);font-size:14.5px}
+.next{background:var(--ink);color:var(--bg);font-family:var(--display);font-weight:700;padding:14px;border-radius:12px;font-size:16px;width:100%}
+.pop{font-family:var(--mono);color:var(--ok)}
+.write{display:flex;flex-direction:column;gap:10px}
+.write input{width:100%;font-family:var(--display);font-weight:700;font-size:22px;padding:14px 16px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);text-align:center}
+.write input:focus{outline:none;border-color:var(--accent)}
+.write input.right{border-color:var(--ok);color:var(--ok)}
+.write input.wrong{border-color:var(--bad);color:var(--bad)}
+.score{font-family:var(--display);font-weight:800;font-size:56px;text-align:center;font-variant-numeric:tabular-nums}
+.sub{text-align:center;color:var(--muted);margin:0}
+.misslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.miss{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;gap:10px;align-items:center}
+.miss b{font-family:var(--display);font-size:22px;min-width:44px}
+.miss span{font-size:14px;line-height:1.3}
+.info{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:14px;align-items:center;min-height:96px}
+.info .bigsym{font-size:48px;min-width:80px;text-align:center}
+.info p{margin:0;line-height:1.45}
+@media (max-width:720px){.names{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:520px){.names{grid-template-columns:1fr 1fr}.modes{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+// Elementos con borde grueso en la tabla de clase. c: metal | nonmetal | semi (semimetal) | noble
+const E = [
+ {z:1,s:"H",en:"Hydrogen",es:"Hidrógeno",p:1,g:1,c:"nonmetal",tip:"El elemento más ligero y abundante del universo."},
+ {z:2,s:"He",en:"Helium",es:"Helio",p:1,g:18,c:"noble",tip:"Gas noble. Es el gas de los globos que flotan."},
+ {z:3,s:"Li",en:"Lithium",es:"Litio",p:2,g:1,c:"metal",tip:"Se usa en las baterías de los móviles."},
+ {z:6,s:"C",en:"Carbon",es:"Carbono",p:2,g:14,c:"nonmetal",tip:"Base de los seres vivos. El diamante y el grafito son carbono."},
+ {z:7,s:"N",en:"Nitrogen",es:"Nitrógeno",p:2,g:15,c:"nonmetal",tip:"Es casi el 78 % del aire."},
+ {z:8,s:"O",en:"Oxygen",es:"Oxígeno",p:2,g:16,c:"nonmetal",tip:"Lo respiramos: es el 21 % del aire."},
+ {z:9,s:"F",en:"Fluorine",es:"Flúor",p:2,g:17,c:"nonmetal",tip:"Está en la pasta de dientes (como fluoruro)."},
+ {z:11,s:"Na",en:"Sodium",es:"Sodio",p:3,g:1,c:"metal",tip:"Na viene del latín natrium. Con el cloro forma la sal (NaCl)."},
+ {z:12,s:"Mg",en:"Magnesium",es:"Magnesio",p:3,g:2,c:"metal",tip:"Arde con una luz blanca muy intensa."},
+ {z:13,s:"Al",en:"Aluminium",es:"Aluminio",p:3,g:13,c:"metal",tip:"Metal ligero: latas y papel de aluminio."},
+ {z:14,s:"Si",en:"Silicon",es:"Silicio",p:3,g:14,c:"semi",tip:"Semimetal. Está en la arena y en los chips de los ordenadores."},
+ {z:15,s:"P",en:"Phosphorus",es:"Fósforo",p:3,g:15,c:"nonmetal",tip:"Está en los huesos y en las cerillas."},
+ {z:16,s:"S",en:"Sulfur",es:"Azufre",p:3,g:16,c:"nonmetal",tip:"Es amarillo. Algunos de sus compuestos huelen a huevo podrido."},
+ {z:17,s:"Cl",en:"Chlorine",es:"Cloro",p:3,g:17,c:"nonmetal",tip:"Se usa para limpiar el agua de las piscinas."},
+ {z:18,s:"Ar",en:"Argon",es:"Argón",p:3,g:18,c:"noble",tip:"Gas noble. Ar no es «Argentum»: la plata es Ag."},
+ {z:19,s:"K",en:"Potassium",es:"Potasio",p:4,g:1,c:"metal",tip:"K viene del latín kalium. Lo tienen mucho los plátanos."},
+ {z:20,s:"Ca",en:"Calcium",es:"Calcio",p:4,g:2,c:"metal",tip:"Forma los huesos y los dientes."},
+ {z:22,s:"Ti",en:"Titanium",es:"Titanio",p:4,g:4,c:"metal",tip:"Metal ligero y muy resistente: prótesis y bicis."},
+ {z:24,s:"Cr",en:"Chromium",es:"Cromo",p:4,g:6,c:"metal",tip:"Da el brillo a los grifos «cromados»."},
+ {z:25,s:"Mn",en:"Manganese",es:"Manganeso",p:4,g:7,c:"metal",tip:"Mn, no Mg (magnesio). Se añade al acero."},
+ {z:26,s:"Fe",en:"Iron",es:"Hierro",p:4,g:8,c:"metal",tip:"Fe viene del latín ferrum. Está en la sangre."},
+ {z:27,s:"Co",en:"Cobalt",es:"Cobalto",p:4,g:9,c:"metal",tip:"Da el color «azul cobalto» al vidrio y la cerámica."},
+ {z:28,s:"Ni",en:"Nickel",es:"Níquel",p:4,g:10,c:"metal",tip:"Está en muchas monedas."},
+ {z:29,s:"Cu",en:"Copper",es:"Cobre",p:4,g:11,c:"metal",tip:"Cu viene del latín cuprum. Cables eléctricos."},
+ {z:30,s:"Zn",en:"Zinc",es:"Cinc",p:4,g:12,c:"metal",tip:"Protege el hierro de la oxidación (galvanizado)."},
+ {z:33,s:"As",en:"Arsenic",es:"Arsénico",p:4,g:15,c:"semi",tip:"Semimetal muy venenoso."},
+ {z:34,s:"Se",en:"Selenium",es:"Selenio",p:4,g:16,c:"nonmetal",tip:"Se usa en células fotoeléctricas."},
+ {z:35,s:"Br",en:"Bromine",es:"Bromo",p:4,g:17,c:"nonmetal",tip:"Uno de los pocos elementos líquidos a temperatura ambiente."},
+ {z:47,s:"Ag",en:"Silver",es:"Plata",p:5,g:11,c:"metal",tip:"Ag viene del latín argentum (de ahí «Argentina»)."},
+ {z:50,s:"Sn",en:"Tin",es:"Estaño",p:5,g:14,c:"metal",tip:"Sn viene del latín stannum. Se usa para soldar."},
+ {z:51,s:"Sb",en:"Antimony",es:"Antimonio",p:5,g:15,c:"semi",tip:"Sb viene del latín stibium."},
+ {z:53,s:"I",en:"Iodine",es:"Yodo",p:5,g:17,c:"nonmetal",tip:"Se usa como desinfectante y está en la sal yodada."},
+ {z:78,s:"Pt",en:"Platinum",es:"Platino",p:6,g:10,c:"metal",tip:"Metal precioso que no se oxida. Se usa en joyería y en los catalizadores de los coches."},
+ {z:79,s:"Au",en:"Gold",es:"Oro",p:6,g:11,c:"metal",tip:"Au viene del latín aurum."},
+ {z:80,s:"Hg",en:"Mercury",es:"Mercurio",p:6,g:12,c:"metal",tip:"Único metal líquido. Hg viene de hydrargyrum, «agua plateada»."},
+ {z:82,s:"Pb",en:"Lead",es:"Plomo",p:6,g:14,c:"metal",tip:"Pb viene del latín plumbum (de ahí «fontanero» en inglés: plumber)."},
+ {z:86,s:"Rn",en:"Radon",es:"Radón",p:6,g:18,c:"noble",tip:"Gas noble radiactivo."}
+];
+E.forEach((e,i)=>e.id=i);
+const CAT = {metal:"Metal",nonmetal:"No metal",semi:"Semimetal",noble:"Gas noble"};
+
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const store={get(k,d){try{const v=localStorage.getItem('el_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+             set(k,v){try{localStorage.setItem('el_'+k,JSON.stringify(v))}catch(e){}}};
+const app=document.getElementById('app');
+let opts={len:store.get('len',10),timer:store.get('timer',true)};
+let G=null,tick=null;
+
+const MODES={
+  name:{name:"¿Qué elemento es?",desc:"Ves el símbolo y eliges su nombre entre los 38.",tag:"símbolo → nombre"},
+  symbol:{name:"Busca el símbolo",desc:"Te doy el nombre y tocas su símbolo en la tabla.",tag:"nombre → símbolo"},
+  writeName:{name:"Escribe el nombre",desc:"Ves el símbolo y escribes el nombre, en inglés o en español.",tag:"símbolo → escribir"},
+  writeSymbol:{name:"Escribe el símbolo",desc:"Ves el nombre y escribes el símbolo, con sus mayúsculas.",tag:"nombre → escribir"},
+  mix:{name:"Modo mezcla",desc:"Mezcla de los cuatro tipos de pregunta.",tag:"todo mezclado"}
+};
+
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function header(back){return `<div class="top"><div class="brand">Element Quest<small>Biology · 1º ESO · ${E.length} elementos</small></div>${back?'<button class="ghost" id="home">Inicio</button>':''}</div>`}
+function bindHome(){const h=document.getElementById('home');if(h)h.onclick=()=>{stop();home()}}
+function stop(){if(tick){clearInterval(tick);tick=null}}
+
+function tableHtml(withNames){
+  const groups=[...new Set(E.map(e=>e.g))];
+  const gn=Array.from({length:18},(_,i)=>`<div class="gnum" style="grid-column:${i+1}">${i+1}</div>`).join('');
+  return `<div class="ptable hasg" id="pt">${gn}${E.map(e=>`<button class="tile ${e.c}" data-id="${e.id}" style="--g:${e.g};--p:${e.p}" aria-label="${e.s}"><span class="z">${e.z}</span><span class="s">${e.s}</span>${withNames?`<span class="n">${e.en}</span>`:''}</button>`).join('')}</div>`;
+}
+const legend=`<div class="legend">${Object.entries(CAT).map(([k,v])=>`<span><i class="tile ${k}" style="aspect-ratio:auto;padding:0"></i>${v}</span>`).join('')}</div>`;
+
+function home(){
+  const best=store.get('best',{});
+  app.innerHTML=header(false)+`
+   <p class="lead">Aprende los ${E.length} elementos marcados con borde grueso en la tabla de clase: su símbolo y su nombre en inglés y en español. Cada acierto rápido suma más puntos.</p>
+   <div class="row">
+     <div class="seg" role="group" aria-label="Preguntas por partida">${[10,20,E.length].map(n=>`<button data-len="${n}" aria-pressed="${opts.len===n}">${n===E.length?'Todos':n+' preguntas'}</button>`).join('')}</div>
+     <div class="seg" role="group" aria-label="Tiempo"><button data-timer="1" aria-pressed="${opts.timer}">Con tiempo</button><button data-timer="0" aria-pressed="${!opts.timer}">Sin prisa</button></div>
+   </div>
+   <div class="modes">
+     ${Object.entries(MODES).map(([k,m])=>`<button class="mode" data-mode="${k}"><i>${m.tag}</i><b>${m.name}</b><span>${m.desc}</span>${best[k]?`<span class="best">Récord: ${best[k]} pts</span>`:''}</button>`).join('')}
+     <button class="mode" data-study="1"><i>repaso</i><b>Tabla de estudio</b><span>Toca cada elemento para ver su nombre y un truco para recordarlo.</span></button>
+   </div>`;
+  app.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{opts.len=+b.dataset.len;store.set('len',opts.len);home()});
+  app.querySelectorAll('[data-timer]').forEach(b=>b.onclick=()=>{opts.timer=b.dataset.timer==="1";store.set('timer',opts.timer);home()});
+  app.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>start(b.dataset.mode));
+  app.querySelector('[data-study]').onclick=study;
+}
+
+function start(mode,pool){
+  const base=pool||E;
+  let list=shuffle(base);
+  if(!pool) list=list.slice(0,Math.min(opts.len,E.length));
+  const TYPES=['name','symbol','writeName','writeSymbol'];
+  const qs=list.map(e=>({e,type:mode==='mix'?TYPES[Math.floor(Math.random()*4)]:mode}));
+  G={mode,qs,i:0,score:0,streak:0,bestStreak:0,right:0,misses:[],review:!!pool};
+  ask();
+}
+
+function ask(){
+  stop();
+  const Q=G.qs[G.i],e=Q.e;
+  let prompt,answers;
+  if(Q.type==='name'){
+    prompt=`<div class="q">¿Qué elemento es?</div><div class="bigsym">${e.s}</div>`;
+    answers=`<div class="names" id="ans">${E.map(o=>`<button class="ans" data-id="${o.id}">${o.en}<small>${o.es}</small></button>`).join('')}</div>`;
+  } else if(Q.type==='writeName'){
+    prompt=`<div class="q">Escribe el nombre de…</div><div class="bigsym">${e.s}</div>`;
+    answers=writeBox('Nombre en inglés o en español');
+  } else if(Q.type==='writeSymbol'){
+    prompt=`<div class="q">Escribe el símbolo de…</div><div class="bigname">${e.en}/${e.es}</div>`;
+    answers=writeBox('Símbolo, por ejemplo Fe');
+  } else {
+    prompt=`<div class="q">Toca el símbolo de…</div><div class="bigname">${e.en}/${e.es}</div>`;
+    answers=tableHtml(false);
+  }
+  app.innerHTML=header(true)+`
+    <div class="hud"><span>${G.i+1}/${G.qs.length}</span><span class="grow"></span><span>racha ${G.streak}</span><span>${G.score} pts</span></div>
+    ${opts.timer?'<div class="bar"><div id="tb"></div></div>':''}
+    <div class="prompt">${prompt}</div>
+    ${answers}
+    <div id="fb"></div>`;
+  bindHome();
+  const writing=Q.type.startsWith('write');
+  const t0=performance.now(),LIMIT=writing?30000:20000;
+  G.answered=false;G.limit=LIMIT;
+  app.querySelectorAll('.ans,.tile').forEach(b=>b.onclick=()=>answer(+b.dataset.id,performance.now()-t0));
+  if(writing){
+    const inp=document.getElementById('wr');
+    const go=()=>{const r=checkWritten(Q,inp.value);if(r)answer(r.id,performance.now()-t0,r)};
+    document.getElementById('wform').onsubmit=ev=>{ev.preventDefault();go()};
+    document.getElementById('skip').onclick=()=>answer(-1,LIMIT,{skipped:true});
+    inp.focus({preventScroll:true});
+  }
+  if(opts.timer){
+    const tb=document.getElementById('tb');
+    tick=setInterval(()=>{const left=Math.max(0,1-(performance.now()-t0)/LIMIT);tb.style.width=(left*100)+'%';if(left<=0)answer(-1,LIMIT)},100);
+  }
+}
+
+function writeBox(ph){
+  return `<form class="write" id="wform" autocomplete="off">
+    <input id="wr" type="text" placeholder="${ph}" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="${ph}">
+    <div class="row"><button type="submit" class="next" style="flex:1">Comprobar</button><button type="button" class="ghost" id="skip" style="padding:14px">No lo sé</button></div>
+  </form>`;
+}
+const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z]/g,'');
+const ALT={Aluminium:["aluminum"],Sulfur:["sulphur"],Zinc:["zinc"],Iodine:["iodo"],Cesium:[]};
+function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+// Returns {id, typed, note} or null when the box is empty
+function checkWritten(Q,raw){
+  const typed=raw.trim(),e=Q.e;
+  if(!typed){document.getElementById('wr').focus();return null}
+  if(Q.type==='writeSymbol'){
+    if(typed.toLowerCase()===e.s.toLowerCase())
+      return {id:e.id,typed,note:typed===e.s?'':`Ojo: se escribe «${e.s}». ${e.s.length===1?'Va en mayúscula.':'La primera letra va en mayúscula y la segunda en minúscula.'}`};
+    const other=E.find(o=>o.s.toLowerCase()===typed.toLowerCase());
+    return {id:-2,typed,other};
+  }
+  const t=norm(typed);
+  const names=o=>[o.en,o.es,...(ALT[o.en]||[])].map(norm);
+  if(names(e).includes(t)) return {id:e.id,typed,note:''};
+  const other=E.find(o=>names(o).includes(t));
+  if(other) return {id:-2,typed,other};
+  if(t.length>=5&&names(e).some(n=>lev(n,t)<=1))
+    return {id:e.id,typed,note:`Vale, pero revisa cómo se escribe: «${e.en}» / «${e.es}».`};
+  return {id:-2,typed};
+}
+
+function answer(id,ms,w){
+  if(G.answered)return;G.answered=true;stop();
+  const Q=G.qs[G.i],e=Q.e,ok=id===e.id;let gained=0;
+  if(w){const inp=document.getElementById('wr');if(inp){inp.disabled=true;inp.classList.add(ok?'right':'wrong')}
+    app.querySelectorAll('#wform button').forEach(b=>b.disabled=true)}
+  if(ok){G.streak++;G.right++;G.bestStreak=Math.max(G.bestStreak,G.streak);
+    gained=opts.timer?Math.round(500+500*Math.max(0,1-ms/G.limit)):1000;if(w)gained+=200;if(G.streak>=3)gained+=100;G.score+=gained;}
+  else{G.streak=0;if(!G.misses.includes(e))G.misses.push(e)}
+  app.querySelectorAll('.ans,.tile').forEach(b=>{b.disabled=true;const bid=+b.dataset.id;
+    if(bid===e.id)b.classList.add('right');else if(bid===id)b.classList.add('wrong');else b.classList.add('dim')});
+  const wrongEl=id>=0&&!ok?E[id]:(w&&w.other)||null;
+  const verb=w?'Has escrito':'Has elegido';
+  const typedLine=w&&!ok&&w.typed&&!w.other?`<p class="fact">Has escrito «${esc(w.typed)}».</p>`:'';
+  const noteLine=w&&ok&&w.note?`<p class="fact"><b>${w.note}</b></p>`:'';
+  const title=ok?`¡Correcto! <span class="pop">+${gained}</span>`:(id===-1?(w&&w.skipped?'La respuesta era…':'¡Se acabó el tiempo!'):'¡Casi!');
+  const fb=document.getElementById('fb');
+  fb.innerHTML=`<div class="feedback ${ok?'good':'bad'}"><h3>${title}</h3>
+    <p><b>${e.s}</b> = <b>${e.en}/${e.es}</b> · nº atómico ${e.z}</p>
+    ${wrongEl?`<p class="fact">${verb} ${wrongEl.s} = ${wrongEl.en}/${wrongEl.es}.</p>`:''}${typedLine}${noteLine}
+    <p class="fact">${e.tip}</p>
+    <button class="next" id="nx">${G.i+1<G.qs.length?'Siguiente':'Ver resultado'}</button></div>`;
+  const nx=document.getElementById('nx');nx.focus({preventScroll:true});
+  fb.scrollIntoView({behavior:'smooth',block:'end'});
+  nx.onclick=()=>{G.i++;G.i<G.qs.length?ask():results()};
+}
+
+function results(){
+  const total=G.qs.length,best=store.get('best',{});let rec=false;
+  if(!G.review&&G.score>(best[G.mode]||0)){best[G.mode]=G.score;store.set('best',best);rec=true}
+  const pct=Math.round(100*G.right/total);
+  const msg=pct===100?'¡Perfecto! Te sabes la tabla.':pct>=80?'¡Muy bien! Casi lo tienes.':pct>=50?'Vas bien. Repasa los fallos y vuelve a jugar.':'Empieza por la tabla de estudio y luego vuelve a intentarlo.';
+  app.innerHTML=header(true)+`
+    <div class="prompt" style="position:static">
+      <div class="q">${MODES[G.mode].name}${G.review?' · repaso de fallos':''}</div>
+      <div class="score">${G.score}</div>
+      <p class="sub">${G.right} de ${total} aciertos · mejor racha ${G.bestStreak}${rec?' · ¡nuevo récord!':''}</p>
+      <p class="sub">${msg}</p>
+    </div>
+    <div class="row" style="flex-direction:column;align-items:stretch">
+      ${G.misses.length?`<button class="next" id="rv">Repasar mis ${G.misses.length} fallo${G.misses.length>1?'s':''}</button>`:''}
+      <button class="ghost" id="again" style="padding:14px">Jugar otra vez</button>
+    </div>
+    ${G.misses.length?`<h3 style="font-size:16px">Para repasar</h3><div class="misslist">${G.misses.map(e=>`<div class="miss"><b>${e.s}</b><span>${e.en}<br>${e.es}</span></div>`).join('')}</div>`:''}`;
+  bindHome();
+  const mode=G.mode,misses=G.misses.slice();
+  document.getElementById('again').onclick=()=>start(mode);
+  const rv=document.getElementById('rv');if(rv)rv.onclick=()=>start(mode,misses);
+}
+
+function study(){
+  stop();
+  app.innerHTML=header(true)+`
+    <p class="lead">Estos son los ${E.length} elementos que entran. Toca uno para ver su nombre. Fíjate en los que tienen símbolo «raro» porque viene del latín: Na, K, Fe, Cu, Ag, Sn, Sb, Au, Hg y Pb.</p>
+    <div class="info" id="info"><div class="bigsym">?</div><p>Toca un elemento de la tabla.</p></div>
+    ${tableHtml(true)}
+    ${legend}`;
+  bindHome();
+  const info=document.getElementById('info');
+  app.querySelectorAll('.tile').forEach(t=>t.onclick=()=>{
+    app.querySelectorAll('.tile.sel').forEach(x=>x.classList.remove('sel'));t.classList.add('sel');
+    const e=E[+t.dataset.id];
+    info.innerHTML=`<div class="bigsym">${e.s}</div><p><b>${e.en}/${e.es}</b><br><span class="fact">Nº atómico ${e.z} · ${CAT[e.c]}</span><br><span class="fact">${e.tip}</span></p>`;
+  });
+}
+
+home();
+</script>
+
+</html>
