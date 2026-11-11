@@ -261,8 +261,9 @@ const MODES={
   part:{name:"Elige el participio",desc:"Ves el verbo y eliges su Past Participle entre cuatro opciones.",tag:"V1 → V3"},
   meaning:{name:"¿Qué verbo es?",desc:"Ves la traducción en español y eliges el verbo en inglés.",tag:"español → V1"},
   writeRow:{name:"Completa la fila",desc:"Ves el verbo y escribes su pasado y su participio.",tag:"V1 → escribir V2 y V3"},
+  writeAny:{name:"Completa la fila al azar",desc:"Ves una sola forma (presente, pasado o participio) y escribes las otras dos.",tag:"V1, V2 o V3 → escribir el resto"},
   writeAll:{name:"Desde el español",desc:"Ves la traducción y escribes las tres formas. El más difícil.",tag:"español → V1 V2 V3"},
-  mix:{name:"Modo mezcla",desc:"Mezcla de los cinco tipos de pregunta.",tag:"todo mezclado"}
+  mix:{name:"Modo mezcla",desc:"Mezcla de los seis tipos de pregunta.",tag:"todo mezclado"}
 };
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -291,7 +292,7 @@ function home(){
    </div>
    <div class="modes">
      ${Object.entries(MODES).map(([k,m])=>`<button class="mode" data-mode="${k}"><i>${m.tag}</i><b>${m.name}</b><span>${m.desc}</span>${best[k]?`<span class="best">Récord: ${best[k]} pts</span>`:''}</button>`).join('')}
-     <button class="mode" data-study="1" style="grid-column:1/-1"><i>repaso</i><b>Tabla de estudio</b><span>La lista completa con pronunciación, el tipo de cada verbo y un botón para oírlo.</span></button>
+     <button class="mode" data-study="1"><i>repaso</i><b>Tabla de estudio</b><span>La lista completa con pronunciación, el tipo de cada verbo y un botón para oírlo.</span></button>
    </div>`;
   app.querySelectorAll('[data-range]').forEach(b=>b.onclick=()=>{opts.range=b.dataset.range;store.set('range',opts.range);home()});
   app.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{opts.len=+b.dataset.len;store.set('len',opts.len);home()});
@@ -303,7 +304,7 @@ function home(){
 function start(mode,review){
   let list=shuffle(review||pool());
   if(!review&&opts.len) list=list.slice(0,opts.len);
-  const TYPES=['past','part','meaning','writeRow','writeAll'];
+  const TYPES=['past','part','meaning','writeRow','writeAny','writeAll'];
   const qs=list.map(v=>({v,type:mode==='mix'?TYPES[Math.floor(Math.random()*TYPES.length)]:mode}));
   G={mode,qs,i:0,score:0,streak:0,bestStreak:0,right:0,misses:[],review:!!review};
   ask();
@@ -356,6 +357,14 @@ function ask(){
       <div class="trio"><span class="f1">${v.v1}</span><span class="gap f2">?</span><span class="gap f3">?</span></div>
       <div class="ipa">/${v.i1}/ · ${esc(v.es)}</div>${sayBtn}`;
     answers=writeBox([['w2','Past Simple (V2)','f2'],['w3','Past Participle (V3)','f3']]);
+  } else if(Q.type==='writeAny'){
+    if(!Q.given)Q.given=1+Math.floor(Math.random()*3);
+    const F=[null,{id:'w1',l:'Infinitivo (V1)',name:'infinitivo',w:v.v1,ipa:v.i1},{id:'w2',l:'Past Simple (V2)',name:'pasado',w:v.v2,ipa:v.i2},{id:'w3',l:'Past Participle (V3)',name:'participio',w:v.v3,ipa:v.i3}];
+    const g=F[Q.given],rest=[1,2,3].filter(k=>k!==Q.given);
+    prompt=`<div class="q">Te doy el <span class="f${Q.given}">${g.name}</span>. Escribe ${rest.map(k=>`el <span class="f${k}">${F[k].name}</span>`).join(' y ')}</div>
+      <div class="trio">${[1,2,3].map(k=>k===Q.given?`<span class="f${k}">${esc(g.w)}</span>`:`<span class="gap f${k}">?</span>`).join('')}</div>
+      <div class="ipa">/${g.ipa}/ · ${esc(v.es)}</div>${canSpeak?`<button class="say" id="sayg" type="button">${SPK}Escuchar</button>`:''}`;
+    answers=writeBox(rest.map(k=>[F[k].id,F[k].l,'f'+k]));
   } else {
     prompt=`<div class="q">Escribe las tres formas de…</div><div class="bigverb es">${esc(v.es)}</div><div class="ipa">Empieza por «${v.v1[0]}»</div>`;
     answers=writeBox([['w1','Infinitivo (V1)','f1'],['w2','Past Simple (V2)','f2'],['w3','Past Participle (V3)','f3']],true);
@@ -368,6 +377,7 @@ function ask(){
     <div id="fb"></div>`;
   bindHome();
   const sq=document.getElementById('sayq');if(sq)sq.onclick=()=>say(v.v1);
+  const sg=document.getElementById('sayg');if(sg)sg.onclick=()=>say([v.v1,v.v2,v.v3][Q.given-1].replace(/\s*\/\s*/g,', or '));
   const writing=Q.type.startsWith('write');
   const t0=performance.now(),LIMIT=Q.type==='writeAll'?45000:writing?35000:15000;
   G.answered=false;G.limit=LIMIT;
