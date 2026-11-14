@@ -277,7 +277,7 @@ const sayAll=v=>`${v.v1}. ${v.v2.replace(/\s*\/\s*/g,', or ')}. ${v.v3.replace(/
 const canSpeak=(()=>{try{return 'speechSynthesis' in window}catch(e){return false}})();
 
 const ONLINE=/github\.io$/.test(location.hostname);
-function header(back){return `<div class="top"><div class="brand">Verb Quest<small>English · 1º ESO · Irregular verbs</small></div><div class="row" style="justify-content:flex-end">${ONLINE?'<a class="ghost" href="../">← Todos los juegos</a>':''}${back?'<button class="ghost" id="home">Inicio</button>':''}</div></div>`}
+function header(back){return `<div class="top"><div class="brand">Verb Quest<small>English · 1º ESO · Irregular verbs</small></div><div class="row" style="justify-content:flex-end">${ONLINE?'<a class="ghost" href="./">← Todos los juegos</a>':''}${back?'<button class="ghost" id="home">Inicio</button>':''}</div></div>`}
 function bindHome(){const h=document.getElementById('home');if(h)h.onclick=()=>{stop();home()}}
 function stop(){if(tick){clearInterval(tick);tick=null}}
 
