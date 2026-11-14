@@ -274,7 +274,7 @@ function onFigTap(cands,cb){
 
 /* ---------- Pantallas ---------- */
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function header(back){return `<div class="top"><div class="brand">Cuerpo Quest<small>Ciencias Naturales · 6º Primaria · ${P.filter(p=>p.c==='hueso').length} huesos y ${P.filter(p=>p.c==='musculo').length} músculos</small></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">${/github\.io$/.test(location.hostname)?'<a class="ghost" href="../../" style="color:inherit;text-decoration:none;white-space:nowrap">← Todos los juegos</a>':''}${back?'<button class="ghost" id="home">Inicio</button>':''}</div></div>`}
+function header(back){return `<div class="top"><div class="brand">Cuerpo Quest<small>Ciencias Naturales · 6º Primaria · ${P.filter(p=>p.c==='hueso').length} huesos y ${P.filter(p=>p.c==='musculo').length} músculos</small></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">${/github\.io$/.test(location.hostname)?'<a class="ghost" href="../" style="color:inherit;text-decoration:none;white-space:nowrap">← Todos los juegos</a>':''}${back?'<button class="ghost" id="home">Inicio</button>':''}</div></div>`}
 function bindHome(){const h=$('home');if(h)h.onclick=()=>{stop();home()}}
 function stop(){if(tick){clearInterval(tick);tick=null}}
 

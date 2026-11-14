@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Juegos de estudio · 1º ESO</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{--bg:#eef0ea;--surface:#fff;--ink:#1d2321;--muted:#5d6762;--line:#d5dad3;--accent:#6a3fa0}
+@media (prefers-color-scheme:dark){:root{--bg:#151917;--surface:#1f2522;--ink:#ecefe9;--muted:#a3ada7;--line:#323a36;--accent:#a77fe0;color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Atkinson Hyperlegible",system-ui,sans-serif;padding:24px max(16px,env(safe-area-inset-left))}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:"Unbounded",system-ui,sans-serif;font-weight:800;font-size:24px;margin:0}
+h2{font-family:"Unbounded",system-ui,sans-serif;font-weight:800;font-size:19px;margin:18px 0 0;padding-bottom:6px;border-bottom:2px solid var(--accent)}
+h3{font-size:15px;margin:6px 0 0;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+p{color:var(--muted);margin:0;line-height:1.5}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+nav a{padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:inherit;text-decoration:none;font-size:14px}
+a.card{display:flex;flex-direction:column;gap:6px;padding:18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;text-decoration:none;color:inherit}
+a.card b{font-family:"Unbounded",system-ui,sans-serif;font-size:17px}
+a.card span{color:var(--muted);font-size:14.5px}
+a.card i{font-style:normal;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+a.course{display:flex;align-items:center;gap:16px;padding:22px 20px;background:var(--surface);border:1px solid var(--line);border-radius:18px;text-decoration:none;color:inherit}
+a.course .n{font-family:"Unbounded",system-ui,sans-serif;font-weight:800;font-size:30px;color:var(--accent);min-width:64px;text-align:center}
+a.course b{font-family:"Unbounded",system-ui,sans-serif;font-size:19px;display:block}
+a.course span{color:var(--muted);font-size:14.5px}
+a.course em{margin-left:auto;font-style:normal;font-size:22px;color:var(--muted)}
+a.back{color:var(--accent);text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../">← Elegir curso</a>
+<h1>1º ESO</h1>
+<h3>Biology</h3>
+<a class="card" href="biologia-geologia/mineral-quest.html"><i>20 minerales</i><b>Mineral Quest</b><span>Reconoce cada mineral por su foto y su nombre en inglés y español.</span></a>
+<a class="card" href="biologia-geologia/rocks-quest.html"><i>15 rocas</i><b>Rock Quest</b><span>Reconoce cada roca por su foto, su nombre en inglés y español, y su tipo: ígnea, sedimentaria o metamórfica.</span></a>
+<a class="card" href="biologia-geologia/elements-quest.html"><i>37 elementos</i><b>Element Quest</b><span>Símbolos y nombres de los elementos marcados de la tabla periódica.</span></a>
+
+<h3>English</h3>
+<a class="card" href="ingles/verb-quest.html"><i>55 verbos irregulares</i><b>Verb Quest</b><span>Infinitivo, pasado y participio de los verbos irregulares, con su traducción y pronunciación.</span></a>
+</div>
+</body>
+</html>
