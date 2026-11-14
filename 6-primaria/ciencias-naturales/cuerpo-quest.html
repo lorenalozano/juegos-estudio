@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Cuerpo Quest 6º</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: body drawing (skeleton + muscles, like the textbook) beside the question panel on wide screens; stacked prompt → drawing → answers on phones */
+:root{
+  --bg:#eef0f3; --surface:#ffffff; --ink:#1b2129; --muted:#5b6573; --line:#d3d8df;
+  --skin:#f3e3d0; --skin-ln:#d6bc9c; --bone:#fbf8f1; --bone-ln:#a3937a;
+  --mus:#c9584a; --mus2:#da705f; --mus3:#b0473b; --mus-ln:#8a3127; --tendon:#efe3d8; --eye:#ffffff; --pupil:#2b2b2b;
+  --dot:#17324d; --dot-ring:#ffffff;
+  --ok:#1f8a4c; --bad:#c23b2c; --accent:#2f5fb3;
+  --display:"Unbounded",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13171c; --surface:#1d232a; --ink:#e9edf2; --muted:#a2acb8; --line:#333b45;
+  --skin:#3b3129; --skin-ln:#5c4b3b; --bone:#ebe4d4; --bone-ln:#8c7d64;
+  --mus:#a6463b; --mus2:#bf5c4d; --mus3:#933a30; --mus-ln:#5a1e17; --tendon:#d8cabc; --eye:#f4f4f4; --pupil:#1b1b1b;
+  --dot:#f1f4f8; --dot-ring:#13171c;
+  --ok:#3dbb72; --bad:#e25c4c; --accent:#7aa3ef; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13171c; --surface:#1d232a; --ink:#e9edf2; --muted:#a2acb8; --line:#333b45;
+  --skin:#3b3129; --skin-ln:#5c4b3b; --bone:#ebe4d4; --bone-ln:#8c7d64;
+  --mus:#a6463b; --mus2:#bf5c4d; --mus3:#933a30; --mus-ln:#5a1e17; --tendon:#d8cabc; --eye:#f4f4f4; --pupil:#1b1b1b;
+  --dot:#f1f4f8; --dot-ring:#13171c;
+  --ok:#3dbb72; --bad:#e25c4c; --accent:#7aa3ef; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;
+  -webkit-tap-highlight-color:transparent}
+.wrap{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,.pt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-family:var(--display);font-weight:800;font-size:18px}
+.brand small{display:block;font-family:var(--body);font-weight:400;font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.ghost{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:14px}
+.lead{color:var(--muted);margin:0;line-height:1.5;max-width:65ch}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{padding:8px 12px;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:700}
+.modes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.mode{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;transition:transform .12s}
+.mode:active{transform:scale(.97)}
+.mode:disabled{opacity:.45;cursor:not-allowed}
+.mode b{font-family:var(--display);font-size:15px}
+.mode span{font-size:13.5px;color:var(--muted);line-height:1.4}
+.mode i{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--accent)}
+.best{font-size:13px;color:var(--muted)}
+
+/* Stage: drawing + panel */
+.stage{display:grid;gap:14px;grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "fig" "rest"}
+.stage>.top-a{grid-area:top;min-width:0;display:flex;flex-direction:column;gap:12px}
+.stage>.fig-a{grid-area:fig;min-width:0}
+.stage>.rest-a{grid-area:rest;min-width:0;display:flex;flex-direction:column;gap:12px}
+.stage.figlast{grid-template-areas:"top" "rest" "fig"}
+@media (min-width:760px){
+  .stage,.stage.figlast{grid-template-columns:minmax(0,430px) minmax(0,1fr);grid-template-areas:"fig top" "fig rest";grid-template-rows:auto 1fr;align-items:start}
+  .stage>.fig-a{position:sticky;top:calc(12px + env(safe-area-inset-top,0px))}
+}
+.figbox{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:8px}
+.fig{display:block;width:100%;height:auto;max-height:72vh;margin:0 auto;touch-action:manipulation}
+.fig line{stroke-linecap:round}
+.sk .o{fill:var(--skin-ln);stroke:var(--skin-ln)} .sk .f{fill:var(--skin);stroke:var(--skin)}
+.mu .o{fill:var(--mus-ln);stroke:var(--mus-ln)} .mu .f{fill:var(--mus);stroke:var(--mus)}
+.b{fill:var(--bone);stroke:var(--bone-ln);stroke-width:1.2}
+.hole{fill:var(--bone-ln)}
+.bo{stroke:var(--bone-ln);fill:none;stroke-linecap:round} .bf{stroke:var(--bone);fill:none;stroke-linecap:round}
+.m{fill:var(--mus2);stroke:var(--mus-ln);stroke-width:1}
+.m2{fill:var(--mus3);stroke:var(--mus-ln);stroke-width:1}
+.mo{stroke:var(--mus-ln);fill:none;stroke-linecap:round} .mf{stroke:var(--mus2);fill:none;stroke-linecap:round}
+.t{fill:var(--tendon);stroke:var(--mus-ln);stroke-width:1} .tl{stroke:var(--tendon);fill:none}
+.eye{fill:var(--eye)} .pupil{fill:var(--pupil)}
+.lab{fill:var(--muted);font:700 11px var(--mono);letter-spacing:.14em;text-anchor:middle}
+.pt{fill:var(--dot);stroke:var(--dot-ring);stroke-width:2;cursor:pointer;transition:opacity .2s}
+.pt.dim{opacity:.25}
+.pt.right{fill:var(--ok)} .pt.wrong{fill:var(--bad)} .pt.sel{fill:var(--accent)}
+.ring{fill:none;stroke-width:3.5} .ring.right{stroke:var(--ok)} .ring.wrong{stroke:var(--bad)} .ring.sel{stroke:var(--accent)}
+.hl{fill:none;stroke:var(--accent);stroke-width:3.5;transform-box:fill-box;transform-origin:center;animation:pulse 1.1s ease-in-out infinite}
+.hlc{fill:var(--accent);stroke:var(--dot-ring);stroke-width:2}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.45)}}
+.figlink{display:block;width:100%;padding:0;text-align:center;font-size:13px;color:var(--muted)}
+
+/* Game */
+.hud{display:flex;gap:10px;align-items:center;font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
+.hud .grow{flex:1}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar>div{height:100%;background:var(--accent);width:100%;transition:width .1s linear}
+.prompt{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.q{font-family:var(--display);font-weight:700;font-size:16px}
+.hint{font-size:14px;color:var(--muted)}
+.bigname{font-family:var(--display);font-weight:800;font-size:clamp(20px,6vw,30px);overflow-wrap:anywhere;hyphens:auto}
+.clue{font-size:18px;line-height:1.45;max-width:46ch}
+.grp{display:flex;flex-direction:column;gap:6px}
+.grp h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.names{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ans{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-height:46px;padding:8px 10px;font-size:15px;line-height:1.2;text-align:left;box-shadow:inset 0 -3px 0 var(--line);overflow-wrap:anywhere;hyphens:auto;transition:opacity .2s}
+.ans.hueso{border-left:5px solid var(--bone-ln)} .ans.musculo{border-left:5px solid var(--mus)}
+.ans.dim{opacity:.3}
+.ans.right{background:var(--ok);border-color:var(--ok);color:#fff}
+.ans.wrong{background:var(--bad);border-color:var(--bad);color:#fff}
+.kinds{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kind{border-radius:14px;padding:22px 10px;font-family:var(--display);font-weight:800;font-size:20px;border:2px solid;transition:opacity .2s}
+.kind.hueso{background:var(--bone);border-color:var(--bone-ln);color:#3a3326}
+.kind.musculo{background:var(--mus2);border-color:var(--mus-ln);color:#fff}
+.kind.dim{opacity:.3}
+.kind.right{outline:4px solid var(--ok);outline-offset:2px}
+.kind.wrong{outline:4px solid var(--bad);outline-offset:2px}
+.feedback{border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;border:2px solid;background:var(--surface)}
+.feedback.good{border-color:var(--ok)}.feedback.bad{border-color:var(--bad)}
+.feedback h3{font-size:17px}
+.feedback.good h3{color:var(--ok)}.feedback.bad h3{color:var(--bad)}
+.feedback p{margin:0;line-height:1.45}
+.fact{color:var(--muted);font-size:14.5px}
+.next{background:var(--ink);color:var(--bg);font-family:var(--display);font-weight:700;padding:14px;border-radius:12px;font-size:16px;width:100%}
+.pop{font-family:var(--mono);color:var(--ok)}
+.write{display:flex;flex-direction:column;gap:10px}
+.write input{width:100%;font-family:var(--display);font-weight:700;font-size:20px;padding:14px 16px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);text-align:center}
+.write input:focus{outline:none;border-color:var(--accent)}
+.write input.right{border-color:var(--ok);color:var(--ok)}
+.write input.wrong{border-color:var(--bad);color:var(--bad)}
+.score{font-family:var(--display);font-weight:800;font-size:56px;font-variant-numeric:tabular-nums}
+.sub{color:var(--muted);margin:0}
+.misslist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.miss{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:2px}
+.miss.hueso{border-left:5px solid var(--bone-ln)} .miss.musculo{border-left:5px solid var(--mus)}
+.miss b{font-family:var(--display);font-size:15px;overflow-wrap:anywhere}
+.miss span{font-size:13px;color:var(--muted)}
+.info{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px;min-height:120px}
+.info h3{font-size:20px;overflow-wrap:anywhere}
+.info p{margin:0;line-height:1.45}
+.tag{display:inline-block;font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:6px 10px;border-radius:20px;border:1px solid var(--line);background:var(--surface);font-size:14px}
+.chip.hueso{border-left:5px solid var(--bone-ln)} .chip.musculo{border-left:5px solid var(--mus)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (max-width:420px){.names{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.modes{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.hl{animation:none}}
+</style>
+
+<div class="wrap" id="app"></div>
+
+<script>
+// Huesos y músculos del libro (aparato locomotor). x,y: posición en el dibujo (cada figura mide 200 de ancho).
+const OX=220;
+const P=[
+ {n:"frontal",c:"hueso",z:"Cabeza",x:100,y:18,clue:"Hueso de la frente. Protege la parte delantera del cerebro.",tip:"Es el hueso que notas al tocarte la frente. Forma parte del cráneo.",alt:["hueso frontal"]},
+ {n:"temporal",c:"hueso",z:"Cabeza",x:81,y:38,clue:"Hueso del cráneo que está a cada lado de la cabeza, junto a las orejas.",tip:"Está en las sienes. Dentro de él está el oído.",alt:["temporales"]},
+ {n:"maxilar",c:"hueso",z:"Cabeza",x:100,y:54,clue:"Hueso de la cara en el que están los dientes de arriba.",tip:"La mandíbula, donde están los dientes de abajo, es el único hueso de la cabeza que se mueve.",alt:["maxilar superior","maxilares"]},
+ {n:"vértebra",c:"hueso",z:"Tronco",x:100,y:222,clue:"Huesos pequeños que, apilados uno sobre otro, forman la columna.",tip:"Tenemos 33 vértebras. Juntas forman la columna vertebral, que nos sostiene y protege la médula espinal.",alt:["columna","columna vertebral"]},
+ {n:"costilla",c:"hueso",z:"Tronco",x:75,y:140,clue:"Huesos curvos que forman una «jaula» que protege el corazón y los pulmones.",tip:"Tenemos 12 pares de costillas (24 en total). Por delante se unen al esternón.",alt:[]},
+ {n:"pelvis",c:"hueso",z:"Cadera",x:80,y:250,clue:"Hueso grande de la cadera que une la columna con las piernas.",tip:"Sostiene los órganos de la tripa. En ella encaja la cabeza del fémur.",alt:["cadera","coxal","hueso coxal"]},
+ {n:"húmero",c:"hueso",z:"Brazo",x:147.5,y:140,clue:"Hueso del brazo, entre el hombro y el codo.",tip:"Va del hombro al codo. Encima tiene el bíceps (delante) y el tríceps (detrás).",alt:[]},
+ {n:"radio",c:"hueso",z:"Antebrazo",x:28.5,y:223,clue:"Hueso del antebrazo que está del lado del dedo pulgar.",tip:"Truco: el radio va del lado del pulgar. Cuando giras la mano, el radio gira alrededor del cúbito.",alt:[]},
+ {n:"cúbito",c:"hueso",z:"Antebrazo",x:43.5,y:224,clue:"Hueso del antebrazo que está del lado del dedo meñique.",tip:"Truco: cúbito con meñique. Su punta es el «hueso» que notas en el codo.",alt:["ulna"]},
+ {n:"fémur",c:"hueso",z:"Pierna (muslo)",x:84,y:302,clue:"Hueso del muslo. Es el más largo del cuerpo.",tip:"Es el hueso más largo y fuerte del cuerpo. Encima tiene el cuádriceps.",alt:[]},
+ {n:"rótula",c:"hueso",z:"Rodilla",x:80,y:347,clue:"Hueso pequeño y redondeado que protege la rodilla por delante.",tip:"Está metida en el tendón del cuádriceps y protege la articulación de la rodilla.",alt:["patela"]},
+ {n:"tibia",c:"hueso",z:"Pierna",x:116,y:390,clue:"Hueso grueso de la parte de delante de la pierna (la espinilla).",tip:"Es la espinilla: por eso duele tanto un golpe ahí. Aguanta casi todo el peso del cuerpo.",alt:[]},
+ {n:"peroné",c:"hueso",z:"Pierna",x:130.5,y:390,clue:"Hueso fino de la pierna que va pegado a la tibia, por fuera.",tip:"Es fino y va por fuera de la tibia. Ayuda a que el tobillo sea firme.",alt:["fibula"]},
+ {n:"orbicular",c:"musculo",z:"Cara",x:91,y:37,clue:"Músculo en forma de anillo alrededor del ojo. Sirve para cerrar los párpados.",tip:"Hay dos orbiculares en la cara: el de los ojos (para cerrar los párpados y guiñar) y el de los labios (para silbar o dar besos).",alt:["orbicular de los ojos","orbicular del ojo","orbicular de los parpados","orbiculares"]},
+ {n:"esternocleidomastoideo",c:"musculo",z:"Cuello",x:91,y:70,clue:"Músculo del cuello que gira e inclina la cabeza.",tip:"Su nombre dice dónde se sujeta: esternón, clavícula («cleido») y mastoides (detrás de la oreja). Se lee es-ter-no-clei-do-mas-toi-de-o.",alt:[]},
+ {n:"deltoides",c:"musculo",z:"Hombro",x:54,y:106,clue:"Músculo que cubre el hombro y levanta el brazo hacia los lados.",tip:"Tiene forma de triángulo, como la letra griega delta (Δ). De ahí su nombre.",alt:["deltoide"]},
+ {n:"pectorales",c:"musculo",z:"Pecho",x:83,y:114,clue:"Músculos del pecho. Trabajan al abrazar o al hacer flexiones.",tip:"Unen el pecho con el brazo y llevan los brazos hacia delante.",alt:["pectoral","pectoral mayor"]},
+ {n:"bíceps",c:"musculo",z:"Brazo (delante)",x:53,y:142,clue:"Músculo de la parte de delante del brazo. Dobla el codo.",tip:"«Bi» significa dos: tiene dos cabezas. Es el músculo que enseñas al «sacar bola».",alt:[]},
+ {n:"tríceps",c:"musculo",z:"Brazo (detrás)",x:157,y:138,clue:"Músculo de la parte de atrás del brazo. Estira el codo.",tip:"«Tri» significa tres: tiene tres cabezas. Hace lo contrario que el bíceps: uno dobla el codo y el otro lo estira.",alt:[]},
+ {n:"abdominales",c:"musculo",z:"Tripa",x:100,y:184,clue:"Músculos de la tripa. Doblan el tronco hacia delante.",tip:"Protegen los órganos de la tripa y te ayudan a incorporarte cuando estás tumbado.",alt:["abdominal","recto abdominal"]},
+ {n:"oblicuos",c:"musculo",z:"Cintura",x:77,y:200,clue:"Músculos de los lados de la cintura. Giran el tronco.",tip:"Sus fibras van en diagonal (oblicuas). Trabajan cuando giras la cintura.",alt:["oblicuo"]},
+ {n:"cuádriceps",c:"musculo",z:"Muslo (delante)",x:84,y:300,clue:"Músculo de la parte de delante del muslo. Estira la rodilla, por ejemplo al dar una patada.",tip:"«Cuadri» significa cuatro: tiene cuatro partes. Es uno de los músculos más fuertes del cuerpo.",alt:[]},
+ {n:"gemelo",c:"musculo",z:"Pantorrilla",x:127,y:382,clue:"Músculo de la pantorrilla, detrás de la pierna. Te pone de puntillas.",tip:"Se une al talón por el tendón de Aquiles. Trabaja al andar, correr y saltar.",alt:["gemelos"]}
+];
+P.forEach((p,i)=>{p.id=i;p.ax=p.x+(p.c==='musculo'?OX:0)});
+const CATN={hueso:"Hueso",musculo:"Músculo"};
+
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const store={get(k,d){try{const v=localStorage.getItem('cq_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+             set(k,v){try{localStorage.setItem('cq_'+k,JSON.stringify(v))}catch(e){}}};
+const app=document.getElementById('app');
+let opts={len:store.get('len',10),timer:store.get('timer',true),set:store.get('set','all')};
+let G=null,tick=null;
+const pool=()=>opts.set==='all'?P:P.filter(p=>p.c===opts.set);
+
+const MODES={
+  point:{name:"¿Qué es este punto?",desc:"Parpadea un punto del dibujo y eliges su nombre.",tag:"punto → nombre"},
+  find:{name:"Búscalo en el cuerpo",desc:"Te digo un nombre y tocas su punto en el dibujo.",tag:"nombre → punto"},
+  write:{name:"Escribe el nombre",desc:"Parpadea un punto y escribes su nombre. ¡Ojo con las tildes!",tag:"punto → escribir"},
+  clue:{name:"Adivina por la pista",desc:"Lees para qué sirve o dónde está y eliges el nombre.",tag:"pista → nombre"},
+  kind:{name:"¿Hueso o músculo?",desc:"Te digo un nombre y decides rápido si es un hueso o un músculo.",tag:"clasificar"},
+  mix:{name:"Modo mezcla",desc:"Mezcla de todos los tipos de pregunta.",tag:"todo mezclado"}
+};
+
+/* ---------- Dibujo ---------- */
+const L=(x1,y1,x2,y2,w,c)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="${w}" class="${c}"/>`;
+const BL=(x1,y1,x2,y2,w)=>L(x1,y1,x2,y2,w+2.2,'bo')+L(x1,y1,x2,y2,w,'bf');
+const BP=(d,w)=>`<path d="${d}" stroke-width="${w+2.2}" class="bo"/><path d="${d}" stroke-width="${w}" class="bf"/>`;
+const MP=(d,w)=>`<path d="${d}" stroke-width="${w+2}" class="mo"/><path d="${d}" stroke-width="${w}" class="mf"/>`;
+const MIR=s=>`<g>${s}</g><g transform="translate(200,0) scale(-1,1)">${s}</g>`;
+function sil(){
+  const shapes=[['e',100,36,23,28],['r',89,58,22,36],['p','M62 90Q100 82 138 90Q147 100 142 130Q134 170 132 210Q134 240 136 262Q100 280 64 262Q66 240 68 210Q66 170 58 130Q53 100 62 90Z'],
+    ['e',26,286,9,17],['e',174,286,9,17],['e',74,440,13,7],['e',126,440,13,7]];
+  const limbs=[[62,98,42,182,26],[42,182,29,262,24],[138,98,158,182,26],[158,182,171,262,24],[83,262,80,345,34],[80,345,79,428,28],[117,262,120,345,34],[120,345,121,428,28]];
+  const sh=(c,sw)=>shapes.map(s=>s[0]==='e'?`<ellipse cx="${s[1]}" cy="${s[2]}" rx="${s[3]}" ry="${s[4]}" class="${c}" stroke-width="${sw}"/>`:s[0]==='r'?`<rect x="${s[1]}" y="${s[2]}" width="${s[3]}" height="${s[4]}" rx="6" class="${c}" stroke-width="${sw}"/>`:`<path d="${s[1]}" class="${c}" stroke-width="${sw}"/>`).join('');
+  return sh('o',3)+limbs.map(l=>L(l[0],l[1],l[2],l[3],l[4]+3,'o')).join('')+sh('f',0)+limbs.map(l=>L(l[0],l[1],l[2],l[3],l[4],'f')).join('');
+}
+function skel(){
+  let half=BL(99,92,68,89,4);
+  for(let i=0;i<7;i++){const y=102+i*12;half+=BP(`M98 ${y}Q66 ${y-4} 70 ${y+16}`,3.5)}
+  half+=`<path class="b" d="M97 238Q72 226 67 246Q67 263 86 271Q96 266 97 256Z"/>`;
+  half+=BL(62,100,43,180,7)+`<circle class="b" cx="61" cy="98" r="6"/><circle class="b" cx="43" cy="183" r="5"/>`;
+  half+=BL(36,190,21,256,5)+BL(49,190,38,258,5);
+  half+=`<circle class="b" cx="28" cy="266" r="4.5"/>`+BL(27,269,19,297,2.4)+BL(27,269,24,300,2.4)+BL(28,269,29,300,2.4)+BL(29,269,33,297,2.4)+BL(33,267,38,281,2.4);
+  half+=BL(87,268,81,336,8)+`<circle class="b" cx="89" cy="264" r="6"/><circle class="b" cx="80" cy="338" r="6"/>`;
+  half+=`<circle class="b" cx="80" cy="347" r="5.5"/>`;
+  half+=BL(85,356,83,424,6.5)+BL(70,358,69,422,3.5);
+  half+=`<ellipse class="b" cx="74" cy="440" rx="10" ry="5"/>`;
+  let mid='';
+  for(let y=64;y<=256;y+=8)mid+=`<rect class="b" x="95.5" y="${y}" width="9" height="6" rx="2"/>`;
+  mid+=`<rect class="b" x="96" y="93" width="8" height="54" rx="3"/>`;
+  mid+=`<path class="b" d="M95 240L105 240L102 266L98 266Z"/>`;
+  mid+=`<ellipse class="b" cx="100" cy="34" rx="20" ry="23"/><path class="b" d="M84 46Q86 66 100 68Q114 66 116 46Q100 56 84 46Z"/>`;
+  mid+=`<ellipse class="hole" cx="92" cy="36" rx="5" ry="4.5"/><ellipse class="hole" cx="108" cy="36" rx="5" ry="4.5"/><path class="hole" d="M100 42L97 50L103 50Z"/>`+L(92,57,108,57,1.2,'bo');
+  return MIR(half)+mid;
+}
+function musc(){
+  let half=`<ellipse class="m" cx="91" cy="37" rx="8" ry="6.5"/><ellipse class="eye" cx="91" cy="37" rx="3.6" ry="2.4"/><circle class="pupil" cx="91" cy="37" r="1.5"/>`;
+  half+=MP('M85 48Q90 70 97 92',6);
+  half+=`<path class="m" d="M99 96Q78 90 66 104Q64 124 80 133Q93 136 99 128Z"/>`;
+  half+=`<path class="m" d="M66 88Q46 90 44 118Q50 122 56 118Q60 104 72 96Z"/>`;
+  half+=`<path class="m" d="M70 140Q85 150 87 198Q86 234 73 252Q63 200 70 140Z"/>`;
+  for(const y of [140,162,184,206])half+=`<rect class="m" x="89" y="${y}" width="10" height="19" rx="3"/>`;
+  half+=`<ellipse class="m" cx="53" cy="140" rx="7" ry="26" transform="rotate(13 53 140)"/><ellipse class="m2" cx="43" cy="136" rx="3.5" ry="20" transform="rotate(13 43 136)"/>`;
+  half+=`<ellipse class="m" cx="36" cy="222" rx="8" ry="30" transform="rotate(9 36 222)"/>`;
+  half+=`<ellipse class="m" cx="84" cy="300" rx="12" ry="36" transform="rotate(2 84 300)"/>`;
+  half+=`<ellipse class="t" cx="80" cy="347" rx="7.5" ry="9"/>`;
+  half+=`<ellipse class="m2" cx="85" cy="384" rx="5" ry="22"/><ellipse class="m" cx="73" cy="382" rx="8" ry="24"/>`;
+  half+=L(77,408,78,428,4,'tl');
+  return MIR(half)+`<ellipse class="m" cx="100" cy="56" rx="7" ry="4"/>`;
+}
+const FIG=`<svg class="fig" id="fig" viewBox="0 0 420 480" role="img" aria-label="Dibujo del cuerpo humano: a la izquierda el esqueleto y a la derecha los músculos">
+<g class="sk">${sil()}${skel()}</g><g class="mu" transform="translate(${OX},0)">${sil()}${musc()}</g>
+<text class="lab" x="100" y="474">ESQUELETO</text><text class="lab" x="${OX+100}" y="474">MÚSCULOS</text>
+<g id="rings"></g><g id="pts"></g></svg>`;
+const figHtml=extra=>`<div class="figbox">${FIG}${extra||''}</div>`;
+const $=id=>document.getElementById(id);
+function setDots(list){$('pts').innerHTML=list.map((p,k)=>`<circle class="pt" data-id="${p.id}" cx="${p.ax}" cy="${p.y}" r="6.5" tabindex="0" role="button" aria-label="Punto ${k+1}"/>`).join('')}
+function highlight(p){$('rings').innerHTML=`<circle class="hl" cx="${p.ax}" cy="${p.y}" r="11"/><circle class="hlc" cx="${p.ax}" cy="${p.y}" r="6"/>`}
+function mark(p,cls){$('rings').insertAdjacentHTML('beforeend',`<circle class="ring ${cls}" cx="${p.ax}" cy="${p.y}" r="12"/><circle class="pt ${cls}" cx="${p.ax}" cy="${p.y}" r="6.5"/>`)}
+// Tap on the drawing → nearest candidate point (generous hit area for small fingers)
+function onFigTap(cands,cb){
+  const svg=$('fig');
+  svg.addEventListener('click',ev=>{
+    const pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;
+    const m=svg.getScreenCTM();if(!m)return;const q=pt.matrixTransform(m.inverse());
+    let best=null,bd=22;
+    cands().forEach(p=>{const d=Math.hypot(p.ax-q.x,p.y-q.y);if(d<bd){bd=d;best=p}});
+    if(best)cb(best);
+  });
+  svg.addEventListener('keydown',ev=>{if((ev.key==='Enter'||ev.key===' ')&&ev.target.dataset&&ev.target.dataset.id){ev.preventDefault();cb(P[+ev.target.dataset.id])}});
+}
+
+/* ---------- Pantallas ---------- */
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function header(back){return `<div class="top"><div class="brand">Cuerpo Quest<small>Ciencias Naturales · 6º Primaria · ${P.filter(p=>p.c==='hueso').length} huesos y ${P.filter(p=>p.c==='musculo').length} músculos</small></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">${/github\.io$/.test(location.hostname)?'<a class="ghost" href="../../" style="color:inherit;text-decoration:none;white-space:nowrap">← Todos los juegos</a>':''}${back?'<button class="ghost" id="home">Inicio</button>':''}</div></div>`}
+function bindHome(){const h=$('home');if(h)h.onclick=()=>{stop();home()}}
+function stop(){if(tick){clearInterval(tick);tick=null}}
+
+function home(){
+  const best=store.get('best',{});
+  const pl=pool();
+  const lens=[10,20].filter(n=>n<pl.length).concat([pl.length]);
+  if(!lens.includes(opts.len))opts.len=lens.includes(10)?10:pl.length;
+  app.innerHTML=header(false)+`
+   <div class="stage figlast">
+    <div class="top-a">
+     <p class="lead">Aprende los huesos y los músculos del aparato locomotor que salen en el dibujo del libro. Cada acierto rápido suma más puntos.</p>
+     <div class="row">
+       <div class="seg" role="group" aria-label="Qué estudiar">${[['all','Todo'],['hueso','Huesos'],['musculo','Músculos']].map(([k,v])=>`<button data-set="${k}" aria-pressed="${opts.set===k}">${v}</button>`).join('')}</div>
+       <div class="seg" role="group" aria-label="Preguntas por partida">${lens.map(n=>`<button data-len="${n}" aria-pressed="${opts.len===n}">${n===pl.length?'Todas ('+n+')':n}</button>`).join('')}</div>
+       <div class="seg" role="group" aria-label="Tiempo"><button data-timer="1" aria-pressed="${opts.timer}">Con tiempo</button><button data-timer="0" aria-pressed="${!opts.timer}">Sin prisa</button></div>
+     </div>
+    </div>
+    <div class="fig-a">${figHtml('<button class="figlink" id="tostudy">Toca el dibujo para estudiar</button>')}</div>
+    <div class="rest-a"><div class="modes">
+     ${Object.entries(MODES).map(([k,m])=>{const off=k==='kind'&&opts.set!=='all';return `<button class="mode" data-mode="${k}" ${off?'disabled':''}><i>${m.tag}</i><b>${m.name}</b><span>${off?'Elige «Todo» para jugar a este modo.':m.desc}</span>${best[k+'_'+opts.set]?`<span class="best">Récord: ${best[k+'_'+opts.set]} pts</span>`:''}</button>`}).join('')}
+     <button class="mode" data-study="1"><i>repaso</i><b>Dibujo de estudio</b><span>Toca cada punto para ver su nombre, para qué sirve y un truco para recordarlo.</span></button>
+    </div></div>
+   </div>`;
+  setDots(pl);
+  app.querySelectorAll('[data-set]').forEach(b=>b.onclick=()=>{opts.set=b.dataset.set;store.set('set',opts.set);home()});
+  app.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{opts.len=+b.dataset.len;store.set('len',opts.len);home()});
+  app.querySelectorAll('[data-timer]').forEach(b=>b.onclick=()=>{opts.timer=b.dataset.timer==="1";store.set('timer',opts.timer);home()});
+  app.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>start(b.dataset.mode));
+  app.querySelector('[data-study]').onclick=()=>study();
+  $('tostudy').onclick=()=>study();
+  onFigTap(()=>P,p=>study(p.id));
+}
+
+function start(mode,review){
+  const pl=pool();
+  let list=shuffle(review||pl);
+  if(!review)list=list.slice(0,Math.min(opts.len,pl.length));
+  const TYPES=opts.set==='all'?['point','find','write','clue','kind']:['point','find','write','clue'];
+  const qs=list.map(e=>({e,type:mode==='mix'?TYPES[Math.floor(Math.random()*TYPES.length)]:mode}));
+  G={mode,qs,i:0,score:0,streak:0,bestStreak:0,right:0,misses:[],review:!!review,pool:pl};
+  ask();
+}
+
+function namesHtml(list){
+  const g=c=>list.filter(p=>p.c===c);
+  return ['hueso','musculo'].filter(c=>g(c).length).map(c=>`<div class="grp"><h4>${c==='hueso'?'Huesos':'Músculos'}</h4><div class="names">${g(c).map(p=>`<button class="ans ${c}" data-id="${p.id}">${p.n}</button>`).join('')}</div></div>`).join('');
+}
+
+function ask(){
+  stop();
+  const Q=G.qs[G.i],e=Q.e;
+  let prompt,answers='';
+  if(Q.type==='point'){
+    prompt=`<div class="q">¿Cómo se llama el punto que parpadea?</div><div class="hint">Búscalo en el dibujo del ${e.c==='hueso'?'esqueleto':'cuerpo con músculos'}.</div>`;
+    answers=namesHtml(G.pool);
+  } else if(Q.type==='find'){
+    prompt=`<div class="q">Toca en el dibujo dónde está…</div><div class="bigname">${e.n}</div>`;
+  } else if(Q.type==='write'){
+    prompt=`<div class="q">Escribe el nombre del punto que parpadea</div><div class="hint">Búscalo en el dibujo del ${e.c==='hueso'?'esqueleto':'cuerpo con músculos'}.</div>`;
+    answers=writeBox();
+  } else if(Q.type==='clue'){
+    prompt=`<div class="q">¿Qué es?</div><div class="clue">${e.clue}</div>`;
+    answers=namesHtml(G.pool);
+  } else {
+    prompt=`<div class="q">¿Es un hueso o un músculo?</div><div class="bigname">${e.n}</div>`;
+    answers=`<div class="kinds"><button class="kind hueso" data-kind="hueso">Hueso</button><button class="kind musculo" data-kind="musculo">Músculo</button></div>`;
+  }
+  app.innerHTML=header(true)+`
+    <div class="stage">
+      <div class="top-a">
+        <div class="hud"><span>${G.i+1}/${G.qs.length}</span><span class="grow"></span><span>racha ${G.streak}</span><span>${G.score} pts</span></div>
+        ${opts.timer?'<div class="bar"><div id="tb"></div></div>':''}
+        <div class="prompt">${prompt}</div>
+      </div>
+      <div class="fig-a">${figHtml()}</div>
+      <div class="rest-a">${answers}<div id="fb"></div></div>
+    </div>`;
+  bindHome();
+  const writing=Q.type==='write';
+  const LIMIT=writing?30000:Q.type==='kind'?8000:20000;
+  const t0=performance.now();
+  G.answered=false;G.limit=LIMIT;
+  if(Q.type==='point'||writing)highlight(e);
+  if(Q.type==='find'){setDots(G.pool);onFigTap(()=>G.answered?[]:G.pool,p=>answer(p.id,performance.now()-t0))}
+  app.querySelectorAll('.ans').forEach(b=>b.onclick=()=>answer(+b.dataset.id,performance.now()-t0));
+  app.querySelectorAll('.kind').forEach(b=>b.onclick=()=>answer(b.dataset.kind,performance.now()-t0));
+  if(writing){
+    const inp=$('wr');
+    $('wform').onsubmit=ev=>{ev.preventDefault();const r=checkWritten(Q,inp.value);if(r)answer(r.id,performance.now()-t0,r)};
+    $('skip').onclick=()=>answer(-1,LIMIT,{skipped:true});
+    if(matchMedia('(min-width:760px)').matches)inp.focus({preventScroll:true});
+  }
+  if(opts.timer){
+    const tb=$('tb');
+    tick=setInterval(()=>{const left=Math.max(0,1-(performance.now()-t0)/LIMIT);tb.style.width=(left*100)+'%';if(left<=0)answer(-1,LIMIT)},100);
+  }
+}
+
+function writeBox(){
+  return `<form class="write" id="wform" autocomplete="off">
+    <input id="wr" type="text" placeholder="Escribe el nombre" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-label="Nombre del hueso o músculo">
+    <div class="row"><button type="submit" class="next" style="flex:1">Comprobar</button><button type="button" class="ghost" id="skip" style="padding:14px">No lo sé</button></div>
+  </form>`;
+}
+const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-zñ]/g,'');
+function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+const forms=o=>[o.n,...o.alt].map(norm);
+const same=(t,f)=>t===f||t===f+'s'||t+'s'===f||t===f+'es'||t+'es'===f;
+function checkWritten(Q,raw){
+  const e=Q.e;
+  const typed=raw.trim().toLowerCase().replace(/^((el|la|los|las|un|una|hueso|huesos|m[uú]sculo|m[uú]sculos|de|del)\s+)+/,'');
+  if(!typed){$('wr').focus();return null}
+  const t=norm(typed);
+  if(forms(e).some(f=>same(t,f))){
+    const acc=e.n.match(/[áéíóú]/g)||[];
+    const missing=acc.length>0&&same(t,norm(e.n))&&acc.some(ch=>!typed.includes(ch));
+    return {id:e.id,typed,note:missing?`Ojo con la tilde: se escribe «${e.n}».`:''};
+  }
+  const other=P.find(o=>o!==e&&forms(o).some(f=>same(t,f)));
+  if(other)return {id:-2,typed,other};
+  if(forms(e).some(f=>{const tol=f.length>=12?2:f.length>=5?1:0;return tol&&lev(f,t)<=tol}))
+    return {id:e.id,typed,note:`Vale, pero revisa cómo se escribe: «${e.n}».`};
+  return {id:-2,typed};
+}
+
+function answer(choice,ms,w){
+  if(G.answered)return;G.answered=true;stop();
+  const Q=G.qs[G.i],e=Q.e;
+  const ok=Q.type==='kind'?choice===e.c:choice===e.id;let gained=0;
+  if(w){const inp=$('wr');if(inp){inp.disabled=true;inp.classList.add(ok?'right':'wrong')}
+    app.querySelectorAll('#wform button').forEach(b=>b.disabled=true)}
+  if(ok){G.streak++;G.right++;G.bestStreak=Math.max(G.bestStreak,G.streak);
+    gained=opts.timer?Math.round(500+500*Math.max(0,1-ms/G.limit)):1000;if(w)gained+=200;if(G.streak>=3)gained+=100;G.score+=gained;}
+  else{G.streak=0;if(!G.misses.includes(e))G.misses.push(e)}
+  app.querySelectorAll('.ans').forEach(b=>{b.disabled=true;const bid=+b.dataset.id;
+    if(bid===e.id)b.classList.add('right');else if(bid===choice)b.classList.add('wrong');else b.classList.add('dim')});
+  app.querySelectorAll('.kind').forEach(b=>{b.disabled=true;const k=b.dataset.kind;
+    if(k===e.c)b.classList.add('right');else if(k===choice)b.classList.add('wrong');else b.classList.add('dim')});
+  // Show the answer on the drawing
+  $('pts').querySelectorAll('.pt').forEach(c=>c.classList.add('dim'));
+  $('rings').innerHTML='';
+  const wrongEl=typeof choice==='number'&&choice>=0&&!ok?P[choice]:(w&&w.other)||null;
+  if(wrongEl)mark(wrongEl,'wrong');
+  mark(e,'right');
+  const typedLine=w&&!ok&&w.typed&&!w.other?`<p class="fact">Has escrito «${esc(w.typed)}».</p>`:'';
+  const noteLine=w&&ok&&w.note?`<p class="fact"><b>${w.note}</b></p>`:'';
+  const kindLine=Q.type==='kind'&&!ok&&choice!==-1?`<p class="fact">Has dicho ${CATN[choice].toLowerCase()}.</p>`:'';
+  const wrongLine=wrongEl?`<p class="fact">${w?'Has escrito':'Has elegido'} «${wrongEl.n}» (${CATN[wrongEl.c].toLowerCase()}), que está en el punto rojo del dibujo.</p>`:'';
+  const title=ok?`¡Correcto! <span class="pop">+${gained}</span>`:(choice===-1?(w&&w.skipped?'La respuesta era…':'¡Se acabó el tiempo!'):'¡Casi!');
+  const fb=$('fb');
+  fb.innerHTML=`<div class="feedback ${ok?'good':'bad'}"><h3>${title}</h3>
+    <p><b>${e.n}</b> · ${CATN[e.c]} · ${e.z}</p>
+    ${wrongLine}${kindLine}${typedLine}${noteLine}
+    ${Q.type!=='clue'?`<p class="fact">${e.clue}</p>`:''}
+    <p class="fact">${e.tip}</p>
+    <button class="next" id="nx">${G.i+1<G.qs.length?'Siguiente':'Ver resultado'}</button></div>`;
+  const nx=$('nx');nx.focus({preventScroll:true});
+  fb.scrollIntoView({behavior:'smooth',block:'end'});
+  nx.onclick=()=>{G.i++;G.i<G.qs.length?ask():results()};
+}
+
+function results(){
+  const total=G.qs.length,best=store.get('best',{});let rec=false;
+  const key=G.mode+'_'+opts.set;
+  if(!G.review&&G.score>(best[key]||0)){best[key]=G.score;store.set('best',best);rec=true}
+  const pct=Math.round(100*G.right/total);
+  const msg=pct===100?'¡Perfecto! Te sabes el aparato locomotor.':pct>=80?'¡Muy bien! Casi lo tienes.':pct>=50?'Vas bien. Repasa los fallos y vuelve a jugar.':'Empieza por el dibujo de estudio y luego vuelve a intentarlo.';
+  app.innerHTML=header(true)+`
+    <div class="prompt">
+      <div class="q">${MODES[G.mode].name}${G.review?' · repaso de fallos':''}</div>
+      <div class="score">${G.score}</div>
+      <p class="sub">${G.right} de ${total} aciertos · mejor racha ${G.bestStreak}${rec?' · ¡nuevo récord!':''}</p>
+      <p class="sub">${msg}</p>
+    </div>
+    <div class="row" style="flex-direction:column;align-items:stretch">
+      ${G.misses.length?`<button class="next" id="rv">Repasar mis ${G.misses.length} fallo${G.misses.length>1?'s':''}</button>`:''}
+      <button class="ghost" id="again" style="padding:14px">Jugar otra vez</button>
+    </div>
+    ${G.misses.length?`<h3 style="font-size:16px">Para repasar</h3><div class="misslist">${G.misses.map(e=>`<div class="miss ${e.c}"><b>${e.n}</b><span>${CATN[e.c]} · ${e.z}</span></div>`).join('')}</div>`:''}`;
+  bindHome();
+  const mode=G.mode,misses=G.misses.slice();
+  $('again').onclick=()=>start(mode);
+  const rv=$('rv');if(rv)rv.onclick=()=>start(mode,misses);
+}
+
+function study(sel){
+  stop();
+  const chips=c=>P.filter(p=>p.c===c).map(p=>`<button class="chip ${c}" data-id="${p.id}" aria-pressed="false">${p.n}</button>`).join('');
+  app.innerHTML=header(true)+`
+    <div class="stage">
+      <div class="top-a">
+        <p class="lead">Toca un punto del dibujo o un nombre de la lista. A la izquierda está el esqueleto y a la derecha los músculos, como en el libro.</p>
+        <div class="info" id="info"><h3>¿Qué parte es?</h3><p class="fact">Elige un punto para ver su nombre, para qué sirve y un truco para recordarlo.</p></div>
+      </div>
+      <div class="fig-a">${figHtml()}</div>
+      <div class="rest-a">
+        <div class="grp"><h4>Huesos</h4><div class="chips">${chips('hueso')}</div></div>
+        <div class="grp"><h4>Músculos</h4><div class="chips">${chips('musculo')}</div></div>
+      </div>
+    </div>`;
+  bindHome();
+  setDots(P);
+  const pick=p=>{
+    $('rings').innerHTML='';mark(p,'sel');
+    app.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',+c.dataset.id===p.id));
+    $('info').innerHTML=`<div><span class="tag">${CATN[p.c]} · ${p.z}</span></div><h3>${p.n}</h3><p>${p.clue}</p><p class="fact">${p.tip}</p>`;
+  };
+  app.querySelectorAll('.chip').forEach(c=>c.onclick=()=>pick(P[+c.dataset.id]));
+  onFigTap(()=>P,pick);
+  if(sel!=null)pick(P[sel]);
+}
+
+home();
+</script>
+</body>
+</html>

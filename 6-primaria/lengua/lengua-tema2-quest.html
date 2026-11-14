@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lengua Quest 6º · Tema 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff8ec; --ink:#2b2340; --soft:#6b6385; --card:#ffffff;
+  --teal:#1f8a8a; --orange:#f07b2c; --red:#e2474b; --yellow:#ffc53d; --green:#2fa86a; --purple:#7a5cd6; --pink:#e85a9b;
+  --shadow:0 6px 0 rgba(43,35,64,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif}
+body{min-height:100vh;background-image:radial-gradient(circle at 10% 0%,#ffe3c2 0,transparent 40%),radial-gradient(circle at 100% 100%,#d4f1ee 0,transparent 45%)}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 40px}
+h1,h2,h3{font-family:"Baloo 2",cursive;margin:0;line-height:1.1}
+button{font:inherit;cursor:pointer;border:0}
+.hidden{display:none!important}
+
+/* Home */
+.hero{text-align:center;padding:10px 0 18px}
+.hero .badge{display:inline-block;background:var(--teal);color:#fff;border-radius:999px;padding:4px 14px;font-weight:800;font-size:.85rem;letter-spacing:.03em}
+.hero h1{font-size:2.4rem;margin-top:8px;color:var(--ink)}
+.hero h1 span{color:var(--orange)}
+.hero p{color:var(--soft);margin:6px 0 0;font-weight:700}
+.total{display:flex;justify-content:center;gap:10px;margin:12px 0 4px}
+.pill{background:#fff;border-radius:999px;padding:6px 14px;font-weight:800;box-shadow:var(--shadow)}
+.grid{display:grid;gap:12px}
+.mission{display:flex;align-items:center;gap:14px;text-align:left;background:var(--card);border-radius:20px;padding:14px 16px;box-shadow:var(--shadow);border:3px solid transparent;transition:transform .12s}
+.mission:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(43,35,64,.12)}
+.mission .ico{flex:0 0 54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:1.7rem;color:#fff}
+.mission h3{font-size:1.25rem}
+.mission small{display:block;color:var(--soft);font-weight:700;margin-top:2px}
+.mission .stars{margin-left:auto;font-size:1.1rem;letter-spacing:1px;white-space:nowrap}
+.stop{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff}
+.stop small{color:#ffe9dc}
+.stop .ico{background:rgba(255,255,255,.2)!important}
+
+/* Game */
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.back{background:#fff;border-radius:14px;width:44px;height:44px;font-size:1.3rem;box-shadow:var(--shadow)}
+.bar{flex:1;height:14px;background:#eadfcf;border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:999px;transition:width .35s}
+.score{font-weight:800;background:#fff;border-radius:14px;padding:8px 12px;box-shadow:var(--shadow);min-width:64px;text-align:center}
+.timer{font-weight:800;background:var(--red);color:#fff;border-radius:14px;padding:8px 12px;min-width:58px;text-align:center}
+.streak{font-weight:800;color:var(--orange);text-align:right;min-height:1.3em;font-size:.95rem}
+.qcard{background:#fff;border-radius:24px;padding:20px 18px;box-shadow:var(--shadow);margin-top:6px}
+.tag{display:inline-block;font-weight:800;font-size:.78rem;color:#fff;border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.qtext{font-size:1.15rem;font-weight:800;margin:0 0 10px}
+.ctx{font-size:1.2rem;background:#f6f1ff;border-left:6px solid var(--purple);border-radius:12px;padding:12px 14px;margin:0 0 14px;line-height:1.45}
+.ctx mark{background:var(--yellow);border-radius:6px;padding:0 4px;font-weight:800;color:var(--ink)}
+.word{font-family:"Baloo 2";font-size:2.4rem;text-align:center;margin:4px 0 14px;color:var(--purple)}
+.opts{display:grid;gap:10px}
+.opts.cols3{grid-template-columns:repeat(3,1fr)}
+.opt{background:#fff;border:3px solid #e6def5;border-radius:16px;padding:13px 14px;text-align:left;font-weight:800;font-size:1rem;color:var(--ink);box-shadow:0 4px 0 #e6def5;transition:transform .1s}
+.cols3 .opt{text-align:center;padding:16px 6px}
+.opt:active{transform:translateY(2px)}
+.opt.ok{background:#e3f7ec;border-color:var(--green);box-shadow:0 4px 0 var(--green)}
+.opt.bad{background:#fde6e7;border-color:var(--red);box-shadow:0 4px 0 var(--red)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:14px;border-radius:16px;padding:14px;font-weight:700;line-height:1.4}
+.fb.ok{background:#e3f7ec;color:#145c39}
+.fb.bad{background:#fde6e7;color:#8a1f22}
+.fb b{font-family:"Baloo 2";font-size:1.15rem;display:block;margin-bottom:2px}
+.next{display:block;width:100%;margin-top:14px;background:var(--teal);color:#fff;font-weight:800;font-size:1.1rem;padding:15px;border-radius:16px;box-shadow:0 5px 0 #136363}
+.next:active{transform:translateY(3px);box-shadow:0 2px 0 #136363}
+
+/* Results */
+.res{text-align:center;background:#fff;border-radius:24px;padding:24px 18px;box-shadow:var(--shadow)}
+.res .big{font-size:3rem;letter-spacing:6px;margin:8px 0}
+.res h2{font-size:2rem}
+.res p{color:var(--soft);font-weight:700}
+.review{text-align:left;margin-top:16px}
+.review h3{font-size:1.2rem;margin-bottom:8px}
+.review li{margin-bottom:10px;line-height:1.35}
+.review li span{color:var(--soft);font-weight:700;display:block;font-size:.92rem}
+.row{display:flex;gap:10px;margin-top:16px}
+.row button{flex:1}
+.ghost{background:#fff;border:3px solid var(--teal);color:var(--teal);font-weight:800;padding:13px;border-radius:16px}
+.tip{background:#fff;border-radius:18px;padding:14px 16px;margin-top:16px;box-shadow:var(--shadow);font-weight:700;color:var(--soft);font-size:.95rem}
+.tip b{color:var(--ink)}
+canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:50}
+@media (max-width:380px){.hero h1{font-size:2rem}.cols3 .opt{font-size:.9rem}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <div id="homeLink" style="text-align:left;min-height:8px"></div>
+    <div class="hero">
+      <span class="badge">LENGUA · 6.º PRIMARIA · TEMA 2</span>
+      <h1>Misión <span>Lengua</span></h1>
+      <p>Supera las 5 misiones y luego juega al ¡Stop! contrarreloj</p>
+      <div class="total"><span class="pill" id="totalStars">⭐ 0 / 15</span></div>
+    </div>
+    <div class="grid" id="missions"></div>
+    <div class="tip"><b>Cómo se juega:</b> elige la respuesta correcta. Si fallas, lee la explicación: ¡así se aprende! Consigue 3 estrellas acertando casi todas.</div>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="hidden">
+    <div class="top">
+      <button class="back" id="btnBack" aria-label="Volver">←</button>
+      <div class="bar"><i id="prog"></i></div>
+      <div class="timer hidden" id="timer">60</div>
+      <div class="score" id="score">0</div>
+    </div>
+    <div class="streak" id="streak"></div>
+    <div class="qcard">
+      <span class="tag" id="tag"></span>
+      <p class="qtext" id="qtext"></p>
+      <div id="ctx" class="ctx hidden"></div>
+      <div id="word" class="word hidden"></div>
+      <div class="opts" id="opts"></div>
+      <div id="fb" class="fb hidden"></div>
+      <button class="next hidden" id="btnNext">Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="hidden">
+    <div class="res">
+      <h2 id="rTitle">¡Misión cumplida!</h2>
+      <div class="big" id="rStars">⭐⭐⭐</div>
+      <p id="rText"></p>
+      <div class="review hidden" id="rReview"><h3>Para repasar</h3><ul id="rList"></ul></div>
+      <div class="row">
+        <button class="ghost" id="btnHome">Menú</button>
+        <button class="next" style="margin-top:0" id="btnAgain">Otra vez</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ---------- CONTENIDO (sacado de la lección) ---------- */
+const MISSIONS = [
+{
+ id:"det", name:"Los determinantes", sub:"Artículos, demostrativos, posesivos…", ico:"🔎", color:"#1f8a8a",
+ qs:[
+  {ctx:"[[Unos]] niños de 6.º cuidan el huerto del colegio.", q:"¿Qué tipo de determinante es la palabra destacada?", o:["Artículo indeterminado","Artículo determinado","Demostrativo","Posesivo"], a:0, e:"Los artículos indeterminados (un, una, unos, unas) indican que el nombre es desconocido."},
+  {ctx:"¿Compramos unas flores para [[la]] prima Olivia?", q:"¿Qué tipo de determinante es?", o:["Artículo determinado","Artículo indeterminado","Indefinido","Numeral"], a:0, e:"Los artículos determinados (el, la, los, las) indican que el nombre es conocido."},
+  {ctx:"Me sentaré en [[esta]] butaca de aquí.", q:"¿Qué distancia indica este demostrativo?", o:["Cercanía","Distancia media","Lejanía"], a:0, e:"Este, esta, estos, estas → cercanía (aquí)."},
+  {ctx:"Usted siéntese en [[ese]] sillón de ahí.", q:"¿Qué distancia indica este demostrativo?", o:["Cercanía","Distancia media","Lejanía"], a:1, e:"Ese, esa, esos, esas → distancia media (ahí)."},
+  {ctx:"Parece más cómodo que [[aquella]] silla de allí.", q:"¿Qué distancia indica este demostrativo?", o:["Cercanía","Distancia media","Lejanía"], a:2, e:"Aquel, aquella, aquellos, aquellas → lejanía (allí)."},
+  {ctx:"[[Vuestras]] cosas están en el armario.", q:"Analízalo con la ruta del determinante:", o:["Posesivo, varios poseedores, 2.ª persona, plural, femenino","Posesivo, un poseedor, 2.ª persona, plural, femenino","Posesivo, varios poseedores, 1.ª persona, plural, masculino","Demostrativo, 2.ª persona, plural, femenino"], a:0, e:"«Vuestras» es posesivo: hay varios poseedores (vosotros), 2.ª persona, plural y femenino."},
+  {ctx:"Gracias por [[tus]] abrazos.", q:"Analízalo con la ruta del determinante:", o:["Posesivo, un poseedor, 2.ª persona, plural, masculino","Posesivo, varios poseedores, 2.ª persona, plural, masculino","Posesivo, un poseedor, 1.ª persona, singular, masculino","Artículo, plural, masculino"], a:0, e:"«Tus»: el poseedor es uno (tú), 2.ª persona; «abrazos» es plural y masculino."},
+  {ctx:"Alí Babá y los [[cuarenta]] ladrones", q:"¿Qué tipo de determinante es?", o:["Numeral cardinal","Indefinido","Posesivo","Demostrativo"], a:0, e:"Los numerales cardinales (cinco, cien, cuarenta…) indican una cantidad exacta."},
+  {ctx:"Alí Babá y [[muchos]] ladrones", q:"¿Qué tipo de determinante es?", o:["Indefinido","Numeral cardinal","Artículo","Demostrativo"], a:0, e:"Los indefinidos (algunos, muchos, pocas, varios…) indican una cantidad imprecisa."},
+  {ctx:"La [[segunda]] cualidad de mi padre es su generosidad.", q:"¿Qué es «segunda»?", o:["Un adjetivo (numeral ordinal)","Un determinante numeral cardinal","Un pronombre personal","Un artículo"], a:0, e:"¡Ojo! Los cardinales son determinantes, pero los ordinales (primero, segunda…) son adjetivos."},
+  {q:"¿Dónde aparecen siempre los determinantes?", o:["Delante del nombre","Detrás del nombre","En lugar del nombre"], a:0, e:"Los determinantes van siempre delante del nombre y concuerdan con él en género y número."}
+ ]},
+{
+ id:"pro", name:"Los pronombres", sub:"Personales tónicos y átonos", ico:"🗣️", color:"#7a5cd6",
+ qs:[
+  {q:"¿Qué es un pronombre?", o:["Una palabra que ocupa el lugar del nombre","Una palabra que acompaña siempre al nombre","Una palabra que dice cómo es el nombre"], a:0, e:"Los pronombres ocupan el lugar del nombre para no repetirlo."},
+  {ctx:"Ayer pasé el día con Saray. [[Saray y yo]] estuvimos paseando cerca del río.", q:"¿Por qué pronombre lo sustituyes?", o:["Nosotros / nosotras","Ellas","Vosotras","Se"], a:0, e:"«Saray y yo» incluye a quien habla → 1.ª persona del plural: nosotros o nosotras."},
+  {ctx:"[[Saray]] es muy divertida.", q:"¿Por qué pronombre lo sustituyes?", o:["Ella","Ellos","Lo","Tú"], a:0, e:"Saray es una persona de la que se habla → 3.ª persona del singular: ella."},
+  {ctx:"[[Carlos y Laura]] la vieron el otro día.", q:"¿Por qué pronombre lo sustituyes?", o:["Ellos","Ellas","Nosotros","Le"], a:0, e:"Varias personas de las que se habla, con un chico en el grupo → ellos."},
+  {ctx:"[[Te]] quiero mucho.", q:"Analiza el pronombre:", o:["Personal átono, 2.ª persona, singular","Personal tónico, 2.ª persona, singular","Personal átono, 1.ª persona, singular","Personal átono, 2.ª persona, plural"], a:0, e:"«Te» es átono (me, te, se, lo, la, le, nos, os…), de 2.ª persona del singular."},
+  {ctx:"Cuenta [[conmigo]] si me necesitas.", q:"Analiza el pronombre:", o:["Personal tónico, 1.ª persona, singular","Personal átono, 1.ª persona, singular","Personal tónico, 2.ª persona, singular","Personal tónico, 1.ª persona, plural"], a:0, e:"Tónicos de 1.ª persona del singular: yo, mí, conmigo."},
+  {ctx:"¿[[Nos]] vemos pronto?", q:"Analiza el pronombre:", o:["Personal átono, 1.ª persona, plural","Personal tónico, 1.ª persona, plural","Personal átono, 2.ª persona, plural","Personal átono, 3.ª persona, plural"], a:0, e:"«Nos» es átono, 1.ª persona del plural (el tónico sería nosotros/nosotras)."},
+  {ctx:"Puedes hablar[[lo]] con nosotros.", q:"Analiza el pronombre destacado:", o:["Personal átono, 3.ª persona, singular","Personal tónico, 3.ª persona, singular","Artículo determinado","Personal átono, 1.ª persona, plural"], a:0, e:"«Lo» es átono de 3.ª persona del singular. Va pegado detrás del verbo: hablarlo."},
+  {ctx:"Mi habitación es [[esta]]. ¿Te gusta?", q:"¿«Esta» es determinante o pronombre?", o:["Pronombre demostrativo","Determinante demostrativo"], a:0, e:"Aquí «esta» no acompaña a ningún nombre: ocupa su lugar. Por eso es pronombre."},
+  {ctx:"[[Esta]] película me encanta.", q:"¿«Esta» es determinante o pronombre?", o:["Determinante demostrativo","Pronombre demostrativo"], a:0, e:"Va delante del nombre «película» y lo acompaña: es determinante."},
+  {ctx:"Algunos amigos vinieron y [[otros]] llamaron por teléfono.", q:"¿Qué es «otros»?", o:["Pronombre indefinido","Determinante indefinido","Pronombre personal"], a:0, e:"«Otros» no acompaña a un nombre, lo sustituye (otros amigos) → pronombre indefinido."},
+  {q:"¿Dónde pueden aparecer los pronombres átonos?", o:["Delante o detrás del verbo","Solo delante del nombre","Solo al final de la oración"], a:0, e:"Pueden ir delante o detrás del verbo: ¿Lo entiendes? / Puedo entenderlo."}
+ ]},
+{
+ id:"form", name:"Formación de palabras", sub:"Simples, derivadas y compuestas", ico:"🧩", color:"#f07b2c",
+ qs:[
+  {w:"peine", sort:1, a:0, e:"Peine tiene una sola raíz sin afijos derivativos → simple."},
+  {w:"coche", sort:1, a:0, e:"Una raíz y nada más → simple."},
+  {w:"ventanas", sort:1, a:0, e:"¡Truco! «Ventanas» es simple: la -s es un afijo flexivo (plural), no derivativo."},
+  {w:"ventanal", sort:1, a:1, e:"Ventana + el sufijo -al → derivada."},
+  {w:"destapar", sort:1, a:1, e:"El prefijo des- + tapar → derivada."},
+  {w:"imposible", sort:1, a:1, e:"El prefijo im- + posible → derivada."},
+  {w:"arboleda", sort:1, a:1, e:"Árbol + el sufijo -eda → derivada."},
+  {w:"incoloro", sort:1, a:1, e:"El prefijo in- + color + -o → derivada."},
+  {w:"cabezota", sort:1, a:1, e:"Cabeza + el sufijo -ota → derivada."},
+  {w:"rompeolas", sort:1, a:2, e:"Rompe + olas: dos raíces → compuesta."},
+  {w:"hierbabuena", sort:1, a:2, e:"Hierba + buena: dos raíces → compuesta."},
+  {w:"lanzallamas", sort:1, a:2, e:"Lanza + llamas → compuesta."},
+  {w:"vaivén", sort:1, a:2, e:"Va + y + ven → compuesta."},
+  {q:"¿De qué palabra procede «caminante»?", o:["caminar","camión","mandar","antes"], a:0, e:"Caminante = caminar + el sufijo -ante."},
+  {ctx:"[[des]]hacer", q:"¿Qué es la parte destacada?", o:["Un prefijo","Un sufijo","Una raíz"], a:0, e:"Los prefijos van delante de la raíz (des-, in-, im-, tras-…). Los sufijos van detrás."},
+  {q:"¿Cuál es una palabra COMPUESTA hecha a partir de «sol»?", o:["girasol","soleado","solar","soles"], a:0, e:"Girasol = gira + sol (dos raíces). Soleado y solar son derivadas; soles es simple."}
+ ]},
+{
+ id:"orto", name:"Diptongos, hiatos y triptongos", sub:"Laboratorio ortográfico", ico:"🧪", color:"#e85a9b",
+ qs:[
+  {w:"náutico", sort:2, a:0, e:"au: abierta + cerrada en la misma sílaba (náu-ti-co) → diptongo."},
+  {w:"viaje", sort:2, a:0, e:"ia: cerrada + abierta en la misma sílaba (via-je) → diptongo."},
+  {w:"ciego", sort:2, a:0, e:"ie en la misma sílaba (cie-go) → diptongo."},
+  {w:"adiós", sort:2, a:0, e:"a-diós: «io» va junto → diptongo. La tilde va en la vocal abierta."},
+  {w:"peonza", sort:2, a:1, e:"pe-on-za: dos vocales abiertas en sílabas diferentes → hiato."},
+  {w:"sandía", sort:2, a:1, e:"san-dí-a: la cerrada es tónica y lleva tilde → hiato."},
+  {w:"paraíso", sort:2, a:1, e:"pa-ra-í-so: abierta + cerrada tónica → hiato (siempre con tilde en la cerrada)."},
+  {w:"caer", sort:2, a:1, e:"ca-er: dos vocales abiertas → hiato."},
+  {w:"buey", sort:2, a:2, e:"uey: tres vocales en la misma sílaba → triptongo."},
+  {w:"copiéis", sort:2, a:2, e:"co-piéis: «iéi» en una sílaba → triptongo."},
+  {w:"averiguáis", sort:2, a:2, e:"a-ve-ri-guáis: «uái» → triptongo."},
+  {q:"¿Cuál está bien escrita?", o:["náufrago","naúfrago","naufrago"], a:0, e:"«au» es diptongo; si lleva tilde, se coloca en la vocal abierta: náu-fra-go."},
+  {q:"¿Cuál está bien escrita?", o:["acuífero","acúifero","acuifero"], a:0, e:"Diptongo de dos vocales cerradas (ui): la tilde va en la segunda → acuífero."},
+  {q:"¿Cuál está bien escrita?", o:["egoísta","egoista","egóista"], a:0, e:"Hiato de abierta + cerrada tónica: siempre lleva tilde en la cerrada → e-go-ís-ta."},
+  {q:"¿Cuál está bien escrita?", o:["poema","poéma","poemá"], a:0, e:"po-e-ma: es un hiato que sigue las normas generales; llana acabada en vocal → sin tilde."},
+  {ctx:"Si [[___]] (cambiar) ahora el ordenador, podéis usar este descuento.", q:"Completa con el triptongo:", o:["cambiáis","cambiais","cambíais"], a:0, e:"cam-biáis: aguda acabada en -s → lleva tilde, en la vocal abierta del triptongo."},
+  {ctx:"Habrá muchas llamadas tan pronto como [[___]] (anunciar) la noticia.", q:"Completa con el triptongo:", o:["anunciéis","anuncieis","anúncieis"], a:0, e:"a-nun-ciéis: aguda acabada en -s → tilde en la vocal abierta."}
+ ]},
+{
+ id:"lit", name:"Recursos literarios", sub:"Aliteración y repetición", ico:"🎵", color:"#2fa86a",
+ qs:[
+  {q:"¿Qué es la aliteración?", o:["Repetir un sonido o varios para producir una sensación sonora","Repetir palabras para reforzar una idea","Comparar dos cosas con «como»"], a:0, e:"Aliteración = repetir sonidos. Repetición = repetir palabras o expresiones."},
+  {ctx:"Reía y cantaba, cantaba y reía.", q:"¿Qué recurso aparece?", o:["Repetición","Aliteración"], a:0, e:"Se repiten palabras completas (reía, cantaba) → repetición."},
+  {ctx:"El ruin rufián corría raudo.", q:"¿Qué recurso aparece?", o:["Aliteración","Repetición"], a:0, e:"Se repite el sonido r → aliteración."},
+  {ctx:"Tres tristes tigres tragan trigo en un trigal.", q:"¿Qué sonido se repite?", o:["tr","s","g","ig"], a:0, e:"Tres, tristes, tigres, tragan, trigo, trigal: se repite «tr»."},
+  {ctx:"Si Sansón no sazona su salsa con sal, le sale sosa.", q:"¿Qué sonido se repite?", o:["s","n","l","r"], a:0, e:"La s aparece una y otra vez: es una aliteración."},
+  {ctx:"En el silencio solo se escuchaba / un susurro de abejas que sonaba. (Garcilaso de la Vega)", q:"¿Qué efecto produce la repetición de la s?", o:["Las abejas zumbando","El viento soplando","Un tambor sonando"], a:0, e:"El sonido s imita el zumbido suave de las abejas."},
+  {ctx:"Es tan efímera e infame la filigrana / y la felicidad se enferma y se esfuma como la fama. (Rapsusklei)", q:"¿Qué efecto produce la repetición de la f?", o:["El viento soplando","Las abejas zumbando","Una puerta cerrándose"], a:0, e:"El sonido f recuerda al viento que sopla."},
+  {ctx:"Mi mamá me mima.", q:"¿Por qué marcas y anuncios usan la aliteración?", o:["Para llamar la atención y que se recuerde","Para que el mensaje sea más largo","Para que no se entienda"], a:0, e:"La repetición de sonidos (m, m, m) es pegadiza y se recuerda fácilmente."},
+  {ctx:"—Es que no [[traje]] [[traje]], porque el guarda lo guarda.", q:"¿Significan lo mismo las dos palabras «traje»?", o:["No: la primera es verbo (traer) y la segunda, sustantivo (ropa)","Sí, las dos son sustantivos","Sí, las dos son verbos"], a:0, e:"Es un juego de palabras: misma forma, distinta categoría y significado."},
+  {ctx:"—¿Usted no [[nada]] nada de nada?", q:"¿Qué es el primer «nada»?", o:["Un verbo (nadar)","Un pronombre","Un sustantivo"], a:0, e:"«Usted nada» viene del verbo nadar; los otros «nada» significan «ninguna cosa»."},
+  {q:"¿Para qué sirve la repetición?", o:["Para reforzar una idea o un sentimiento","Para imitar un sonido","Para cambiar el tiempo del verbo"], a:0, e:"La repetición insiste en palabras o expresiones para reforzar una idea o un sentimiento."}
+ ]}
+];
+const SORTS = {1:["Simple","Derivada","Compuesta"], 2:["Diptongo","Hiato","Triptongo"]};
+const SORTQ = {1:"¿Cómo está formada esta palabra?", 2:"¿Qué tienen sus vocales juntas?"};
+
+/* ---------- ESTADO ---------- */
+const $ = id => document.getElementById(id);
+let best = {};
+try { best = JSON.parse(localStorage.getItem("misionLengua2")||"{}"); } catch(e){ best = {}; }
+function saveBest(){ try{ localStorage.setItem("misionLengua2", JSON.stringify(best)); }catch(e){} }
+
+let S = null; // partida actual
+
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function esc(s){ return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+function fmtCtx(s){ return esc(s).replace(/\[\[(.+?)\]\]/g,"<mark>$1</mark>"); }
+
+function renderHome(){
+  const box = $("missions"); box.innerHTML = "";
+  let tot = 0;
+  MISSIONS.forEach(m=>{
+    const st = best[m.id]||0; tot += st;
+    const b = document.createElement("button");
+    b.className = "mission";
+    b.innerHTML = `<div class="ico" style="background:${m.color}">${m.ico}</div>
+      <div><h3>${m.name}</h3><small>${m.sub} · ${m.qs.length} preguntas</small></div>
+      <div class="stars">${"⭐".repeat(st)}${"☆".repeat(3-st)}</div>`;
+    b.onclick = ()=>start(m);
+    box.appendChild(b);
+  });
+  const s = document.createElement("button");
+  s.className = "mission stop";
+  s.innerHTML = `<div class="ico">⏱️</div><div><h3>¡Stop! Contrarreloj</h3><small>60 segundos · preguntas de todo el tema</small></div><div class="stars">🏆 ${best.stop||0}</div>`;
+  s.onclick = ()=>startStop();
+  box.appendChild(s);
+  $("totalStars").textContent = `⭐ ${tot} / 15`;
+}
+
+function show(id){ ["home","game","results"].forEach(x=>$(x).classList.toggle("hidden", x!==id)); window.scrollTo(0,0); }
+
+function prep(q){
+  if(q.sort){ return {...q, q:SORTQ[q.sort], o:SORTS[q.sort], cols3:true, order:[0,1,2]}; }
+  const order = shuffle(q.o.map((_,i)=>i));
+  return {...q, order};
+}
+
+function start(m){
+  S = {mode:"mission", m, list:shuffle(m.qs).map(prep), i:0, ok:0, pts:0, streak:0, wrong:[]};
+  $("timer").classList.add("hidden");
+  show("game"); renderQ();
+}
+
+function startStop(){
+  const all = [];
+  MISSIONS.forEach(m=>m.qs.forEach(q=>all.push({...q, _m:m})));
+  S = {mode:"stop", list:shuffle(all).map(prep), i:0, ok:0, pts:0, streak:0, wrong:[], t:60};
+  $("timer").classList.remove("hidden"); $("timer").textContent = 60;
+  show("game"); renderQ();
+  S.iv = setInterval(()=>{
+    S.t--; $("timer").textContent = S.t;
+    if(S.t<=0){ clearInterval(S.iv); finish(); }
+  },1000);
+}
+
+function renderQ(){
+  const q = S.list[S.i];
+  const m = S.mode==="mission" ? S.m : q._m;
+  $("tag").textContent = m.name; $("tag").style.background = m.color;
+  $("qtext").textContent = q.q;
+  $("ctx").classList.toggle("hidden", !q.ctx);
+  if(q.ctx) $("ctx").innerHTML = fmtCtx(q.ctx);
+  $("word").classList.toggle("hidden", !q.w);
+  if(q.w) $("word").textContent = q.w;
+  const box = $("opts"); box.innerHTML = ""; box.className = "opts"+(q.cols3?" cols3":"");
+  q.order.forEach(idx=>{
+    const b = document.createElement("button");
+    b.className = "opt"; b.textContent = q.o[idx];
+    b.onclick = ()=>answer(idx,b);
+    b.dataset.idx = idx;
+    box.appendChild(b);
+  });
+  $("fb").classList.add("hidden"); $("btnNext").classList.add("hidden");
+  const total = S.mode==="mission" ? S.list.length : null;
+  $("prog").style.width = S.mode==="mission" ? (S.i/total*100)+"%" : ((60-S.t)/60*100)+"%";
+  $("score").textContent = S.pts;
+  $("streak").textContent = S.streak>=2 ? `🔥 ¡Racha de ${S.streak}!` : "";
+}
+
+function answer(idx,btn){
+  const q = S.list[S.i];
+  const ok = idx===q.a;
+  [...$("opts").children].forEach(b=>{
+    b.disabled = true;
+    if(+b.dataset.idx===q.a) b.classList.add("ok");
+  });
+  if(!ok) btn.classList.add("bad");
+  if(ok){ S.ok++; S.streak++; S.pts += 10 + (S.streak>=3?5:0); burst(btn); }
+  else { S.streak=0; S.wrong.push(q); }
+  $("score").textContent = S.pts;
+  $("streak").textContent = S.streak>=2 ? `🔥 ¡Racha de ${S.streak}!` : "";
+  if(S.mode==="stop"){
+    // en contrarreloj: feedback breve y sigue solo
+    const fb=$("fb"); fb.className="fb "+(ok?"ok":"bad");
+    fb.innerHTML = ok ? "<b>¡Bien!</b>" : `<b>¡Uy!</b>${esc(q.e)}`;
+    setTimeout(()=>{ if(S && S.mode==="stop" && S.t>0){ S.i=(S.i+1)%S.list.length; renderQ(); } }, ok?550:1800);
+    return;
+  }
+  const fb=$("fb"); fb.className = "fb "+(ok?"ok":"bad");
+  const yay=["¡Genial!","¡Correcto!","¡Muy bien!","¡Eso es!","¡Crack!"];
+  fb.innerHTML = `<b>${ok?yay[Math.floor(Math.random()*yay.length)]:"Casi… ¡fíjate!"}</b>${esc(q.e)}`;
+  $("btnNext").classList.remove("hidden");
+  $("btnNext").textContent = S.i===S.list.length-1 ? "Ver resultado 🏁" : "Siguiente →";
+  $("btnNext").focus({preventScroll:true});
+}
+
+$("btnNext").onclick = ()=>{
+  S.i++;
+  if(S.i>=S.list.length) finish(); else renderQ();
+};
+
+function finish(){
+  if(S.iv) clearInterval(S.iv);
+  const rList=$("rList"); rList.innerHTML="";
+  if(S.mode==="mission"){
+    const n=S.list.length, pct=S.ok/n;
+    const st = pct>=0.9?3: pct>=0.7?2: pct>=0.4?1:0;
+    if(st>(best[S.m.id]||0)){ best[S.m.id]=st; saveBest(); }
+    $("rTitle").textContent = st===3?"¡Misión perfecta!":st>=2?"¡Misión cumplida!":st===1?"¡Buen intento!":"¡A practicar!";
+    $("rStars").textContent = "⭐".repeat(st)+"☆".repeat(3-st);
+    $("rText").textContent = `Has acertado ${S.ok} de ${n} · ${S.pts} puntos`;
+    if(st>=2) confetti();
+  } else {
+    const rec = S.pts>(best.stop||0);
+    if(rec){ best.stop=S.pts; saveBest(); }
+    $("rTitle").textContent = "¡Stop! Se acabó el tiempo";
+    $("rStars").textContent = "🏆";
+    $("rText").textContent = `${S.ok} aciertos · ${S.pts} puntos${rec?" · ¡NUEVO RÉCORD!":` · Récord: ${best.stop}`}`;
+    if(S.ok>=5) confetti();
+  }
+  const uniq=[...new Set(S.wrong)];
+  $("rReview").classList.toggle("hidden", !uniq.length);
+  uniq.forEach(q=>{
+    const li=document.createElement("li");
+    const label = q.w ? `«${q.w}» → ${q.o[q.a]}` : (q.ctx? q.ctx.replace(/\[\[|\]\]/g,"") + " → " : "") + (q.w?"":q.o[q.a]);
+    li.innerHTML = `${esc(label)}<span>${esc(q.e)}</span>`;
+    rList.appendChild(li);
+  });
+  show("results");
+}
+
+$("btnBack").onclick = ()=>{ if(S&&S.iv) clearInterval(S.iv); S=null; renderHome(); show("home"); };
+$("btnHome").onclick = ()=>{ S=null; renderHome(); show("home"); };
+$("btnAgain").onclick = ()=>{ const mode=S.mode, m=S.m; mode==="mission"?start(m):startStop(); };
+
+/* ---------- EFECTOS ---------- */
+const cv=$("fx"), cx=cv.getContext("2d"); let parts=[], raf=null;
+function size(){ cv.width=innerWidth; cv.height=innerHeight; } size(); addEventListener("resize",size);
+const COLS=["#ffc53d","#f07b2c","#1f8a8a","#e85a9b","#7a5cd6","#2fa86a"];
+function add(x,y,n,spread){ for(let i=0;i<n;i++) parts.push({x,y,vx:(Math.random()-.5)*spread,vy:-Math.random()*spread*0.9-2,g:.25,s:4+Math.random()*5,c:COLS[i%COLS.length],r:Math.random()*6,life:70+Math.random()*40}); if(!raf) loop(); }
+function burst(el){ const r=el.getBoundingClientRect(); add(r.left+r.width/2, r.top+r.height/2, 18, 9); }
+function confetti(){ for(let k=0;k<4;k++) setTimeout(()=>add(Math.random()*innerWidth, innerHeight*0.35, 40, 14), k*180); }
+function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts.forEach(p=>{ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.r+=.15; p.life--; cx.save(); cx.translate(p.x,p.y); cx.rotate(p.r); cx.fillStyle=p.c; cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); cx.restore(); });
+  parts=parts.filter(p=>p.life>0 && p.y<cv.height+20);
+  raf = parts.length ? requestAnimationFrame(loop) : null;
+  if(!raf) cx.clearRect(0,0,cv.width,cv.height);
+}
+
+if(/github\.io$/.test(location.hostname)) $("homeLink").innerHTML='<a href="../../" style="color:var(--teal);font-weight:800;text-decoration:none">← Todos los juegos</a>';
+renderHome();
+</script>
+</body>
+</html>
