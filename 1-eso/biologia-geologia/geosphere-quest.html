@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Geosphere Quest 1º ESO</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Same family as Mineral / Rock Quest: one-screen game card, Spanish help under English prompts */
+:root{
+  --bg:#efede8; --surface:#ffffff; --ink:#22201d; --muted:#665f57; --line:#d9d4cc;
+  --a:#b83a2e; --b:#2d5fb3; --c:#c08a12; --d:#2f7d4f;
+  --ok:#1f8a4c; --bad:#c23b2c; --accent:#a0522d;
+  --crustc:#8a6b4a; --crusto:#4b5563; --um:#d97706; --lm:#b45309; --oc:#ea580c; --ic:#facc15;
+  --display:"Unbounded",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#181614; --surface:#23201d; --ink:#efebe5; --muted:#aba39a; --line:#3a3530;
+  --a:#c9493c; --b:#3a6fc6; --c:#c99a24; --d:#2f8a56; --ok:#3dbb72; --bad:#e25c4c; --accent:#d9834f; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px;
+  -webkit-tap-highlight-color:transparent}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px;min-height:100%}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-family:var(--display);font-weight:800;font-size:18px;letter-spacing:.01em}
+.brand small{display:block;font-family:var(--body);font-weight:400;font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.ghost{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:14px;color:inherit;text-decoration:none;white-space:nowrap}
+.lead{color:var(--muted);margin:0;line-height:1.5}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mode{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:104px;transition:transform .12s}
+.mode:active{transform:scale(.97)}
+.mode b{font-family:var(--display);font-size:15px}
+.mode span{font-size:13.5px;color:var(--muted);line-height:1.4}
+.mode i{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--accent)}
+.best{font-size:13px;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);flex-wrap:wrap}
+.seg button{padding:8px 12px;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);font-weight:700}
+.hud{display:flex;gap:10px;align-items:center;font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
+.hud .grow{flex:1}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar>div{height:100%;background:var(--accent);width:100%;transition:width .1s linear}
+.prompt{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.tag{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.q{font-family:var(--display);font-weight:700;font-size:18px;text-align:center;line-height:1.35}
+.qes{color:var(--muted);font-size:14.5px;text-align:center;margin:0}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ans{color:#fff;border-radius:14px;padding:14px 12px;min-height:64px;font-weight:700;font-size:16px;display:flex;align-items:center;text-align:left;box-shadow:inset 0 -4px 0 rgba(0,0,0,.22);transition:opacity .2s,transform .1s;line-height:1.3}
+.ans:active{transform:translateY(2px)}
+.answers .ans:nth-child(4n+1){background:var(--a)}.answers .ans:nth-child(4n+2){background:var(--b)}.answers .ans:nth-child(4n+3){background:var(--c)}.answers .ans:nth-child(4n+4){background:var(--d)}
+.answers.light .ans{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:inset 0 -3px 0 var(--line);min-height:50px;font-size:15px}
+.ans .es{display:block;font-weight:400;font-size:13px;opacity:.85}
+.ans.dim{opacity:.28}
+.ans.right{outline:4px solid var(--ok);outline-offset:2px;opacity:1}
+.ans.wrong{outline:4px solid var(--bad);outline-offset:2px}
+.answers.light .ans.right{background:var(--ok);color:#fff;border-color:var(--ok)}
+.answers.light .ans.wrong{background:var(--bad);color:#fff;border-color:var(--bad)}
+.feedback{border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;border:2px solid;background:var(--surface)}
+.feedback.good{border-color:var(--ok)}.feedback.bad{border-color:var(--bad)}
+.feedback h3{font-size:17px}
+.feedback.good h3{color:var(--ok)}.feedback.bad h3{color:var(--bad)}
+.feedback p{margin:0;line-height:1.45}
+.fact{color:var(--muted);font-size:14.5px}
+.next{background:var(--ink);color:var(--bg);font-family:var(--display);font-weight:700;padding:14px;border-radius:12px;font-size:16px;width:100%}
+.pop{font-family:var(--mono);color:var(--ok)}
+.score{font-family:var(--display);font-weight:800;font-size:56px;text-align:center;font-variant-numeric:tabular-nums}
+.sub{text-align:center;color:var(--muted);margin:0}
+.misslist{display:flex;flex-direction:column;gap:8px}
+.miss{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14.5px;line-height:1.4}
+.miss b{display:block}
+svg text{font-family:var(--body)}
+.earth{width:100%;max-width:420px;height:auto;display:block}
+.earth .ly{cursor:pointer;transition:opacity .2s}
+.earth .ly.off{opacity:.35}
+.earth .ly.hl{stroke:var(--ink);stroke-width:4}
+.earth .lbl{font-size:13px;font-weight:700;fill:var(--ink);pointer-events:none}
+.info{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.info b{font-family:var(--display);font-size:16px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14.5px}
+.kv span:nth-child(odd){color:var(--muted)}
+.ladder{display:flex;flex-direction:column-reverse;gap:6px}
+.rung{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:15px}
+.rung .n{font-family:var(--mono);font-weight:500;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:13px;flex:none}
+.rung.empty{color:var(--muted);border-style:dashed}
+.pool{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.pool button{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px;font-weight:700;box-shadow:inset 0 -3px 0 var(--line)}
+.pool button.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.cycle{width:100%;max-width:520px;height:auto;display:block}
+.cycle .arr{stroke:var(--line);stroke-width:5;fill:none}
+.cycle .arr.hl{stroke:var(--accent);stroke-width:7}
+.cycle .arr.done{stroke:var(--ok)}
+.cycle .node rect{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.cycle .node text{font-size:14px;font-weight:700;fill:var(--ink)}
+.cycle .alab{font-size:11.5px;fill:var(--ok);font-weight:700}
+.cycle .qm{font-size:16px;fill:var(--accent);font-weight:800}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.card{perspective:800px;min-height:150px;text-align:left}
+.card .in{position:relative;width:100%;height:100%;min-height:150px;transition:transform .45s;transform-style:preserve-3d}
+.card.flip .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;background:var(--surface);border:1px solid var(--line);padding:12px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.face b{font-family:var(--display);font-size:15px}
+.face .t{font-family:var(--mono);font-size:11px;color:var(--accent)}
+.back{transform:rotateY(180deg)}
+.back p{margin:0;font-size:13.5px;line-height:1.4}
+.back .esn{color:var(--muted);font-size:13px}
+@media (max-width:520px){
+  .answers{grid-template-columns:1fr}
+  .modes{grid-template-columns:1fr}
+  .mode{min-height:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ---------- Content (from Pablo's Unit 1 notebook: Geosphere) ---------- */
+const TOPICS = {
+  earth:{name:"Inside the Earth", es:"Estructura interna"},
+  atoms:{name:"Atoms & molecules", es:"Átomos y moléculas"},
+  min:  {name:"Minerals", es:"Minerales y propiedades"},
+  rocks:{name:"Rocks", es:"Rocas y ciclo"},
+  uses: {name:"Uses & extraction", es:"Usos y extracción"}
+};
+// q: question (EN) · es: Spanish help · o: options · a: index of right option · w: why (ES)
+const Q = [
+ // Inside the Earth
+ {t:"earth",q:"Which is the thin outer shell of the Earth that we all live on?",es:"¿Cuál es la capa exterior y delgada en la que vivimos?",o:["Crust","Mantle","Outer core","Inner core"],a:0,w:"Crust / corteza: la capa más fina, la de las rocas que pisamos."},
+ {t:"earth",q:"Which layer is the largest part of the Earth?",es:"¿Qué capa es la más grande de la Tierra?",o:["Mantle","Crust","Outer core","Inner core"],a:0,w:"El manto (mantle) es una capa sólida de roca y es la parte más grande del planeta."},
+ {t:"earth",q:"The outer core is made of…",es:"El núcleo externo está formado por…",o:["Liquid iron","Solid iron","Granite","Basalt"],a:0,w:"Outer core = hierro líquido (liquid iron). Ese metal en movimiento genera el campo magnético."},
+ {t:"earth",q:"The inner core is…",es:"El núcleo interno es…",o:["A solid ball of iron","A liquid ball of iron","Made of granite","Made of water"],a:0,w:"Inner core = bola sólida de hierro en el centro del planeta, a unos 6.370 km de profundidad."},
+ {t:"earth",q:"Which rock makes up the continental crust?",es:"¿Qué roca forma la corteza continental?",o:["Granite","Basalt","Peridotite","Bridgmanite"],a:0,w:"Corteza continental → granito. Corteza oceánica → basalto."},
+ {t:"earth",q:"Which rock makes up the oceanic crust?",es:"¿Qué roca forma la corteza oceánica?",o:["Basalt","Granite","Marble","Limestone"],a:0,w:"La corteza oceánica es de basalto y es más delgada (unos 8 km)."},
+ {t:"earth",q:"Which crust is thicker?",es:"¿Qué corteza es más gruesa?",o:["Continental crust (≈40 km)","Oceanic crust (≈8 km)","They are the same","Neither: the crust has no thickness"],a:0,w:"La continental mide unos 40 km (más bajo las montañas); la oceánica, unos 8 km."},
+ {t:"earth",q:"The upper mantle is mainly made of…",es:"El manto superior está formado sobre todo por…",o:["Olivine (peridotite)","Granite","Liquid iron","Clay"],a:0,w:"Manto superior: olivino, que forma la roca peridotita. Manto inferior: bridgmanita."},
+ {t:"earth",q:"Which mineral is typical of the lower mantle?",es:"¿Qué mineral es típico del manto inferior?",o:["Bridgmanite","Quartz","Halite","Gypsum"],a:0,w:"La bridgmanita es el mineral del manto inferior (y el más abundante de la Tierra)."},
+ {t:"earth",q:"As we go deeper towards the centre, temperature and density…",es:"Al bajar hacia el centro, la temperatura y la densidad…",o:["Both increase","Both decrease","Stay the same","Temperature goes up, density goes down"],a:0,w:"Cuanto más profundo, más calor y más densidad: los materiales más pesados están en el centro."},
+ {t:"earth",q:"What generates the Earth's magnetic field?",es:"¿Qué genera el campo magnético de la Tierra?",o:["Flowing liquid iron in the outer core","The solid crust","The Sun's light","Ocean water"],a:0,w:"El hierro líquido que se mueve en el núcleo externo crea el campo magnético."},
+ {t:"earth",q:"The magnetic field of the Earth protects us from…",es:"El campo magnético nos protege del…",o:["Solar wind","Earthquakes","Rain","Volcanoes"],a:0,w:"Desvía el viento solar (partículas que llegan del Sol)."},
+ {t:"earth",q:"How far is it from the surface to the centre of the Earth?",es:"¿Cuánto hay desde la superficie hasta el centro?",o:["About 6,370 km","About 40 km","About 700 km","About 100,000 km"],a:0,w:"El radio de la Tierra es de unos 6.370 km."},
+ {t:"earth",q:"The continental shelf is the shallow sea next to the coast. How deep is it?",es:"La plataforma continental es el mar poco profundo junto a la costa. ¿Qué profundidad tiene?",o:["About 200 m","About 20 km","About 3,000 km","About 2 m"],a:0,w:"Llega hasta unos 200 m de profundidad; después el fondo baja hacia el océano profundo (varios km)."},
+ {t:"earth",q:"Put the layers in order from the outside to the centre.",es:"Ordena las capas desde fuera hacia el centro.",o:["Crust → mantle → outer core → inner core","Mantle → crust → inner core → outer core","Crust → outer core → mantle → inner core","Inner core → outer core → mantle → crust"],a:0,w:"Corteza → manto → núcleo externo → núcleo interno."},
+ // Atoms & molecules
+ {t:"atoms",q:"Regular matter is made of…",es:"La materia ordinaria está formada por…",o:["Atoms","Minerals","Rocks","Crystals"],a:0,w:"Todo está hecho de átomos, que son muy pequeños: unos 10⁻¹⁰ m."},
+ {t:"atoms",q:"Which particles are in the nucleus of an atom?",es:"¿Qué partículas hay en el núcleo de un átomo?",o:["Protons and neutrons","Electrons only","Molecules","Crystals"],a:0,w:"En el núcleo: protones y neutrones. Los electrones giran alrededor."},
+ {t:"atoms",q:"Atoms are classified into elements according to the number of…",es:"Los átomos se clasifican en elementos según el número de…",o:["Protons","Neutrons","Electrons in the air","Molecules"],a:0,w:"El número de protones es el número atómico (Z) y decide qué elemento es."},
+ {t:"atoms",q:"Which element has atomic number Z = 1?",es:"¿Qué elemento tiene Z = 1?",o:["Hydrogen","Carbon","Iron","Oxygen"],a:0,w:"Z=1 hidrógeno (H) · Z=6 carbono (C) · Z=26 hierro (Fe)."},
+ {t:"atoms",q:"Iron (Fe) has atomic number…",es:"El hierro (Fe) tiene número atómico…",o:["26","6","1","8"],a:0,w:"El hierro tiene 26 protones: Z = 26."},
+ {t:"atoms",q:"In the periodic table, elements are ordered by…",es:"En la tabla periódica, los elementos se ordenan por…",o:["Atomic number","Colour","Name in alphabetical order","Hardness"],a:0,w:"Se ordenan por número atómico, en filas (periodos) y columnas (grupos)."},
+ {t:"atoms",q:"Elements in the same group (column)…",es:"Los elementos del mismo grupo (columna)…",o:["Share many properties","Have the same atomic number","Are always gases","Are always metals"],a:0,w:"Los grupos comparten muchas propiedades."},
+ {t:"atoms",q:"Which one is written correctly as a chemical symbol?",es:"¿Cuál está bien escrito como símbolo químico?",o:["Na","NA","na","nA"],a:0,w:"Una mayúscula, a veces seguida de una minúscula: Na, Fe, Cl, O."},
+ {t:"atoms",q:"Groups of atoms bonded together are called…",es:"Los grupos de átomos unidos se llaman…",o:["Molecules","Minerals","Elements","Nuclei"],a:0,w:"Los átomos casi nunca están solos: se unen formando moléculas."},
+ {t:"atoms",q:"How many oxygen atoms are there in Fe₂O₃?",es:"¿Cuántos átomos de oxígeno hay en Fe₂O₃?",o:["3","2","1","5"],a:0,w:"El número pequeño va detrás del símbolo: Fe₂ = 2 de hierro, O₃ = 3 de oxígeno."},
+ {t:"atoms",q:"In H₂O, how many oxygen atoms are there?",es:"En H₂O, ¿cuántos átomos de oxígeno hay?",o:["1","2","0","3"],a:0,w:"Si es 1, no se escribe el número. H₂O = 2 H + 1 O."},
+ // Minerals
+ {t:"min",q:"Which of these is NOT a condition to be a mineral?",es:"¿Cuál NO es una condición para ser mineral?",o:["Being liquid","Being natural","Being inorganic","Having a crystalline structure"],a:0,w:"Un mineral es sólido, natural, inorgánico, sustancia pura (tiene fórmula) y cristalino."},
+ {t:"min",q:"Why is water NOT a mineral?",es:"¿Por qué el agua NO es un mineral?",o:["It is not solid","It is not natural","It is organic","It has no formula"],a:0,w:"El agua líquida (y el mercurio) no son sólidos, así que no son minerales."},
+ {t:"min",q:"Why is glass NOT a mineral?",es:"¿Por qué el vidrio NO es un mineral?",o:["It is not natural (it is made by people)","It is liquid","It is organic","It is too hard"],a:0,w:"Vidrio y cerámica los fabricamos nosotros: no son naturales."},
+ {t:"min",q:"Why are amber or pearls NOT minerals?",es:"¿Por qué el ámbar o las perlas NO son minerales?",o:["They come from living beings (organic)","They are liquid","They are man-made","They have no colour"],a:0,w:"Inorgánico = que no ha formado parte de un ser vivo."},
+ {t:"min",q:"Crystalline means that atoms are arranged…",es:"Cristalino significa que los átomos están ordenados…",o:["In a regular 3D grid","Randomly","In a straight line","Only on the surface"],a:0,w:"Los átomos forman una red ordenada en 3D (como el NaCl, la sal)."},
+ {t:"min",q:"Substances with no crystalline structure are called…",es:"Las sustancias sin estructura cristalina se llaman…",o:["Mineraloids (amorphous)","Crystals","Rocks","Ores"],a:0,w:"Son amorfas y se llaman mineraloides."},
+ {t:"min",q:"A crystal is…",es:"Un cristal es…",o:["A solid with flat geometric faces that forms naturally","Any piece of glass","A liquid mineral","A type of rock"],a:0,w:"Es el resultado visible (macroscópico) de la estructura cristalina."},
+ {t:"min",q:"Why is colour NOT a reliable property?",es:"¿Por qué el color NO es fiable?",o:["It can change a lot with impurities","It is impossible to see","All minerals are white","It changes with temperature every day"],a:0,w:"Ejemplo: el cuarzo puede ser hialino, amatista, citrino, rosa, lechoso o ahumado."},
+ {t:"min",q:"Amethyst, citrine and rose quartz are varieties of…",es:"La amatista, el citrino y el cuarzo rosa son variedades de…",o:["Quartz","Calcite","Gypsum","Mica"],a:0,w:"Son el mismo mineral (cuarzo) con distintos colores por las impurezas."},
+ {t:"min",q:"Streak is…",es:"La raya es…",o:["The colour of the mineral in powder form","How it shines","How it breaks","Its weight"],a:0,w:"Se raya el mineral sobre una placa de porcelana, como si fuera una tiza. Es más fiable que el color."},
+ {t:"min",q:"Pyrite is golden, but its streak is…",es:"La pirita es dorada, pero su raya es…",o:["Black","Golden","White","Pink"],a:0,w:"¡Por eso la raya sirve para identificar! Pirita: raya negra."},
+ {t:"min",q:"Lustre (brillo) describes…",es:"El brillo describe…",o:["How light interacts with the surface","How heavy it is","Its smell","Its hardness"],a:0,w:"Brillo metálico o no metálico (vítreo, céreo, terroso, nacarado, graso…)."},
+ {t:"min",q:"Which one is a NON-metallic lustre?",es:"¿Cuál es un brillo NO metálico?",o:["Vitreous","Metallic","Golden","Magnetic"],a:0,w:"No metálicos: vítreo, céreo, terroso, nacarado, graso…"},
+ {t:"min",q:"Diaphaneity is the ability to…",es:"La diafanidad es la capacidad de…",o:["Let light pass through it","Attract magnets","Scratch glass","Dissolve in water"],a:0,w:"Transparente, translúcido u opaco."},
+ {t:"min",q:"A mineral that lets NO light pass through is…",es:"Un mineral que NO deja pasar la luz es…",o:["Opaque","Transparent","Translucent","Vitreous"],a:0,w:"Opaco. Translúcido deja pasar algo de luz; transparente, toda."},
+ {t:"min",q:"Calcite shows a double image when you look through it. This is…",es:"La calcita muestra una imagen doble al mirar a través. Esto es…",o:["Birefringence","Cleavage","Streak","Magnetism"],a:0,w:"Birrefringencia: la propiedad especial de la calcita."},
+ {t:"min",q:"Most minerals break easily. We say they are…",es:"La mayoría de minerales se rompen fácilmente. Son…",o:["Brittle","Tough","Malleable","Ductile"],a:0,w:"Frágiles (brittle), incluso el diamante. Los tenaces (tough) suelen ser metales nativos: maleables y dúctiles."},
+ {t:"min",q:"A mineral that breaks along flat planes has…",es:"Un mineral que se rompe por planos tiene…",o:["Cleavage","Fracture","Lustre","Streak"],a:0,w:"Exfoliación (cleavage): calcita, mica. Fractura: superficies irregulares (cinabrio)."},
+ {t:"min",q:"Conchoidal fracture means it breaks…",es:"La fractura concoidea significa que se rompe…",o:["Like glass, with curved surfaces","In perfect cubes","In thin sheets like mica","It never breaks"],a:0,w:"Se rompe como el vidrio, con superficies curvas en forma de concha."},
+ {t:"min",q:"Hardness is the ability to…",es:"La dureza es la capacidad de…",o:["Scratch or be scratched","Float in water","Shine","Attract magnets"],a:0,w:"Refleja la fuerza de los enlaces entre átomos. Se mide con la escala de Mohs (1-10)."},
+ {t:"min",q:"Which is the softest mineral in the Mohs scale (1)?",es:"¿Cuál es el más blando de la escala de Mohs (1)?",o:["Talc","Gypsum","Quartz","Diamond"],a:0,w:"1 talco · 2 yeso · 3 calcita · 4 fluorita · 5 apatito · 6 ortosa · 7 cuarzo · 8 topacio · 9 corindón · 10 diamante."},
+ {t:"min",q:"Your fingernail has a hardness of about 2.5. Which mineral can you scratch with it?",es:"La uña tiene dureza 2,5. ¿Qué mineral puedes rayar con ella?",o:["Gypsum (2)","Calcite (3)","Quartz (7)","Topaz (8)"],a:0,w:"La uña (2,5) raya el talco y el yeso, pero no la calcita."},
+ {t:"min",q:"Glass has a hardness of about 5.5. Which mineral scratches glass?",es:"El vidrio tiene dureza 5,5. ¿Qué mineral raya el vidrio?",o:["Quartz (7)","Calcite (3)","Fluorite (4)","Talc (1)"],a:0,w:"Todos los de dureza mayor que 5,5: ortosa, cuarzo, topacio, corindón, diamante."},
+ {t:"min",q:"Specific gravity compares the mass of a mineral with the mass of the same volume of…",es:"El peso específico compara la masa del mineral con la del mismo volumen de…",o:["Water","Air","Gold","Sand"],a:0,w:"Diamante: 3,52. Yeso ligero (2,3), baritina pesada (5). Los minerales con metales pesan más."},
+ {t:"min",q:"Which mineral feels HEAVIER in your hand?",es:"¿Qué mineral notas más pesado en la mano?",o:["Baryte (SG ≈ 5)","Gypsum (SG ≈ 2.3)","They weigh the same","Talc"],a:0,w:"La baritina tiene un peso específico de unos 5; el yeso, de 2,3."},
+ {t:"min",q:"The typical shape of the crystals of a mineral is its…",es:"La forma típica de los cristales de un mineral es su…",o:["Habit","Streak","Lustre","Tenacity"],a:0,w:"Hábito: cúbico, octaédrico, hexagonal, romboédrico… o agregados dendríticos, aciculares, tabulares, masivos."},
+ {t:"min",q:"Calcite fizzes when you drop diluted acid on it. This property is…",es:"La calcita burbujea con ácido diluido. Esta propiedad es…",o:["Reaction (effervescence)","Magnetism","Taste","Diaphaneity"],a:0,w:"Efervescencia con ácido: así reconocemos la calcita y las calizas."},
+ {t:"min",q:"Which property should you NOT test yourself in the lab?",es:"¿Qué propiedad NO debes comprobar tú en el laboratorio?",o:["Taste","Colour","Lustre","Hardness"],a:0,w:"¡El sabor no se prueba! (aunque la halita sepa a sal)."},
+ // Rocks
+ {t:"rocks",q:"A rock is…",es:"Una roca es…",o:["An aggregate of minerals","A single pure substance","Always a crystal","A liquid"],a:0,w:"Agregado de minerales: un sólido natural, no vivo y estable que forma grandes masas."},
+ {t:"rocks",q:"Igneous rocks form when…",es:"Las rocas ígneas se forman cuando…",o:["Magma cools down","Sediments are compacted","Rocks are pressed without melting","Plants are buried"],a:0,w:"Magma (líquido) que se enfría y se solidifica."},
+ {t:"rocks",q:"Plutonic rocks cool slowly underground, so they are…",es:"Las plutónicas se enfrían despacio bajo tierra, así que son…",o:["Coarse-grained (big crystals)","Fine-grained","Full of fossils","Always black"],a:0,w:"Enfriamiento lento → cristales grandes: granito, sienita."},
+ {t:"rocks",q:"Volcanic rocks cool quickly, so they are…",es:"Las volcánicas se enfrían rápido, así que son…",o:["Fine-grained (tiny crystals)","Coarse-grained","Layered like slate","Made of shells"],a:0,w:"Enfriamiento rápido → cristales diminutos o vidrio: basalto, obsidiana."},
+ {t:"rocks",q:"Which one is a plutonic rock?",es:"¿Cuál es una roca plutónica?",o:["Granite","Basalt","Obsidian","Sandstone"],a:0,w:"Plutónicas: granito, sienita. Volcánicas: basalto, obsidiana."},
+ {t:"rocks",q:"Which one is a volcanic rock?",es:"¿Cuál es una roca volcánica?",o:["Basalt","Granite","Marble","Gypsum"],a:0,w:"El basalto es lava enfriada rápidamente."},
+ {t:"rocks",q:"Sedimentary rocks form from sediments by…",es:"Las sedimentarias se forman a partir de sedimentos por…",o:["Compaction and cementation","Melting","Cooling of magma","Magnetism"],a:0,w:"Compactación + cementación = diagénesis (litificación)."},
+ {t:"rocks",q:"Diagenesis is also called…",es:"La diagénesis también se llama…",o:["Lithification","Metamorphism","Erosion","Melting"],a:0,w:"Diagénesis o litificación: los sedimentos se convierten en roca."},
+ {t:"rocks",q:"Which one is a DETRITAL sedimentary rock?",es:"¿Cuál es una sedimentaria DETRÍTICA?",o:["Conglomerate","Rock salt","Coal","Marble"],a:0,w:"Detríticas: conglomerado, arenisca, arcilla. Orgánica: carbón. Químicas/evaporitas: caliza, sal gema, yeso."},
+ {t:"rocks",q:"Coal is a sedimentary rock of … origin.",es:"El carbón es una sedimentaria de origen…",o:["Organic","Volcanic","Metamorphic","Detrital"],a:0,w:"Se formó con restos de plantas enterradas."},
+ {t:"rocks",q:"Rock salt and gypsum are…",es:"La sal gema y el yeso son…",o:["Evaporites","Volcanic rocks","Metamorphic rocks","Plutonic rocks"],a:0,w:"Evaporitas: se forman cuando se evapora el agua y precipitan las sales."},
+ {t:"rocks",q:"Metamorphic rocks form with high pressure and temperature…",es:"Las metamórficas se forman con presión y temperatura altas…",o:["Without melting","After melting into magma","At the surface by erosion","In the sea by evaporation"],a:0,w:"La roca cambia sin llegar a fundirse."},
+ {t:"rocks",q:"Which metamorphic rock is FOLIATED (in layers/bands)?",es:"¿Qué metamórfica es FOLIADA (en láminas o bandas)?",o:["Slate","Marble","Quartzite","Basalt"],a:0,w:"Foliadas: gneis, pizarra. No foliadas: mármol, cuarcita."},
+ {t:"rocks",q:"Marble is a…",es:"El mármol es una roca…",o:["Non-foliated metamorphic rock","Volcanic rock","Detrital sedimentary rock","Plutonic rock"],a:0,w:"Metamórfica no foliada, procede de la caliza."},
+ {t:"rocks",q:"In the rock cycle, what turns a rock into magma?",es:"En el ciclo de las rocas, ¿qué convierte una roca en magma?",o:["Melting","Cooling","Erosion","Cementation"],a:0,w:"Fusión (melting). Después, el magma se enfría y forma rocas ígneas."},
+ {t:"rocks",q:"Erosion of rocks at the surface produces…",es:"La erosión de las rocas en la superficie produce…",o:["Sediments","Magma","Metamorphic rocks","Crystals"],a:0,w:"Los sedimentos se acumulan y, compactados y cementados, forman rocas sedimentarias."},
+ // Uses & extraction
+ {t:"uses",q:"A mineral with metal atoms in its formula (like Fe₂O₃) is probably…",es:"Un mineral con átomos metálicos en su fórmula (como Fe₂O₃) probablemente es…",o:["An ore (mena) of that metal","A gem","A building stone","Fuel"],a:0,w:"Una mena: de ella se extrae el metal (de Fe₂O₃ sacamos hierro)."},
+ {t:"uses",q:"A mineral that is hard (7 or more) and looks good is probably used…",es:"Un mineral duro (7 o más) y bonito probablemente se usa…",o:["As a gem (jewellery)","As fuel","To make cement","As fertiliser"],a:0,w:"Gemas: diamante, topacio, corindón (rubí y zafiro)…"},
+ {t:"uses",q:"The part of the rock that we discard when we extract an ore is called…",es:"La parte de la roca que se desecha al extraer la mena se llama…",o:["Gangue (ganga)","Streak","Habit","Magma"],a:0,w:"Mena = lo que aprovechamos. Ganga = lo que se tira."},
+ {t:"uses",q:"Which one is an ENERGY use of rocks?",es:"¿Cuál es un uso ENERGÉTICO de las rocas?",o:["Coal","Slate roofs","Marble statues","Granite kitchen tops"],a:0,w:"Energía: carbón, rocas con uranio. El petróleo se usa, pero no es una roca."},
+ {t:"uses",q:"Which one is NOT a rock?",es:"¿Cuál NO es una roca?",o:["Petroleum","Coal","Limestone","Slate"],a:0,w:"El petróleo es líquido: no es una roca."},
+ {t:"uses",q:"Limestone and clay are used to make…",es:"La caliza y la arcilla se usan para fabricar…",o:["Cement and bricks","Jewellery","Fuel","Glass lenses"],a:0,w:"Materiales de construcción: bloques, mampostería, cemento (caliza), tejas de pizarra, ladrillos (arcilla)."},
+ {t:"uses",q:"A big hole dug from the surface to extract rocks or minerals is…",es:"Un gran agujero excavado desde la superficie para extraer rocas o minerales es…",o:["An open-pit mine","An underground mine","A volcano","A gravel"],a:0,w:"Mina a cielo abierto (open-pit). También: minas subterráneas, canteras (quarries) y graveras (gravel pits)."},
+ {t:"uses",q:"'Cantera' in English is…",es:"«Cantera» en inglés es…",o:["Quarry","Gravel pit","Mine","Gangue"],a:0,w:"Quarry = cantera · gravel pit = gravera · open-pit mine = mina a cielo abierto."},
+ {t:"uses",q:"Which is a negative environmental impact of mining?",es:"¿Cuál es un impacto ambiental negativo de la minería?",o:["Water and air pollution","More fertile soil","More forests","Cleaner rivers"],a:0,w:"Contaminación del agua y el aire, cambios en el paisaje y destrucción del suelo, la fauna y la flora."},
+ {t:"uses",q:"Can we completely avoid the environmental impact of mines?",es:"¿Podemos evitar del todo el impacto de las minas?",o:["No, we can only reduce it partially","Yes, always","Yes, if we work at night","Mines have no impact"],a:0,w:"Se pueden mitigar, pero solo en parte."}
+];
+Q.forEach((q,i)=>q.id=i);
+
+const LAYERS = [
+ {k:"cc",en:"Continental crust",es:"Corteza continental",col:"var(--crustc)",state:"Solid / sólida",mat:"Granite (granito)",depth:"0 – ≈40 km (up to 70 km under mountains)",tip:"Más gruesa que la oceánica, pero más ligera."},
+ {k:"oc",en:"Oceanic crust",es:"Corteza oceánica",col:"var(--crusto)",state:"Solid / sólida",mat:"Basalt (basalto)",depth:"0 – ≈8 km",tip:"Bajo los océanos. Fina y de basalto."},
+ {k:"um",en:"Upper mantle",es:"Manto superior",col:"var(--um)",state:"Solid rock / roca sólida",mat:"Olivine → peridotite (olivino, peridotita)",depth:"crust – ≈700 km",tip:"El manto en conjunto es la capa más grande."},
+ {k:"lm",en:"Lower mantle",es:"Manto inferior",col:"var(--lm)",state:"Solid rock / roca sólida",mat:"Bridgmanite (bridgmanita)",depth:"≈700 – ≈2,900 km",tip:"Más calor y presión que en el manto superior."},
+ {k:"ocr",en:"Outer core",es:"Núcleo externo",col:"var(--oc)",state:"LIQUID / líquido",mat:"Iron (hierro)",depth:"≈2,900 – ≈5,100 km",tip:"El hierro líquido en movimiento genera el campo magnético, que nos protege del viento solar."},
+ {k:"ic",en:"Inner core",es:"Núcleo interno",col:"var(--ic)",state:"SOLID / sólido",mat:"Iron (hierro)",depth:"≈5,100 – 6,370 km (centre)",tip:"Bola sólida de metal en el centro. Lo más caliente y denso."}
+];
+const MOHS = ["Talc","Gypsum","Calcite","Fluorite","Apatite","Orthoclase","Quartz","Topaz","Corundum","Diamond"];
+const MOHS_ES = ["talco","yeso","calcita","fluorita","apatito","ortosa","cuarzo","topacio","corindón","diamante"];
+const NODES = {
+ magma:{x:260,y:46,en:"Magma",es:"magma"},
+ ign:{x:440,y:150,en:"Igneous rock",es:"roca ígnea"},
+ sedi:{x:380,y:330,en:"Sediments",es:"sedimentos"},
+ sedr:{x:140,y:330,en:"Sedimentary rock",es:"roca sedimentaria"},
+ met:{x:80,y:150,en:"Metamorphic rock",es:"roca metamórfica"}
+};
+const PROC = {cool:"Cooling / enfriamiento",melt:"Melting / fusión",ero:"Erosion / erosión",comp:"Compaction + cementation / compactación y cementación",meta:"Metamorphism / metamorfismo"};
+const ARROWS = [
+ {f:"magma",t:"ign",p:"cool",w:"El magma se enfría y solidifica → roca ígnea (plutónica si es lento, volcánica si es rápido)."},
+ {f:"ign",t:"sedi",p:"ero",w:"La erosión rompe y transporta la roca → sedimentos."},
+ {f:"sedi",t:"sedr",p:"comp",w:"Compactación + cementación (diagénesis) → roca sedimentaria."},
+ {f:"sedr",t:"met",p:"meta",w:"Presión y temperatura altas sin fundirse → roca metamórfica."},
+ {f:"met",t:"magma",p:"melt",w:"Si la temperatura es tan alta que la roca se funde → magma."},
+ {f:"ign",t:"met",p:"meta",w:"Una roca ígnea también puede transformarse sin fundirse (metamorfismo)."},
+ {f:"sedr",t:"magma",p:"melt",w:"Cualquier roca que se funde vuelve a ser magma."},
+ {f:"met",t:"sedi",p:"ero",w:"Cualquier roca en la superficie puede erosionarse."}
+];
+
+/* ---------- Helpers ---------- */
+const shuffle = a => {a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const store = {get(k,d){try{const v=localStorage.getItem('gq-'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+               set(k,v){try{localStorage.setItem('gq-'+k,JSON.stringify(v))}catch(e){}}};
+const app = document.getElementById('app');
+let opts = {len: store.get('len',10), timer: store.get('timer',true), topic: store.get('topic','all')};
+let G=null, tick=null;
+function stop(){ if(tick){clearInterval(tick);tick=null} }
+function header(back){
+  return `<div class="top"><div class="brand">Geosphere Quest<small>Biology &amp; Geology · 1º ESO · Unit 1</small></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">${/github\.io$/.test(location.hostname)?'<a class="ghost" href="./">← Todos los juegos</a>':''}${back?'<button class="ghost" id="home">Inicio</button>':''}</div></div>`;
+}
+function bindHome(){const h=document.getElementById('home'); if(h) h.onclick=()=>{stop();home()}}
+function points(ms){return opts.timer?Math.round(500+500*Math.max(0,1-ms/20000)):1000}
+
+/* ---------- Home ---------- */
+const MODES = {
+  quiz:  {name:"Quiz de la unidad", desc:"Preguntas tipo examen en inglés, con ayuda en español. Elige tema o mézclalo todo.", tag:"elige la respuesta"},
+  layers:{name:"Label the Earth", desc:"Se ilumina una capa de la Tierra y tienes que decir cuál es.", tag:"capas de la Tierra"},
+  mohs:  {name:"Mohs ladder", desc:"Ordena los 10 minerales de la escala de Mohs del más blando al más duro.", tag:"dureza 1 → 10"},
+  cycle: {name:"Rock cycle", desc:"Completa las flechas del ciclo de las rocas: ¿qué proceso es?", tag:"procesos"}
+};
+function home(){
+  stop();
+  const best = store.get('best',{});
+  app.innerHTML = header(false) + `
+   <p class="lead">Repasa toda la <b>Unit 1 · Geosphere</b>: la estructura interna de la Tierra, átomos y moléculas, minerales y sus propiedades, rocas, el ciclo de las rocas y sus usos. Cada acierto rápido suma más puntos.</p>
+   <div class="row">
+     <div class="seg" role="group" aria-label="Preguntas por partida">${[10,20].map(n=>`<button data-len="${n}" aria-pressed="${opts.len===n}">${n} preguntas</button>`).join('')}</div>
+     <div class="seg" role="group" aria-label="Tiempo"><button data-timer="1" aria-pressed="${opts.timer}">Con tiempo</button><button data-timer="0" aria-pressed="${!opts.timer}">Sin prisa</button></div>
+   </div>
+   <div class="row"><div class="seg" role="group" aria-label="Tema del quiz">
+     <button data-topic="all" aria-pressed="${opts.topic==='all'}">Todo</button>
+     ${Object.entries(TOPICS).map(([k,t])=>`<button data-topic="${k}" aria-pressed="${opts.topic===k}">${t.es}</button>`).join('')}
+   </div></div>
+   <div class="modes">
+     ${Object.entries(MODES).map(([k,m])=>`<button class="mode" data-mode="${k}"><i>${m.tag}</i><b>${m.name}</b><span>${m.desc}</span>${best[k]?`<span class="best">Récord: ${best[k]} pts</span>`:''}</button>`).join('')}
+     <button class="mode" data-explore="1"><i>explora</i><b>Inside the Earth</b><span>Toca cada capa para ver de qué está hecha, si es sólida o líquida y su profundidad.</span></button>
+     <button class="mode" data-study="1"><i>repaso</i><b>Fichas de estudio</b><span>Vocabulario clave en inglés: intenta decir qué significa antes de girar la ficha.</span></button>
+   </div>`;
+  app.querySelectorAll('[data-len]').forEach(b=>b.onclick=()=>{opts.len=+b.dataset.len;store.set('len',opts.len);home()});
+  app.querySelectorAll('[data-timer]').forEach(b=>b.onclick=()=>{opts.timer=b.dataset.timer==="1";store.set('timer',opts.timer);home()});
+  app.querySelectorAll('[data-topic]').forEach(b=>b.onclick=()=>{opts.topic=b.dataset.topic;store.set('topic',opts.topic);home()});
+  app.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>({quiz:startQuiz,layers:startLayers,mohs:startMohs,cycle:startCycle})[b.dataset.mode]());
+  app.querySelector('[data-explore]').onclick=explore;
+  app.querySelector('[data-study]').onclick=study;
+}
+
+/* ---------- Generic multiple-choice engine (quiz, layers, cycle) ---------- */
+// item: {html, opts:[{id,label}], key, title, why, missLabel}
+function runRound(mode, items, review){
+  G={mode, items, i:0, score:0, streak:0, bestStreak:0, right:0, misses:[], review:!!review};
+  ask();
+}
+function ask(){
+  stop();
+  const it=G.items[G.i], total=G.items.length;
+  const it2 = typeof it.build==='function' ? it.build() : it;
+  G.cur = it2;
+  app.innerHTML = header(true) + `
+    <div class="hud"><span>${G.i+1}/${total}</span><span class="grow"></span><span>racha ${G.streak}</span><span>${G.score} pts</span></div>
+    ${opts.timer?'<div class="bar"><div id="tb"></div></div>':''}
+    <div class="prompt">${it2.html}</div>
+    <div class="answers ${it2.light?'light':''}" id="ans">${it2.opts.map(o=>`<button class="ans" data-id="${o.id}">${o.label}</button>`).join('')}</div>
+    <div id="fb"></div>`;
+  bindHome();
+  const t0=performance.now(), LIMIT=20000; G.answered=false;
+  app.querySelectorAll('.ans').forEach(b=>b.onclick=()=>answer(b.dataset.id, performance.now()-t0));
+  if(opts.timer){const tb=document.getElementById('tb');
+    tick=setInterval(()=>{const left=Math.max(0,1-(performance.now()-t0)/LIMIT);tb.style.width=(left*100)+'%';if(left<=0)answer(null,LIMIT)},100);}
+}
+function answer(id, ms){
+  if(G.answered) return; G.answered=true; stop();
+  const it=G.cur, ok=id===it.key; let gained=0;
+  if(ok){G.streak++;G.right++;G.bestStreak=Math.max(G.bestStreak,G.streak);gained=points(ms)+(G.streak>=3?100:0);G.score+=gained}
+  else{G.streak=0;const src=G.items[G.i];if(!G.misses.includes(src))G.misses.push(src)}
+  app.querySelectorAll('.ans').forEach(b=>{b.disabled=true;const bid=b.dataset.id;
+    if(bid===it.key)b.classList.add('right');else if(bid===id)b.classList.add('wrong');else b.classList.add('dim')});
+  if(it.after) it.after(ok);
+  const title = ok?`¡Correcto! <span class="pop">+${gained}</span>`:(id===null?'¡Se acabó el tiempo!':'¡Casi!');
+  const fb=document.getElementById('fb');
+  fb.innerHTML=`<div class="feedback ${ok?'good':'bad'}"><h3>${title}</h3>${ok?'':`<p><b>${it.answerText}</b></p>`}<p class="fact">${it.why}</p>
+    <button class="next" id="nx">${G.i+1<G.items.length?'Siguiente':'Ver resultado'}</button></div>`;
+  const nx=document.getElementById('nx'); nx.focus({preventScroll:true});
+  fb.scrollIntoView({behavior:'smooth',block:'nearest'});
+  nx.onclick=()=>{G.i++;G.i<G.items.length?ask():results()};
+}
+function results(){
+  const total=G.items.length,best=store.get('best',{});let rec=false;
+  if(!G.review&&G.score>(best[G.mode]||0)){best[G.mode]=G.score;store.set('best',best);rec=true}
+  const pct=Math.round(100*G.right/total);
+  const msg=pct===100?'¡Perfecto! Dominas la geosfera.':pct>=80?'¡Muy bien! Casi lo tienes.':pct>=50?'Vas bien. Repasa los fallos y vuelve a jugar.':'Empieza por las fichas y la exploración de capas, y vuelve a intentarlo.';
+  app.innerHTML=header(true)+`
+    <div class="prompt"><div class="q">${MODES[G.mode].name}${G.review?' · repaso de fallos':''}</div>
+      <div class="score">${G.score}</div>
+      <p class="sub">${G.right} de ${total} aciertos · mejor racha ${G.bestStreak}${rec?' · ¡nuevo récord!':''}</p><p class="sub">${msg}</p></div>
+    <div class="row" style="flex-direction:column;align-items:stretch">
+      ${G.misses.length?`<button class="next" id="rv">Repasar mis ${G.misses.length} fallo${G.misses.length>1?'s':''}</button>`:''}
+      <button class="ghost" id="again" style="padding:14px">Jugar otra vez</button></div>
+    ${G.misses.length?`<h3 style="font-size:16px">Para repasar</h3><div class="misslist">${G.misses.map(m=>`<div class="miss"><b>${m.missQ}</b>${m.missA}</div>`).join('')}</div>`:''}`;
+  bindHome();
+  const mode=G.mode, misses=G.misses.slice();
+  document.getElementById('again').onclick=()=>({quiz:startQuiz,layers:startLayers,cycle:startCycle})[mode]();
+  const rv=document.getElementById('rv'); if(rv) rv.onclick=()=>runRound(mode, shuffle(misses), true);
+}
+
+/* ---------- Quiz ---------- */
+function quizItem(q){
+  return {missQ:q.q, missA:`${q.o[q.a]} — ${q.w}`, build(){
+    const order=shuffle(q.o.map((_,i)=>i));
+    return {html:`<span class="tag">${TOPICS[q.t].name} · ${TOPICS[q.t].es}</span><div class="q">${q.q}</div><p class="qes">${q.es}</p>`,
+      opts:order.map(i=>({id:String(i),label:q.o[i]})), key:String(q.a), answerText:q.o[q.a], why:q.w};
+  }};
+}
+function startQuiz(){
+  const pool = opts.topic==='all' ? Q : Q.filter(q=>q.t===opts.topic);
+  let picked;
+  if(opts.topic==='all'){ // balanced mix across topics
+    const by={}; shuffle(pool).forEach(q=>(by[q.t]=by[q.t]||[]).push(q));
+    picked=[]; const keys=shuffle(Object.keys(by));
+    while(picked.length<Math.min(opts.len,pool.length)) for(const k of keys){ if(by[k].length&&picked.length<opts.len) picked.push(by[k].shift()) }
+    picked=shuffle(picked);
+  } else picked=shuffle(pool).slice(0,opts.len);
+  runRound('quiz', picked.map(quizItem));
+}
+
+/* ---------- Earth cross-section SVG ---------- */
+// radii (not to scale: crust exaggerated so it can be tapped)
+const R = {crust:180, um:160, lm:122, ocr:82, ic:40};
+function earthSVG(hl, labels){
+  const cx=200,cy=200;
+  const ring=(r1,r0,cls,k)=>`<path class="ly ${cls}" data-k="${k}" fill-rule="evenodd" d="M${cx-r1},${cy}a${r1},${r1} 0 1,0 ${2*r1},0a${r1},${r1} 0 1,0 ${-2*r1},0Z M${cx-r0},${cy}a${r0},${r0} 0 1,0 ${2*r0},0a${r0},${r0} 0 1,0 ${-2*r0},0Z"/>`;
+  const half=(r1,r0,side,k)=>{ // side: -1 left (continental), 1 right (oceanic)
+    const s=side<0?0:1;
+    return `<path class="ly" data-k="${k}" d="M${cx},${cy-r1} A${r1},${r1} 0 0,${side<0?0:1} ${cx},${cy+r1} L${cx},${cy+r0} A${r0},${r0} 0 0,${side<0?1:0} ${cx},${cy-r0}Z"/>`;
+  };
+  const L=Object.fromEntries(LAYERS.map(l=>[l.k,l]));
+  const cls=k=>hl==null?'':(hl===k?'hl':'off');
+  const fill=(svg,k)=>svg.replace('class="ly','style="fill:'+L[k].col+'" class="ly '+cls(k));
+  let s=`<svg class="earth" viewBox="0 0 400 400" role="img" aria-label="Cross-section of the Earth">`;
+  s+=fill(half(R.crust+12,R.um,-1,'cc'),'cc');
+  s+=fill(half(R.crust,R.um,1,'oc'),'oc');
+  s+=fill(ring(R.um,R.lm,'','um'),'um');
+  s+=fill(ring(R.lm,R.ocr,'','lm'),'lm');
+  s+=fill(ring(R.ocr,R.ic,'','ocr'),'ocr');
+  s+=`<circle class="ly ${cls('ic')}" data-k="ic" cx="${cx}" cy="${cy}" r="${R.ic}" style="fill:${L.ic.col}"/>`;
+  if(labels){
+    const t=(x,y,txt)=>`<text class="lbl" x="${x}" y="${y}" text-anchor="middle" style="paint-order:stroke;stroke:var(--surface);stroke-width:3px">${txt}</text>`;
+    s+=t(200,205,'Inner core')+t(200,140,'Outer core')+t(200,100,'Lower mantle')+t(200,60,'Upper mantle')+t(70,40,'Continental')+t(330,40,'Oceanic');
+  }
+  return s+`</svg>`;
+}
+function startLayers(){
+  const items=shuffle(LAYERS).concat(shuffle(LAYERS)).slice(0,Math.min(opts.len,12)).map(l=>({
+    missQ:`${l.en} / ${l.es}`, missA:`${l.mat} · ${l.state} · ${l.depth}`,
+    build(){ return {html:`${earthSVG(l.k,false)}<div class="q">Which layer is highlighted?</div><p class="qes">¿Qué capa está resaltada?</p>`,
+      light:true, opts:shuffle(LAYERS).map(x=>({id:x.k,label:`<span>${x.en}<span class="es">${x.es}</span></span>`})),
+      key:l.k, answerText:`${l.en} / ${l.es}`, why:`${l.mat} · ${l.state} · ${l.depth}. ${l.tip}`}; }
+  }));
+  runRound('layers', items);
+}
+function explore(){
+  stop();
+  app.innerHTML=header(true)+`<p class="lead">Toca una capa (el dibujo no está a escala: la corteza se ha dibujado más gruesa para poder tocarla).</p>
+    <div class="prompt" id="ex">${earthSVG(null,true)}</div><div id="inf" class="info"><b>Toca una capa</b><span class="fact">Temperature and density increase towards the centre · La temperatura y la densidad aumentan hacia el centro.</span></div>`;
+  bindHome();
+  const bind=()=>document.querySelectorAll('#ex .ly').forEach(p=>p.onclick=()=>{
+    const l=LAYERS.find(x=>x.k===p.dataset.k);
+    document.getElementById('ex').innerHTML=earthSVG(l.k,true); bind();
+    document.getElementById('inf').innerHTML=`<b>${l.en}</b><span class="fact">${l.es}</span>
+      <div class="kv"><span>Made of</span><span>${l.mat}</span><span>State</span><span>${l.state}</span><span>Depth</span><span>${l.depth}</span></div><p class="fact" style="margin:0">${l.tip}</p>`;
+  });
+  bind();
+}
+
+/* ---------- Mohs ladder ---------- */
+function startMohs(){
+  stop();
+  const M={placed:0, errors:0, t0:performance.now()};
+  const pool=shuffle(MOHS.map((n,i)=>({n,i})));
+  const draw=()=>{
+    app.innerHTML=header(true)+`<div class="hud"><span>${M.placed}/10</span><span class="grow"></span><span>errores ${M.errors}</span></div>
+      <div class="prompt"><div class="q">Build the Mohs scale</div><p class="qes">Toca los minerales en orden, del más blando (1) al más duro (10). La uña raya hasta 2,5 y el vidrio, hasta 5,5.</p></div>
+      <div class="pool" id="pool">${pool.filter(p=>p.i>=M.placed).map(p=>`<button data-i="${p.i}">${p.n}<br><span style="font-weight:400;font-size:13px;color:var(--muted)">${MOHS_ES[p.i]}</span></button>`).join('')}</div>
+      <div class="ladder">${MOHS.map((n,i)=>i<M.placed?`<div class="rung"><span class="n">${i+1}</span><b>${n}</b><span class="fact">${MOHS_ES[i]}${i===1?' · fingernail 2.5 ↑':''}${i===4?' · glass 5.5 ↑':''}</span></div>`:`<div class="rung empty"><span class="n" style="background:var(--line);color:var(--muted)">${i+1}</span>?</div>`).join('')}</div>
+      <div id="fb"></div>`;
+    bindHome();
+    app.querySelectorAll('#pool button').forEach(b=>b.onclick=()=>{
+      const i=+b.dataset.i;
+      if(i===M.placed){M.placed++; M.placed===10?finish():draw()}
+      else{M.errors++; b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+        document.getElementById('fb').innerHTML=`<div class="feedback bad"><p>${MOHS[i]} es el ${i+1}. Ahora toca el número <b>${M.placed+1}</b>.</p></div>`;
+        app.querySelector('.hud span:last-child').textContent='errores '+M.errors;}
+    });
+  };
+  const finish=()=>{
+    const secs=(performance.now()-M.t0)/1000;
+    const score=Math.max(100,Math.round(5000-M.errors*400-(opts.timer?secs*20:0)));
+    const best=store.get('best',{}); let rec=false; if(score>(best.mohs||0)){best.mohs=score;store.set('best',best);rec=true}
+    app.innerHTML=header(true)+`<div class="prompt"><div class="q">Mohs ladder</div><div class="score">${score}</div>
+      <p class="sub">${M.errors} error${M.errors===1?'':'es'} · ${Math.round(secs)} s${rec?' · ¡nuevo récord!':''}</p>
+      <p class="sub">Truco: <b>T</b>alc <b>G</b>ypsum <b>C</b>alcite <b>F</b>luorite <b>A</b>patite <b>O</b>rthoclase <b>Q</b>uartz <b>T</b>opaz <b>C</b>orundum <b>D</b>iamond</p></div>
+      <div class="ladder">${MOHS.map((n,i)=>`<div class="rung"><span class="n">${i+1}</span><b>${n}</b><span class="fact">${MOHS_ES[i]}</span></div>`).join('')}</div>
+      <button class="next" id="again">Jugar otra vez</button>`;
+    bindHome(); document.getElementById('again').onclick=startMohs;
+  };
+  draw();
+}
+
+/* ---------- Rock cycle ---------- */
+function cycleSVG(active, done){
+  const W=150,H=40;
+  const edge=(a,b)=>{ // shorten line so it ends at the box border
+    const A=NODES[a],B=NODES[b];const dx=B.x-A.x,dy=B.y-A.y,len=Math.hypot(dx,dy);
+    const off=t=>{const kx=Math.abs(dx)>0?(W/2+6)/Math.abs(dx):1e9,ky=Math.abs(dy)>0?(H/2+6)/Math.abs(dy):1e9;return Math.min(kx,ky)};
+    const k=off(); return [A.x+dx*k, A.y+dy*k, B.x-dx*k, B.y-dy*k];
+  };
+  let s=`<svg class="cycle" viewBox="0 0 520 380" role="img" aria-label="Rock cycle"><defs>
+    <marker id="mh" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="#8a8178"/></marker></defs>`;
+  ARROWS.forEach((a,i)=>{
+    let [x1,y1,x2,y2]=edge(a.f,a.t);
+    // bend paired arrows apart
+    const nx=-(y2-y1),ny=x2-x1,nl=Math.hypot(nx,ny)||1,bend=i>=5?-28:22;
+    const mx=(x1+x2)/2+nx/nl*bend,my=(y1+y2)/2+ny/nl*bend;
+    const c=i===active?'hl':(done.includes(i)?'done':'');
+    s+=`<path class="arr ${c}" d="M${x1},${y1} Q${mx},${my} ${x2},${y2}" marker-end="url(#mh)" style="${c===''?'':''}"/>`;
+    if(i===active) s+=`<text class="qm" x="${mx}" y="${my}" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:var(--surface);stroke-width:5px">?</text>`;
+    else if(done.includes(i)) s+=`<text class="alab" x="${mx}" y="${my}" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:var(--surface);stroke-width:4px">${PROC[a.p].split(' / ')[0]}</text>`;
+  });
+  Object.values(NODES).forEach(n=>{s+=`<g class="node"><rect x="${n.x-W/2}" y="${n.y-H/2}" width="${W}" height="${H}" rx="10"/><text x="${n.x}" y="${n.y-2}" text-anchor="middle" dominant-baseline="middle">${n.en}</text><text x="${n.x}" y="${n.y+12}" text-anchor="middle" style="font-size:10.5px;font-weight:400;fill:var(--muted)">${n.es}</text></g>`});
+  return s+`</svg>`;
+}
+function startCycle(){
+  const done=[];
+  const order=shuffle(ARROWS.map((_,i)=>i));
+  const items=order.map(i=>{const a=ARROWS[i];return {
+    missQ:`${NODES[a.f].en} → ${NODES[a.t].en}`, missA:`${PROC[a.p]}. ${a.w}`,
+    build(){ return {html:`${cycleSVG(i,done)}<div class="q">${NODES[a.f].en} → ${NODES[a.t].en}: which process?</div><p class="qes">${NODES[a.f].es} → ${NODES[a.t].es}: ¿qué proceso es?</p>`,
+      light:true, opts:Object.entries(PROC).map(([k,v])=>({id:k,label:'<span>'+v.replace(' / ','<span class="es">')+'</span></span>'})),
+      key:a.p, answerText:PROC[a.p], why:a.w, after(){ if(!done.includes(i)) done.push(i) }}; }
+  }});
+  runRound('cycle', items);
+}
+
+/* ---------- Study cards ---------- */
+const CARDS = [
+ ["Earth","Crust","Corteza","Capa exterior y fina. Continental (granito, ≈40 km) y oceánica (basalto, ≈8 km)."],
+ ["Earth","Mantle","Manto","La capa más grande, de roca sólida. Superior: olivino/peridotita. Inferior: bridgmanita."],
+ ["Earth","Outer core","Núcleo externo","Hierro LÍQUIDO. Su movimiento crea el campo magnético."],
+ ["Earth","Inner core","Núcleo interno","Bola de hierro SÓLIDO en el centro (≈6.370 km)."],
+ ["Earth","Magnetic field","Campo magnético","Nos protege del viento solar (solar wind)."],
+ ["Earth","Continental shelf","Plataforma continental","Mar poco profundo junto a la costa, hasta ≈200 m."],
+ ["Atoms","Atomic number (Z)","Número atómico","Número de protones. H=1, C=6, Fe=26."],
+ ["Atoms","Molecule","Molécula","Grupo de átomos unidos. Se escribe con una fórmula: H₂O, NaCl, Fe₂O₃."],
+ ["Atoms","Periodic table","Tabla periódica","Ordenada por Z en filas y columnas; los grupos comparten propiedades."],
+ ["Minerals","Mineral","Mineral","Sólido, natural, inorgánico, sustancia pura (fórmula) y cristalino."],
+ ["Minerals","Mineraloid","Mineraloide","Como un mineral pero amorfo (sin estructura cristalina)."],
+ ["Minerals","Streak","Raya","Color del mineral en polvo, sobre porcelana. Pirita: raya negra."],
+ ["Minerals","Lustre","Brillo","Metálico o no metálico: vítreo, céreo, terroso, nacarado, graso."],
+ ["Minerals","Diaphaneity","Diafanidad","Transparente, translúcido u opaco."],
+ ["Minerals","Birefringence","Birrefringencia","Imagen doble al mirar a través. Calcita."],
+ ["Minerals","Tenacity","Tenacidad","Resistencia a romperse: frágil (brittle) o tenaz (tough, como los metales)."],
+ ["Minerals","Cleavage / fracture","Exfoliación / fractura","Rompe por planos (calcita, mica) o de forma irregular (cinabrio). Concoidea: como el vidrio."],
+ ["Minerals","Hardness","Dureza","Rayar o ser rayado. Escala de Mohs 1–10. Uña 2,5 · vidrio 5,5."],
+ ["Minerals","Specific gravity","Peso específico","Masa del mineral / masa del mismo volumen de agua. Diamante 3,52."],
+ ["Minerals","Habit","Hábito","Forma típica de los cristales: cúbico, hexagonal… o agregados aciculares, dendríticos…"],
+ ["Minerals","Effervescence","Efervescencia","Burbujea con ácido diluido: calcita."],
+ ["Rocks","Rock","Roca","Agregado de minerales; sólido natural que forma grandes masas."],
+ ["Rocks","Plutonic / volcanic","Plutónica / volcánica","Ígneas. Lento → grano grueso (granito). Rápido → grano fino (basalto, obsidiana)."],
+ ["Rocks","Diagenesis","Diagénesis","Compactación + cementación de sedimentos = litificación."],
+ ["Rocks","Sedimentary types","Tipos de sedimentarias","Detríticas (conglomerado, arenisca, arcilla), orgánicas (carbón), evaporitas (sal gema, yeso), caliza."],
+ ["Rocks","Metamorphic","Metamórfica","Presión + temperatura sin fundirse. Foliadas: gneis, pizarra. No foliadas: mármol, cuarcita."],
+ ["Uses","Ore / gangue","Mena / ganga","Mena: de donde sacamos el metal. Ganga: la parte que se desecha."],
+ ["Uses","Quarry · gravel pit · open-pit mine","Cantera · gravera · mina a cielo abierto","Formas de extraer rocas y minerales (también minas subterráneas)."],
+ ["Uses","Environmental impact","Impacto ambiental","Contaminación de agua y aire, cambio del paisaje, destrucción de suelo, fauna y flora. Solo se mitiga en parte."]
+];
+function study(){
+  stop();
+  app.innerHTML=header(true)+`<p class="lead">Intenta explicar cada término antes de tocar la ficha. Toca otra vez para darle la vuelta.</p>
+    <div class="row"><button class="ghost" id="shuf">Barajar</button><button class="ghost" id="all">Girar todas</button></div>
+    <div class="cards">${shuffle(CARDS).map(([t,en,es,d])=>`<button class="card" aria-label="Ficha"><div class="in">
+      <div class="face"><span class="t">${t}</span><b>${en}</b></div>
+      <div class="face back"><b>${es}</b><p>${d}</p></div></div></button>`).join('')}</div>`;
+  bindHome();
+  app.querySelectorAll('.card').forEach(c=>c.onclick=()=>c.classList.toggle('flip'));
+  document.getElementById('shuf').onclick=study;
+  let f=false; document.getElementById('all').onclick=()=>{f=!f;app.querySelectorAll('.card').forEach(c=>c.classList.toggle('flip',f))};
+}
+
+home();
+</script>
+</body>
+</html>
