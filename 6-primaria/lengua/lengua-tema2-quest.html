@@ -139,96 +139,239 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:50}
 </div>
 
 <script>
-/* ---------- CONTENIDO (sacado de la lección) ---------- */
-const MISSIONS = [
-{
- id:"det", name:"Los determinantes", sub:"Artículos, demostrativos, posesivos…", ico:"🔎", color:"#1f8a8a",
- qs:[
-  {ctx:"[[Unos]] niños de 6.º cuidan el huerto del colegio.", q:"¿Qué tipo de determinante es la palabra destacada?", o:["Artículo indeterminado","Artículo determinado","Demostrativo","Posesivo"], a:0, e:"Los artículos indeterminados (un, una, unos, unas) indican que el nombre es desconocido."},
-  {ctx:"¿Compramos unas flores para [[la]] prima Olivia?", q:"¿Qué tipo de determinante es?", o:["Artículo determinado","Artículo indeterminado","Indefinido","Numeral"], a:0, e:"Los artículos determinados (el, la, los, las) indican que el nombre es conocido."},
-  {ctx:"Me sentaré en [[esta]] butaca de aquí.", q:"¿Qué distancia indica este demostrativo?", o:["Cercanía","Distancia media","Lejanía"], a:0, e:"Este, esta, estos, estas → cercanía (aquí)."},
-  {ctx:"Usted siéntese en [[ese]] sillón de ahí.", q:"¿Qué distancia indica este demostrativo?", o:["Cercanía","Distancia media","Lejanía"], a:1, e:"Ese, esa, esos, esas → distancia media (ahí)."},
-  {ctx:"Parece más cómodo que [[aquella]] silla de allí.", q:"¿Qué distancia indica este demostrativo?", o:["Cercanía","Distancia media","Lejanía"], a:2, e:"Aquel, aquella, aquellos, aquellas → lejanía (allí)."},
-  {ctx:"[[Vuestras]] cosas están en el armario.", q:"Analízalo con la ruta del determinante:", o:["Posesivo, varios poseedores, 2.ª persona, plural, femenino","Posesivo, un poseedor, 2.ª persona, plural, femenino","Posesivo, varios poseedores, 1.ª persona, plural, masculino","Demostrativo, 2.ª persona, plural, femenino"], a:0, e:"«Vuestras» es posesivo: hay varios poseedores (vosotros), 2.ª persona, plural y femenino."},
-  {ctx:"Gracias por [[tus]] abrazos.", q:"Analízalo con la ruta del determinante:", o:["Posesivo, un poseedor, 2.ª persona, plural, masculino","Posesivo, varios poseedores, 2.ª persona, plural, masculino","Posesivo, un poseedor, 1.ª persona, singular, masculino","Artículo, plural, masculino"], a:0, e:"«Tus»: el poseedor es uno (tú), 2.ª persona; «abrazos» es plural y masculino."},
-  {ctx:"Alí Babá y los [[cuarenta]] ladrones", q:"¿Qué tipo de determinante es?", o:["Numeral cardinal","Indefinido","Posesivo","Demostrativo"], a:0, e:"Los numerales cardinales (cinco, cien, cuarenta…) indican una cantidad exacta."},
-  {ctx:"Alí Babá y [[muchos]] ladrones", q:"¿Qué tipo de determinante es?", o:["Indefinido","Numeral cardinal","Artículo","Demostrativo"], a:0, e:"Los indefinidos (algunos, muchos, pocas, varios…) indican una cantidad imprecisa."},
-  {ctx:"La [[segunda]] cualidad de mi padre es su generosidad.", q:"¿Qué es «segunda»?", o:["Un adjetivo (numeral ordinal)","Un determinante numeral cardinal","Un pronombre personal","Un artículo"], a:0, e:"¡Ojo! Los cardinales son determinantes, pero los ordinales (primero, segunda…) son adjetivos."},
-  {q:"¿Dónde aparecen siempre los determinantes?", o:["Delante del nombre","Detrás del nombre","En lugar del nombre"], a:0, e:"Los determinantes van siempre delante del nombre y concuerdan con él en género y número."}
- ]},
-{
- id:"pro", name:"Los pronombres", sub:"Personales tónicos y átonos", ico:"🗣️", color:"#7a5cd6",
- qs:[
-  {q:"¿Qué es un pronombre?", o:["Una palabra que ocupa el lugar del nombre","Una palabra que acompaña siempre al nombre","Una palabra que dice cómo es el nombre"], a:0, e:"Los pronombres ocupan el lugar del nombre para no repetirlo."},
-  {ctx:"Ayer pasé el día con Saray. [[Saray y yo]] estuvimos paseando cerca del río.", q:"¿Por qué pronombre lo sustituyes?", o:["Nosotros / nosotras","Ellas","Vosotras","Se"], a:0, e:"«Saray y yo» incluye a quien habla → 1.ª persona del plural: nosotros o nosotras."},
-  {ctx:"[[Saray]] es muy divertida.", q:"¿Por qué pronombre lo sustituyes?", o:["Ella","Ellos","Lo","Tú"], a:0, e:"Saray es una persona de la que se habla → 3.ª persona del singular: ella."},
-  {ctx:"[[Carlos y Laura]] la vieron el otro día.", q:"¿Por qué pronombre lo sustituyes?", o:["Ellos","Ellas","Nosotros","Le"], a:0, e:"Varias personas de las que se habla, con un chico en el grupo → ellos."},
-  {ctx:"[[Te]] quiero mucho.", q:"Analiza el pronombre:", o:["Personal átono, 2.ª persona, singular","Personal tónico, 2.ª persona, singular","Personal átono, 1.ª persona, singular","Personal átono, 2.ª persona, plural"], a:0, e:"«Te» es átono (me, te, se, lo, la, le, nos, os…), de 2.ª persona del singular."},
-  {ctx:"Cuenta [[conmigo]] si me necesitas.", q:"Analiza el pronombre:", o:["Personal tónico, 1.ª persona, singular","Personal átono, 1.ª persona, singular","Personal tónico, 2.ª persona, singular","Personal tónico, 1.ª persona, plural"], a:0, e:"Tónicos de 1.ª persona del singular: yo, mí, conmigo."},
-  {ctx:"¿[[Nos]] vemos pronto?", q:"Analiza el pronombre:", o:["Personal átono, 1.ª persona, plural","Personal tónico, 1.ª persona, plural","Personal átono, 2.ª persona, plural","Personal átono, 3.ª persona, plural"], a:0, e:"«Nos» es átono, 1.ª persona del plural (el tónico sería nosotros/nosotras)."},
-  {ctx:"Puedes hablar[[lo]] con nosotros.", q:"Analiza el pronombre destacado:", o:["Personal átono, 3.ª persona, singular","Personal tónico, 3.ª persona, singular","Artículo determinado","Personal átono, 1.ª persona, plural"], a:0, e:"«Lo» es átono de 3.ª persona del singular. Va pegado detrás del verbo: hablarlo."},
-  {ctx:"Mi habitación es [[esta]]. ¿Te gusta?", q:"¿«Esta» es determinante o pronombre?", o:["Pronombre demostrativo","Determinante demostrativo"], a:0, e:"Aquí «esta» no acompaña a ningún nombre: ocupa su lugar. Por eso es pronombre."},
-  {ctx:"[[Esta]] película me encanta.", q:"¿«Esta» es determinante o pronombre?", o:["Determinante demostrativo","Pronombre demostrativo"], a:0, e:"Va delante del nombre «película» y lo acompaña: es determinante."},
-  {ctx:"Algunos amigos vinieron y [[otros]] llamaron por teléfono.", q:"¿Qué es «otros»?", o:["Pronombre indefinido","Determinante indefinido","Pronombre personal"], a:0, e:"«Otros» no acompaña a un nombre, lo sustituye (otros amigos) → pronombre indefinido."},
-  {q:"¿Dónde pueden aparecer los pronombres átonos?", o:["Delante o detrás del verbo","Solo delante del nombre","Solo al final de la oración"], a:0, e:"Pueden ir delante o detrás del verbo: ¿Lo entiendes? / Puedo entenderlo."}
- ]},
-{
- id:"form", name:"Formación de palabras", sub:"Simples, derivadas y compuestas", ico:"🧩", color:"#f07b2c",
- qs:[
-  {w:"peine", sort:1, a:0, e:"Peine tiene una sola raíz sin afijos derivativos → simple."},
-  {w:"coche", sort:1, a:0, e:"Una raíz y nada más → simple."},
-  {w:"ventanas", sort:1, a:0, e:"¡Truco! «Ventanas» es simple: la -s es un afijo flexivo (plural), no derivativo."},
-  {w:"ventanal", sort:1, a:1, e:"Ventana + el sufijo -al → derivada."},
-  {w:"destapar", sort:1, a:1, e:"El prefijo des- + tapar → derivada."},
-  {w:"imposible", sort:1, a:1, e:"El prefijo im- + posible → derivada."},
-  {w:"arboleda", sort:1, a:1, e:"Árbol + el sufijo -eda → derivada."},
-  {w:"incoloro", sort:1, a:1, e:"El prefijo in- + color + -o → derivada."},
-  {w:"cabezota", sort:1, a:1, e:"Cabeza + el sufijo -ota → derivada."},
-  {w:"rompeolas", sort:1, a:2, e:"Rompe + olas: dos raíces → compuesta."},
-  {w:"hierbabuena", sort:1, a:2, e:"Hierba + buena: dos raíces → compuesta."},
-  {w:"lanzallamas", sort:1, a:2, e:"Lanza + llamas → compuesta."},
-  {w:"vaivén", sort:1, a:2, e:"Va + y + ven → compuesta."},
-  {q:"¿De qué palabra procede «caminante»?", o:["caminar","camión","mandar","antes"], a:0, e:"Caminante = caminar + el sufijo -ante."},
-  {ctx:"[[des]]hacer", q:"¿Qué es la parte destacada?", o:["Un prefijo","Un sufijo","Una raíz"], a:0, e:"Los prefijos van delante de la raíz (des-, in-, im-, tras-…). Los sufijos van detrás."},
-  {q:"¿Cuál es una palabra COMPUESTA hecha a partir de «sol»?", o:["girasol","soleado","solar","soles"], a:0, e:"Girasol = gira + sol (dos raíces). Soleado y solar son derivadas; soles es simple."}
- ]},
-{
- id:"orto", name:"Diptongos, hiatos y triptongos", sub:"Laboratorio ortográfico", ico:"🧪", color:"#e85a9b",
- qs:[
-  {w:"náutico", sort:2, a:0, e:"au: abierta + cerrada en la misma sílaba (náu-ti-co) → diptongo."},
-  {w:"viaje", sort:2, a:0, e:"ia: cerrada + abierta en la misma sílaba (via-je) → diptongo."},
-  {w:"ciego", sort:2, a:0, e:"ie en la misma sílaba (cie-go) → diptongo."},
-  {w:"adiós", sort:2, a:0, e:"a-diós: «io» va junto → diptongo. La tilde va en la vocal abierta."},
-  {w:"peonza", sort:2, a:1, e:"pe-on-za: dos vocales abiertas en sílabas diferentes → hiato."},
-  {w:"sandía", sort:2, a:1, e:"san-dí-a: la cerrada es tónica y lleva tilde → hiato."},
-  {w:"paraíso", sort:2, a:1, e:"pa-ra-í-so: abierta + cerrada tónica → hiato (siempre con tilde en la cerrada)."},
-  {w:"caer", sort:2, a:1, e:"ca-er: dos vocales abiertas → hiato."},
-  {w:"buey", sort:2, a:2, e:"uey: tres vocales en la misma sílaba → triptongo."},
-  {w:"copiéis", sort:2, a:2, e:"co-piéis: «iéi» en una sílaba → triptongo."},
-  {w:"averiguáis", sort:2, a:2, e:"a-ve-ri-guáis: «uái» → triptongo."},
-  {q:"¿Cuál está bien escrita?", o:["náufrago","naúfrago","naufrago"], a:0, e:"«au» es diptongo; si lleva tilde, se coloca en la vocal abierta: náu-fra-go."},
-  {q:"¿Cuál está bien escrita?", o:["acuífero","acúifero","acuifero"], a:0, e:"Diptongo de dos vocales cerradas (ui): la tilde va en la segunda → acuífero."},
-  {q:"¿Cuál está bien escrita?", o:["egoísta","egoista","egóista"], a:0, e:"Hiato de abierta + cerrada tónica: siempre lleva tilde en la cerrada → e-go-ís-ta."},
-  {q:"¿Cuál está bien escrita?", o:["poema","poéma","poemá"], a:0, e:"po-e-ma: es un hiato que sigue las normas generales; llana acabada en vocal → sin tilde."},
-  {ctx:"Si [[___]] (cambiar) ahora el ordenador, podéis usar este descuento.", q:"Completa con el triptongo:", o:["cambiáis","cambiais","cambíais"], a:0, e:"cam-biáis: aguda acabada en -s → lleva tilde, en la vocal abierta del triptongo."},
-  {ctx:"Habrá muchas llamadas tan pronto como [[___]] (anunciar) la noticia.", q:"Completa con el triptongo:", o:["anunciéis","anuncieis","anúncieis"], a:0, e:"a-nun-ciéis: aguda acabada en -s → tilde en la vocal abierta."}
- ]},
-{
- id:"lit", name:"Recursos literarios", sub:"Aliteración y repetición", ico:"🎵", color:"#2fa86a",
- qs:[
-  {q:"¿Qué es la aliteración?", o:["Repetir un sonido o varios para producir una sensación sonora","Repetir palabras para reforzar una idea","Comparar dos cosas con «como»"], a:0, e:"Aliteración = repetir sonidos. Repetición = repetir palabras o expresiones."},
-  {ctx:"Reía y cantaba, cantaba y reía.", q:"¿Qué recurso aparece?", o:["Repetición","Aliteración"], a:0, e:"Se repiten palabras completas (reía, cantaba) → repetición."},
-  {ctx:"El ruin rufián corría raudo.", q:"¿Qué recurso aparece?", o:["Aliteración","Repetición"], a:0, e:"Se repite el sonido r → aliteración."},
-  {ctx:"Tres tristes tigres tragan trigo en un trigal.", q:"¿Qué sonido se repite?", o:["tr","s","g","ig"], a:0, e:"Tres, tristes, tigres, tragan, trigo, trigal: se repite «tr»."},
-  {ctx:"Si Sansón no sazona su salsa con sal, le sale sosa.", q:"¿Qué sonido se repite?", o:["s","n","l","r"], a:0, e:"La s aparece una y otra vez: es una aliteración."},
-  {ctx:"En el silencio solo se escuchaba / un susurro de abejas que sonaba. (Garcilaso de la Vega)", q:"¿Qué efecto produce la repetición de la s?", o:["Las abejas zumbando","El viento soplando","Un tambor sonando"], a:0, e:"El sonido s imita el zumbido suave de las abejas."},
-  {ctx:"Es tan efímera e infame la filigrana / y la felicidad se enferma y se esfuma como la fama. (Rapsusklei)", q:"¿Qué efecto produce la repetición de la f?", o:["El viento soplando","Las abejas zumbando","Una puerta cerrándose"], a:0, e:"El sonido f recuerda al viento que sopla."},
-  {ctx:"Mi mamá me mima.", q:"¿Por qué marcas y anuncios usan la aliteración?", o:["Para llamar la atención y que se recuerde","Para que el mensaje sea más largo","Para que no se entienda"], a:0, e:"La repetición de sonidos (m, m, m) es pegadiza y se recuerda fácilmente."},
-  {ctx:"—Es que no [[traje]] [[traje]], porque el guarda lo guarda.", q:"¿Significan lo mismo las dos palabras «traje»?", o:["No: la primera es verbo (traer) y la segunda, sustantivo (ropa)","Sí, las dos son sustantivos","Sí, las dos son verbos"], a:0, e:"Es un juego de palabras: misma forma, distinta categoría y significado."},
-  {ctx:"—¿Usted no [[nada]] nada de nada?", q:"¿Qué es el primer «nada»?", o:["Un verbo (nadar)","Un pronombre","Un sustantivo"], a:0, e:"«Usted nada» viene del verbo nadar; los otros «nada» significan «ninguna cosa»."},
-  {q:"¿Para qué sirve la repetición?", o:["Para reforzar una idea o un sentimiento","Para imitar un sonido","Para cambiar el tiempo del verbo"], a:0, e:"La repetición insiste en palabras o expresiones para reforzar una idea o un sentimiento."}
- ]}
+/* ---------- GENERADOR DE PREGUNTAS (contenido de la lección, tema 2) ---------- */
+const ROUND = 10;
+const rnd = n => Math.floor(Math.random()*n);
+const pick = a => a[rnd(a.length)];
+function sample(a,k){ return shuffle(a).slice(0,k); }
+function mc(q, correct, wrongs, e, ctx){ const w=[...new Set(wrongs.filter(x=>x!==correct))].slice(0,3); return {ctx, q, o:[correct,...w], a:0, e}; }
+
+/* ===== DETERMINANTES ===== */
+const NOUNS = [
+ ["libro","m","s"],["balón","m","s"],["perro","m","s"],["árbol","m","s"],["cuaderno","m","s"],["sillón","m","s"],
+ ["mesa","f","s"],["casa","f","s"],["silla","f","s"],["mochila","f","s"],["pelota","f","s"],["bicicleta","f","s"],
+ ["coches","m","p"],["lápices","m","p"],["zapatos","m","p"],["cuadernos","m","p"],["cromos","m","p"],["juguetes","m","p"],
+ ["flores","f","p"],["galletas","f","p"],["ventanas","f","p"],["camisetas","f","p"],["fresas","f","p"],["pinturas","f","p"]];
+const FRAMES = ["Mira {D} {N}.","Me encanta jugar con {D} {N}.","Guarda {D} {N} en el armario.","Pinta {D} {N} de azul.","Busca {D} {N}, por favor.","He encontrado {D} {N} en el parque.","Ayer vi {D} {N} en una tienda."];
+const KEY = (g,n)=> g+n; // ms, fs, mp, fp
+const GN = {ms:"masculino singular",fs:"femenino singular",mp:"masculino plural",fp:"femenino plural"};
+const ART_DET = {ms:"el",fs:"la",mp:"los",fp:"las"}, ART_IND = {ms:"un",fs:"una",mp:"unos",fp:"unas"};
+const DEM = {
+ "Cercanía":{ms:"este",fs:"esta",mp:"estos",fp:"estas"},
+ "Distancia media":{ms:"ese",fs:"esa",mp:"esos",fp:"esas"},
+ "Lejanía":{ms:"aquel",fs:"aquella",mp:"aquellos",fp:"aquellas"}};
+const POS = [
+ {per:1,pos:"un",f:{ms:"mi",fs:"mi",mp:"mis",fp:"mis"}},
+ {per:2,pos:"un",f:{ms:"tu",fs:"tu",mp:"tus",fp:"tus"}},
+ {per:1,pos:"varios",f:{ms:"nuestro",fs:"nuestra",mp:"nuestros",fp:"nuestras"}},
+ {per:2,pos:"varios",f:{ms:"vuestro",fs:"vuestra",mp:"vuestros",fp:"vuestras"}}];
+const IND = [
+ {ms:"algún",fs:"alguna",mp:"algunos",fp:"algunas"},{ms:"mucho",fs:"mucha",mp:"muchos",fp:"muchas"},
+ {ms:"poco",fs:"poca",mp:"pocos",fp:"pocas"},{ms:"otro",fs:"otra",mp:"otros",fp:"otras"},
+ {mp:"varios",fp:"varias"},{mp:"bastantes",fp:"bastantes"}];
+const NUMS = ["dos","tres","cuatro","cinco","seis","diez","doce","veinte","treinta","cien"];
+const TYPES = ["Artículo determinado","Artículo indeterminado","Demostrativo","Posesivo","Numeral cardinal","Indefinido"];
+const TYPE_E = {
+ "Artículo determinado":"Los artículos determinados (el, la, los, las) indican que el nombre es conocido.",
+ "Artículo indeterminado":"Los artículos indeterminados (un, una, unos, unas) indican que el nombre es desconocido.",
+ "Demostrativo":"Los demostrativos indican la distancia: este (cerca), ese (distancia media), aquel (lejos).",
+ "Posesivo":"Los posesivos indican a quién pertenece algo (mi, tu, nuestro, vuestro…).",
+ "Numeral cardinal":"Los numerales cardinales indican una cantidad exacta (dos, diez, cien…).",
+ "Indefinido":"Los indefinidos indican una cantidad imprecisa (algunos, muchos, pocas, varios…)."};
+
+function makeDet(){
+  const [nom,g,n] = pick(NOUNS), k = KEY(g,n);
+  const opts = [["Artículo determinado",()=>ART_DET[k]],["Artículo indeterminado",()=>ART_IND[k]],
+    ["Demostrativo",()=>{const d=pick(Object.keys(DEM)); return [DEM[d][k],d];}],
+    ["Posesivo",()=>{const p=pick(POS); return [p.f[k],p];}],
+    ["Indefinido",()=>{const c=IND.filter(x=>x[k]); return pick(c)[k];}]];
+  if(n==="p") opts.push(["Numeral cardinal",()=>pick(NUMS)]);
+  const [type,fn] = pick(opts); let r = fn(), extra=null;
+  if(Array.isArray(r)){ extra=r[1]; r=r[0]; }
+  const ctx = pick(FRAMES).replace("{D}","[["+r+"]]").replace("{N}",nom);
+  return {type, word:r, extra, k, nom, ctx};
+}
+function cap(s){ return s.replace(/^(\[\[)?(.)/,(m,b,c)=>(b||"")+c.toUpperCase()); }
+function posStr(p,k){ return `Posesivo, ${p.pos==="un"?"un poseedor":"varios poseedores"}, ${p.per}.ª persona, ${GN[k]}`; }
+
+const GEN_DET = [
+  ()=>{ const d=makeDet(); return mc("¿Qué tipo de determinante es la palabra destacada?", d.type, sample(TYPES.filter(t=>t!==d.type),3), TYPE_E[d.type], d.ctx); },
+  ()=>{ let d; do{ d=makeDet(); }while(d.type!=="Demostrativo");
+        const e={"Cercanía":"Este, esta, estos, estas → cercanía (aquí).","Distancia media":"Ese, esa, esos, esas → distancia media (ahí).","Lejanía":"Aquel, aquella, aquellos, aquellas → lejanía (allí)."}[d.extra];
+        const q=mc("¿Qué distancia indica este demostrativo?", d.extra, Object.keys(DEM), e, d.ctx); q.fixed=true; q.o=["Cercanía","Distancia media","Lejanía"]; q.a=q.o.indexOf(d.extra); return q; },
+  ()=>{ let d; do{ d=makeDet(); }while(d.type!=="Posesivo");
+        const p=d.extra, k=d.k, right=posStr(p,k);
+        const flip = {ms:"fs",fs:"ms",mp:"fp",fp:"mp"}, num={ms:"mp",mp:"ms",fs:"fp",fp:"fs"};
+        const wr=[posStr({...p,pos:p.pos==="un"?"varios":"un"},k), posStr({...p,per:p.per===1?2:1},k), posStr(p,flip[k]), posStr(p,num[k])];
+        return mc("Analízalo con la ruta del determinante:", right, sample(wr,3), `«${d.word}»: ${p.pos==="un"?"un poseedor":"varios poseedores"}, ${p.per}.ª persona; concuerda con «${d.nom}», que es ${GN[k]}.`, d.ctx); },
+  ()=>{ const d=makeDet(); return mc("¿Con qué género y número concuerda este determinante?", cap(GN[d.k]), Object.values(GN).map(cap), `Concuerda con el nombre «${d.nom}», que es ${GN[d.k]}.`, d.ctx); },
+  ()=>{ const o=pick([["primer","Es el {X} día de clase."],["segunda","Es la {X} vez que vengo."],["tercer","Vivo en el {X} piso."],["cuarta","Llegó en {X} posición."],["quinto","Estoy en {X} de Primaria."],["primera","Ganó la {X} medalla."]]);
+        return mc("¿Qué es la palabra destacada?", "Un adjetivo (numeral ordinal)", ["Un determinante numeral cardinal","Un artículo","Un pronombre personal"], "¡Ojo! Los cardinales (dos, tres…) son determinantes, pero los ordinales (primero, segunda…) son adjetivos.", o[1].replace("{X}","[["+o[0]+"]]")); },
+  ()=>mc("¿Dónde aparecen siempre los determinantes?", "Delante del nombre", ["Detrás del nombre","En lugar del nombre","Al final de la oración"], "Los determinantes van siempre delante del nombre y concuerdan con él en género y número.")
 ];
+const W_DET = [5,2,2,2,1,1];
+
+/* ===== PRONOMBRES ===== */
+const PRON = [
+ ["yo","t",1,"s","[[Yo]] llevo la merienda."],["mí","t",1,"s","Este regalo es para [[mí]]."],["conmigo","t",1,"s","¿Vienes [[conmigo]] al cine?"],
+ ["tú","t",2,"s","[[Tú]] tienes la pelota."],["ti","t",2,"s","He guardado un trozo de tarta para [[ti]]."],["contigo","t",2,"s","Quiero ir [[contigo]] a la excursión."],
+ ["usted","t",2,"s","¿Es [[usted]] la nueva directora?"],["él","t",3,"s","[[Él]] juega al baloncesto."],["ella","t",3,"s","[[Ella]] canta muy bien."],
+ ["consigo","t",3,"s","Mi tío siempre lleva el paraguas [[consigo]]."],["nosotros","t",1,"p","[[Nosotros]] cuidamos el huerto."],["nosotras","t",1,"p","[[Nosotras]] hemos ganado el partido."],
+ ["vosotros","t",2,"p","¿[[Vosotros]] venís a la fiesta?"],["vosotras","t",2,"p","[[Vosotras]] sois muy rápidas."],["ustedes","t",2,"p","¿Quieren [[ustedes]] un vaso de agua?"],
+ ["ellos","t",3,"p","[[Ellos]] llegan mañana."],["ellas","t",3,"p","[[Ellas]] leen cuentos de miedo."],
+ ["me","a",1,"s","[[Me]] gusta mucho el chocolate."],["te","a",2,"s","[[Te]] llamo luego."],["te","a",2,"s","[[Te]] quiero mucho."],
+ ["lo","a",3,"s","El libro [[lo]] tengo yo."],["lo","a",3,"s","Quiero comprar[[lo]] hoy."],["la","a",3,"s","La puerta [[la]] cierro yo."],
+ ["le","a",3,"s","[[Le]] di un abrazo a mi abuela."],["nos","a",1,"p","¿[[Nos]] vemos pronto?"],["nos","a",1,"p","La profesora [[nos]] explicó el tema."],
+ ["os","a",2,"p","[[Os]] espero en la puerta del cole."],["los","a",3,"p","Los deberes [[los]] hago ahora."],["las","a",3,"p","Las llaves [[las]] tiene mamá."],
+ ["les","a",3,"p","[[Les]] conté un chiste a mis amigos."]];
+const pStr = (t,p,n)=>`Personal ${t==="t"?"tónico":"átono"}, ${p}.ª persona, ${n==="s"?"singular":"plural"}`;
+const SUST = [
+ ["[[Saray]] es muy divertida.","Ella"],["[[Carlos]] juega al baloncesto.","Él"],["[[Mi abuela]] hace unos pasteles riquísimos.","Ella"],
+ ["[[El profesor]] explica la lección.","Él"],["[[Carlos y Laura]] vieron una película.","Ellos"],["[[Laura y Marta]] están en el parque.","Ellas"],
+ ["[[Los niños]] cuidan el huerto.","Ellos"],["[[Las niñas]] cantan en el coro.","Ellas"],["[[Mi hermano y yo]] jugamos al ajedrez.","Nosotros / nosotras"],
+ ["[[Saray y yo]] estuvimos paseando cerca del río.","Nosotros / nosotras"],["[[Tú y Pedro]] llegáis tarde.","Vosotros / vosotras"],["[[Tú y tu prima]] sois muy simpáticas.","Vosotros / vosotras"]];
+const SUST_O = ["Él","Ella","Ellos","Ellas","Nosotros / nosotras","Vosotros / vosotras"];
+const DETPRO = [
+ ["Me gusta [[ese]] cuadro.","D"],["Me gusta [[ese]].","P"],["[[Aquella]] casa es enorme.","D"],["La mía es [[aquella]].","P"],
+ ["[[Algunos]] amigos vinieron a la fiesta.","D"],["[[Algunos]] no vinieron.","P"],["He comprado [[muchas]] manzanas.","D"],["He comprado [[muchas]].","P"],
+ ["[[Este]] libro es mío.","D"],["Mi habitación es [[esta]].","P"],["Tengo [[dos]] hermanos.","D"],["Yo quiero [[dos]].","P"],
+ ["[[Esta]] película me encanta.","D"],["Algunos amigos vinieron y [[otros]] llamaron.","P"],["Dame [[otro]] caramelo.","D"],["¿Quieres [[estos]]?","P"]];
+
+const GEN_PRO = [
+  ()=>{ const [w,t,p,n,s]=pick(PRON); const r=pStr(t,p,n);
+        const wr=[pStr(t==="t"?"a":"t",p,n), pStr(t,p===1?2:p===2?3:1,n), pStr(t,p,n==="s"?"p":"s"), pStr(t==="t"?"a":"t",p,n==="s"?"p":"s")];
+        return mc("Analiza el pronombre destacado:", r, sample(wr,3), `«${w}» es ${t==="t"?"tónico":"átono"} de ${p}.ª persona del ${n==="s"?"singular":"plural"}.`, s); },
+  ()=>{ const [s,r]=pick(SUST); return mc("¿Por qué pronombre lo sustituyes?", r, sample(SUST_O.filter(x=>x!==r),3), "Los pronombres personales ocupan el lugar del nombre para no repetirlo.", s); },
+  ()=>{ const [s,t]=pick(DETPRO); const q={ctx:s, q:"¿La palabra destacada es determinante o pronombre?", o:["Determinante","Pronombre"], a:t==="D"?0:1, fixed:true,
+        e: t==="D" ? "Acompaña a un nombre que va detrás: es determinante." : "No acompaña a ningún nombre, ocupa su lugar: es pronombre."}; return q; },
+  ()=>{ const [w,t]=pick(PRON); return mc(`¿«${w}» es un pronombre tónico o átono?`, t==="t"?"Tónico":"Átono", [t==="t"?"Átono":"Tónico"], "Átonos: me, te, se, lo, la, le, nos, os, los, las, les. Los demás personales son tónicos."); },
+  ()=>pick([
+    mc("¿Qué es un pronombre?", "Una palabra que ocupa el lugar del nombre", ["Una palabra que acompaña siempre al nombre","Una palabra que dice cómo es el nombre","Una palabra que indica una acción"], "Los pronombres ocupan el lugar del nombre para no repetirlo."),
+    mc("¿Dónde pueden aparecer los pronombres átonos?", "Delante o detrás del verbo", ["Solo delante del nombre","Solo al final de la oración","Solo detrás del nombre"], "Pueden ir delante o detrás del verbo: ¿Lo entiendes? / Puedo entenderlo.")])
+];
+const W_PRO = [5,3,3,1,1];
+
+/* ===== FORMACIÓN DE PALABRAS ===== */
+const FORM = {
+ S:["peine","coche","mesa","pan","sol","mar","flor","casa","libro","árbol","tarta","compás","papel","nube","gato","zapato","silla","lápiz"],
+ SF:[["ventanas","la -s solo indica plural"],["niñas","-a y -s solo indican femenino y plural"],["perros","la -s solo indica plural"],["gatas","-a y -s solo indican femenino y plural"],["casas","la -s solo indica plural"]],
+ D:[["ventanal","ventana + -al"],["destapar","des- + tapar"],["imposible","im- + posible"],["arboleda","árbol + -eda"],["incoloro","in- + color + -o"],["cabezota","cabeza + -ota"],
+    ["panadero","pan + -adero"],["florero","flor + -ero"],["zapatería","zapato + -ería"],["casita","casa + -ita"],["deshacer","des- + hacer"],["caminante","caminar + -ante"],
+    ["libreta","libro + -eta"],["papelera","papel + -era"],["descolgar","des- + colgar"],["releer","re- + leer"],["submarino","sub- + marino"],["florista","flor + -ista"],
+    ["gatito","gato + -ito"],["comedor","comer + -dor"],["traspasar","tras- + pasar"],["imponer","im- + poner"],["arbolito","árbol + -ito"],["deshojar","des- + hoja + -ar"]],
+ C:[["rompeolas","rompe + olas"],["hierbabuena","hierba + buena"],["lanzallamas","lanza + llamas"],["vaivén","va + y + ven"],["girasol","gira + sol"],["sacacorchos","saca + corchos"],
+    ["paraguas","para + aguas"],["abrelatas","abre + latas"],["cumpleaños","cumple + años"],["sacapuntas","saca + puntas"],["pasatiempo","pasa + tiempo"],["bocacalle","boca + calle"],
+    ["mediodía","medio + día"],["quitasol","quita + sol"],["rompecabezas","rompe + cabezas"],["salvavidas","salva + vidas"],["telaraña","tela + araña"],["agridulce","agrio + dulce"],
+    ["pelirrojo","pelo + rojo"],["baloncesto","balón + cesto"],["cortaúñas","corta + uñas"],["guardabosques","guarda + bosques"]]};
+const FAM = [
+ {r:"sol",d:["solar","soleado"],c:["girasol","quitasol"]},{r:"cabeza",d:["cabezota","cabezón"],c:["rompecabezas"]},
+ {r:"pan",d:["panadero","panadería"],c:[]},{r:"zapato",d:["zapatero","zapatería","zapatilla"],c:[]},{r:"flor",d:["florero","florista","floristería"],c:[]},
+ {r:"papel",d:["papelera","papelería"],c:["pisapapeles"]},{r:"agua",d:["aguacero","acuático"],c:["paraguas"]},{r:"lata",d:["latita"],c:["abrelatas"]},
+ {r:"bosque",d:["boscoso"],c:["guardabosques"]},{r:"ola",d:["oleaje"],c:["rompeolas"]}];
+const AFX = [["[[des]]hacer","Prefijo"],["[[im]]posible","Prefijo"],["[[re]]leer","Prefijo"],["[[sub]]marino","Prefijo"],["[[tras]]pasar","Prefijo"],["[[in]]coloro","Prefijo"],["[[des]]tapar","Prefijo"],
+ ["flor[[ista]]","Sufijo"],["ventan[[al]]","Sufijo"],["árbol[[eda]]","Sufijo"],["libr[[eta]]","Sufijo"],["gat[[ito]]","Sufijo"],["papel[[era]]","Sufijo"],["camin[[ante]]","Sufijo"],["zapat[[ería]]","Sufijo"]];
+const plural = w => /[aeiou]$/.test(w) ? w+"s" : w+"es";
+const GEN_FORM = [
+  ()=>{ const c=pick(["S","S","D","D","C","C","SF"]); let w,e,a;
+        if(c==="S"){ w=pick(FORM.S); a=0; e=`«${w}» tiene una sola raíz, sin prefijos ni sufijos derivativos → simple.`; }
+        else if(c==="SF"){ const x=pick(FORM.SF); w=x[0]; a=0; e=`¡Truco! «${w}» es simple: ${x[1]} (afijos flexivos, no derivativos).`; }
+        else if(c==="D"){ const x=pick(FORM.D); w=x[0]; a=1; e=`«${w}» = ${x[1]} → derivada (raíz + prefijo o sufijo).`; }
+        else { const x=pick(FORM.C); w=x[0]; a=2; e=`«${w}» = ${x[1]} → compuesta (dos o más raíces).`; }
+        return {w, sort:1, a, e}; },
+  ()=>{ const f=pick(FAM.filter(x=>x.c.length)); const r=pick(f.c); const others=FAM.filter(x=>x!==f);
+        return mc(`¿Cuál es una palabra COMPUESTA de la familia de «${f.r}»?`, r, [pick(f.d), pick(pick(others).d), plural(f.r)], `«${r}» tiene dos raíces. Las otras son derivadas o simples.`); },
+  ()=>{ const f=pick(FAM); const r=pick(f.d); const others=FAM.filter(x=>x!==f);
+        const comp = f.c[0] || pick(FAM.filter(x=>x.c.length&&x!==f)).c[0];
+        return mc(`¿Cuál es una palabra DERIVADA de «${f.r}»?`, r, [comp, pick(pick(others).d), plural(f.r)], `«${r}» se forma con la raíz de «${f.r}» y un sufijo. «${plural(f.r)}» es simple (solo plural).`); },
+  ()=>{ const [s,t]=pick(AFX); return {ctx:s, q:"¿Qué es la parte destacada?", o:["Prefijo","Sufijo"], a:t==="Prefijo"?0:1, fixed:true, e:"Los prefijos van delante de la raíz (des-, im-, re-…). Los sufijos van detrás (-ista, -ito, -era…)."}; }
+];
+const W_FORM = [6,1,2,2];
+
+/* ===== DIPTONGOS, HIATOS Y TRIPTONGOS ===== */
+const ORT = {
+ 0:["náu-ti-co","via-je","cie-go","a-diós","pei-ne","re-cuer-do","fo-bia","cui-dar","triun-fo","a-cuí-fe-ro","ai-re","cau-sa","pia-no","hie-lo","nie-ve","sua-ve","cua-tro","ciu-dad","puer-ta","bue-no","rei-na","a-cei-te","deu-da","hue-vo","jau-la","a-vión","ca-mión","can-ción","cuen-to","sie-te","mue-la","vien-to"],
+ 1:["pe-on-za","san-dí-a","pa-ra-í-so","ca-er","le-ón","e-go-ís-ta","po-e-ma","te-a-tro","o-cé-a-no","hé-ro-e","ma-íz","pa-ís","bú-ho","rí-o","dí-a","tí-o","frí-o","le-er","cre-er","po-e-ta","mu-se-o","ca-o-ba","ba-úl","ra-íz","o-í-do","re-ír","a-ta-úd","o-a-sis"],
+ 2:["buey","co-piéis","a-ve-ri-guáis","se-miau-to-má-ti-co","U-ru-guay","Pa-ra-guay","miau","guau","es-tu-diáis","cam-biáis","a-nun-ciéis","lim-piáis","a-pre-ciáis","ac-tuéis","a-ve-ri-güéis"]};
+const TILDE = [
+ ["náufrago","«au» es diptongo; la tilde va en la vocal abierta: náu-fra-go."],["acuífero","Diptongo de dos cerradas (ui): la tilde va en la segunda → a-cuí-fe-ro."],
+ ["egoísta","Hiato de abierta + cerrada tónica: siempre tilde en la cerrada → e-go-ís-ta."],["poema","po-e-ma: llana acabada en vocal → sin tilde."],
+ ["biólogo","Esdrújula: siempre lleva tilde; en el diptongo «io» va en la abierta → bió-lo-go."],["atención","Aguda acabada en -n → tilde; en «io» va en la abierta → a-ten-ción."],
+ ["avión","Aguda acabada en -n → tilde en la vocal abierta del diptongo → a-vión."],["sandía","Hiato de cerrada tónica + abierta: siempre tilde en la cerrada → san-dí-a."],
+ ["paraíso","Hiato de abierta + cerrada tónica → pa-ra-í-so."],["país","Hiato de abierta + cerrada tónica → pa-ís."],["baúl","Hiato de abierta + cerrada tónica → ba-úl."],
+ ["búho","Hiato con la cerrada tónica (aunque haya una h en medio) → bú-ho."],["océano","Esdrújula: siempre lleva tilde → o-cé-a-no."],["teatro","te-a-tro: llana acabada en vocal → sin tilde."],
+ ["cambiáis","Triptongo en aguda acabada en -s → tilde en la vocal abierta: cam-biáis."],["anunciéis","Triptongo en aguda acabada en -s → tilde en la vocal abierta: a-nun-ciéis."],
+ ["estudiéis","Triptongo en aguda acabada en -s → tilde en la vocal abierta: es-tu-diéis."],["adiós","Aguda acabada en -s → tilde en la vocal abierta del diptongo: a-diós."],
+ ["murciélago","Esdrújula: siempre lleva tilde, en la vocal abierta del diptongo → mur-cié-la-go."],["huevo","hue-vo: llana acabada en vocal → sin tilde."],["Uruguay","U-ru-guay: aguda acabada en -y → sin tilde."]];
+const ACC = {a:"á",e:"é",i:"í",o:"ó",u:"ú"}, UNACC = {á:"a",é:"e",í:"i",ó:"o",ú:"u"};
+function tildeWrongs(w){
+  const plain = w.replace(/[áéíóú]/g,c=>UNACC[c]); const out=new Set(); if(plain!==w) out.add(plain);
+  const idx=[...plain].map((c,i)=>ACC[c.toLowerCase()]?i:-1).filter(i=>i>=0);
+  for(const i of shuffle(idx)){ const v=plain.slice(0,i)+ACC[plain[i].toLowerCase()]+plain.slice(i+1); if(v!==w) out.add(v); if(out.size>=2) break; }
+  return [...out];
+}
+const VERBTRI = [["Si [[___]] (cambiar) ahora el ordenador, tendréis descuento.","cambiáis",["cambiais","cambíais"]],
+ ["Habrá muchas llamadas en cuanto [[___]] (anunciar) la noticia.","anunciéis",["anuncieis","anúncieis"]],
+ ["No hace falta que [[___]] (estudiar) solo el día de antes.","estudiéis",["estudieis","estúdieis"]],
+ ["¿Por qué no [[___]] (limpiar) vuestra habitación?","limpiáis",["limpiais","límpiais"]],
+ ["Quiero que [[___]] (copiar) los ejercicios en el cuaderno.","copiéis",["copieis","cópieis"]]];
+const GEN_ORT = [
+  ()=>{ const a=pick([0,0,1,1,2]); const s=pick(ORT[a]); const ww=s.replace(/-/g,"");
+        const e = a===0?`Las vocales juntas van en la misma sílaba (${s}) → diptongo.`: a===1?`Las vocales juntas van en sílabas diferentes (${s}) → hiato.`:`Tres vocales en la misma sílaba (${s}) → triptongo.`;
+        return {w:ww, sort:2, a, e}; },
+  ()=>{ const [w,e]=pick(TILDE); return mc("¿Cuál está bien escrita?", w, tildeWrongs(w), e); },
+  ()=>{ const [c,r,wr]=pick(VERBTRI); return mc("Completa con la forma correcta (tiene triptongo):", r, wr, "Es aguda acabada en -s, así que lleva tilde, en la vocal abierta del triptongo.", c); },
+  ()=>pick([
+    mc("¿Qué es un diptongo?", "Dos vocales juntas en la misma sílaba", ["Dos vocales juntas en sílabas diferentes","Tres vocales en la misma sílaba","Dos consonantes juntas"], "Diptongo: dos vocales en la misma sílaba (cerrada + abierta, abierta + cerrada o dos cerradas)."),
+    mc("¿Qué es un hiato?", "Dos vocales juntas en sílabas diferentes", ["Dos vocales juntas en la misma sílaba","Tres vocales en la misma sílaba","Una vocal con tilde"], "Hiato: dos vocales seguidas que se pronuncian en sílabas distintas (le-ón, pa-ís)."),
+    mc("¿Cómo es un triptongo?", "Una vocal abierta entre dos cerradas, en la misma sílaba", ["Tres vocales abiertas seguidas","Dos vocales en sílabas diferentes","Una vocal cerrada entre dos abiertas"], "Triptongo: abierta (a, e, o) entre dos cerradas (i, u) en la misma sílaba: buey, copiéis."),
+    mc("En un hiato de vocal abierta + cerrada tónica (como «país»)…", "La cerrada siempre lleva tilde", ["Nunca lleva tilde","La tilde va en la abierta","Sigue las normas generales"], "Abierta + cerrada tónica: siempre tilde en la cerrada (pa-ís, ma-íz, e-go-ís-ta).")])
+];
+const W_ORT = [6,3,1,1];
+
+/* ===== RECURSOS LITERARIOS ===== */
+const ALIT = [
+ ["Tres tristes tigres tragan trigo en un trigal.","tr"],["Si Sansón no sazona su salsa con sal, le sale sosa.","s"],["El ruin rufián corría raudo.","r"],
+ ["Erre con erre, guitarra; erre con erre, barril.","r"],["Mi mamá me mima.","m"],["Pablito clavó un clavito, ¿qué clavito clavó Pablito?","cl"],
+ ["En el silencio solo se escuchaba un susurro de abejas que sonaba. (Garcilaso de la Vega)","s"],["Bajo el ala aleve del leve abanico. (Rubén Darío)","l"],
+ ["El viento violento vuela veloz.","v"],["Fina, fría y fresca fluye la fuente.","f"],["Pepe pinta pinos pequeños para Paula.","p"],["Lola lava la lana lila.","l"]];
+const REPE = ["Reía y cantaba, cantaba y reía.","Corre, corre, que llegamos tarde.","Te espero, te espero y te espero.","Lluvia, lluvia, lluvia sobre el tejado.",
+ "Nunca, nunca, nunca me rendiré.","Ya viene, ya viene el verano.","Cantaba y cantaba sin parar.","Más alto, más lejos, más fuerte."];
+const SOUNDS = ["s","r","m","tr","f","l","cl","v","p","t","n","g"];
+const GEN_LIT = [
+  ()=>{ if(Math.random()<.5){ const [s]=pick(ALIT); return {ctx:s,q:"¿Qué recurso literario aparece?",o:["Aliteración","Repetición"],a:0,fixed:true,e:"Se repite un sonido una y otra vez → aliteración."}; }
+        const s=pick(REPE); return {ctx:s,q:"¿Qué recurso literario aparece?",o:["Aliteración","Repetición"],a:1,fixed:true,e:"Se repiten palabras o expresiones completas → repetición."}; },
+  ()=>{ const [s,so]=pick(ALIT); return mc("¿Qué sonido se repite?", so, sample(SOUNDS.filter(x=>x!==so && !x.includes(so) && !so.includes(x) && (s.toLowerCase().split(x).length-1)<=1),3), `El sonido «${so}» aparece muchas veces: es una aliteración.`, s); },
+  ()=>pick([
+    mc("¿Qué es la aliteración?", "Repetir un sonido o varios para producir una sensación sonora", ["Repetir palabras para reforzar una idea","Comparar dos cosas con «como»","Exagerar algo"], "Aliteración = repetir sonidos. Repetición = repetir palabras o expresiones."),
+    mc("¿Qué es la repetición?", "Repetir palabras o expresiones para reforzar una idea o un sentimiento", ["Repetir un sonido para imitar un ruido","Usar palabras que riman","Dar cualidades humanas a las cosas"], "La repetición insiste en palabras o expresiones para reforzar una idea o un sentimiento."),
+    mc("¿Por qué muchas marcas usan aliteraciones (como «Coca Cola»)?", "Para llamar la atención y que se recuerde", ["Para que el nombre sea más largo","Para que no se entienda","Porque es obligatorio"], "La repetición de sonidos es pegadiza y se recuerda fácilmente.")]),
+  ()=>pick([
+    mc("¿Qué efecto produce la repetición de la s?", "Las abejas zumbando", ["El viento soplando","Un tambor sonando","La lluvia cayendo"], "El sonido s imita el zumbido suave de las abejas.", "En el silencio solo se escuchaba / un susurro de abejas que sonaba. (Garcilaso de la Vega)"),
+    mc("¿Qué efecto produce la repetición de la f?", "El viento soplando", ["Las abejas zumbando","Una puerta cerrándose","Un perro ladrando"], "El sonido f recuerda al viento que sopla.", "Es tan efímera e infame la filigrana / y la felicidad se enferma y se esfuma como la fama. (Rapsusklei)"),
+    mc("¿Qué sonido darías a una marca para que suene con FUERZA?", "R o C/K/Q", ["L","S","M"], "Según tu libro: la R o la C/K/Q dan fuerza; la L, suavidad; la S, un efecto siseante.")]),
+  ()=>pick([
+    mc("¿Significan lo mismo las dos palabras «traje»?", "No: la primera es verbo (traer) y la segunda, sustantivo (ropa)", ["Sí, las dos son sustantivos","Sí, las dos son verbos"], "Juego de palabras: misma forma, distinta categoría y significado.", "—Es que no [[traje]] [[traje]], porque el guarda lo guarda."),
+    mc("¿Qué es el primer «nada»?", "Un verbo (nadar)", ["Un pronombre","Un sustantivo","Un adjetivo"], "«Usted nada» viene del verbo nadar; los otros «nada» significan «ninguna cosa».", "—¿Usted no [[nada]] nada de nada?"),
+    mc("¿Qué es el segundo «guarda»?", "Un verbo (guardar)", ["Un sustantivo (la persona que vigila)","Un adjetivo","Un determinante"], "«El guarda» es la persona que vigila; «lo guarda» es el verbo guardar.", "—Es que no traje traje, porque el guarda lo [[guarda]]."),
+    mc("¿Qué es el último «como»?", "Un verbo (comer)", ["Un interrogativo","Una comparación","Un sustantivo"], "Cómo (pregunta), como (comparación) y como (verbo comer): misma forma, distinto significado.", "—¿Cómo comes tan rápido? —Como un león: ¡como mucho!")])
+];
+const W_LIT = [4,3,1,1,1];
+
+function weighted(gens,w){ let t=w.reduce((a,b)=>a+b,0), r=Math.random()*t; for(let i=0;i<gens.length;i++){ r-=w[i]; if(r<0) return gens[i]; } return gens[0]; }
+
+const MISSIONS = [
+ {id:"det", name:"Los determinantes", sub:"Artículos, demostrativos, posesivos…", ico:"🔎", color:"#1f8a8a", gen:()=>weighted(GEN_DET,W_DET)()},
+ {id:"pro", name:"Los pronombres", sub:"Personales tónicos y átonos", ico:"🗣️", color:"#7a5cd6", gen:()=>weighted(GEN_PRO,W_PRO)()},
+ {id:"form", name:"Formación de palabras", sub:"Simples, derivadas y compuestas", ico:"🧩", color:"#f07b2c", gen:()=>weighted(GEN_FORM,W_FORM)()},
+ {id:"orto", name:"Diptongos, hiatos y triptongos", sub:"Laboratorio ortográfico", ico:"🧪", color:"#e85a9b", gen:()=>weighted(GEN_ORT,W_ORT)()},
+ {id:"lit", name:"Recursos literarios", sub:"Aliteración y repetición", ico:"🎵", color:"#2fa86a", gen:()=>weighted(GEN_LIT,W_LIT)()}
+];
+function sig(q){ return (q.ctx||"")+"|"+(q.w||"")+"|"+q.q; }
+function buildRound(gens, n){
+  const out=[], seen=new Set(); let tries=0;
+  while(out.length<n && tries<500){ tries++; const g=pick(gens); const q=g.gen(); q._m=g; const s=sig(q); if(seen.has(s)) continue; seen.add(s); out.push(q); }
+  return out;
+}
 const SORTS = {1:["Simple","Derivada","Compuesta"], 2:["Diptongo","Hiato","Triptongo"]};
 const SORTQ = {1:"¿Cómo está formada esta palabra?", 2:"¿Qué tienen sus vocales juntas?"};
 
@@ -252,7 +395,7 @@ function renderHome(){
     const b = document.createElement("button");
     b.className = "mission";
     b.innerHTML = `<div class="ico" style="background:${m.color}">${m.ico}</div>
-      <div><h3>${m.name}</h3><small>${m.sub} · ${m.qs.length} preguntas</small></div>
+      <div><h3>${m.name}</h3><small>${m.sub} · ${ROUND} preguntas al azar</small></div>
       <div class="stars">${"⭐".repeat(st)}${"☆".repeat(3-st)}</div>`;
     b.onclick = ()=>start(m);
     box.appendChild(b);
@@ -269,20 +412,18 @@ function show(id){ ["home","game","results"].forEach(x=>$(x).classList.toggle("h
 
 function prep(q){
   if(q.sort){ return {...q, q:SORTQ[q.sort], o:SORTS[q.sort], cols3:true, order:[0,1,2]}; }
-  const order = shuffle(q.o.map((_,i)=>i));
+  const order = q.fixed ? q.o.map((_,i)=>i) : shuffle(q.o.map((_,i)=>i));
   return {...q, order};
 }
 
 function start(m){
-  S = {mode:"mission", m, list:shuffle(m.qs).map(prep), i:0, ok:0, pts:0, streak:0, wrong:[]};
+  S = {mode:"mission", m, list:buildRound([m],ROUND).map(prep), i:0, ok:0, pts:0, streak:0, wrong:[]};
   $("timer").classList.add("hidden");
   show("game"); renderQ();
 }
 
 function startStop(){
-  const all = [];
-  MISSIONS.forEach(m=>m.qs.forEach(q=>all.push({...q, _m:m})));
-  S = {mode:"stop", list:shuffle(all).map(prep), i:0, ok:0, pts:0, streak:0, wrong:[], t:60};
+  S = {mode:"stop", list:buildRound(MISSIONS,40).map(prep), i:0, ok:0, pts:0, streak:0, wrong:[], t:60};
   $("timer").classList.remove("hidden"); $("timer").textContent = 60;
   show("game"); renderQ();
   S.iv = setInterval(()=>{
@@ -331,7 +472,7 @@ function answer(idx,btn){
     // en contrarreloj: feedback breve y sigue solo
     const fb=$("fb"); fb.className="fb "+(ok?"ok":"bad");
     fb.innerHTML = ok ? "<b>¡Bien!</b>" : `<b>¡Uy!</b>${esc(q.e)}`;
-    setTimeout(()=>{ if(S && S.mode==="stop" && S.t>0){ S.i=(S.i+1)%S.list.length; renderQ(); } }, ok?550:1800);
+    setTimeout(()=>{ if(S && S.mode==="stop" && S.t>0){ S.i++; if(S.i>=S.list.length) S.list.push(...buildRound(MISSIONS,20).map(prep)); renderQ(); } }, ok?550:1800);
     return;
   }
   const fb=$("fb"); fb.className = "fb "+(ok?"ok":"bad");
