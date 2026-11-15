@@ -140,7 +140,7 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:50}
 
 <script>
 /* ---------- GENERADOR DE PREGUNTAS (contenido de la lección, tema 2) ---------- */
-const ROUND = 10;
+const ROUND = 20;
 const rnd = n => Math.floor(Math.random()*n);
 const pick = a => a[rnd(a.length)];
 function sample(a,k){ return shuffle(a).slice(0,k); }
@@ -333,9 +333,12 @@ const ALIT = [
  ["Tres tristes tigres tragan trigo en un trigal.","tr"],["Si Sansón no sazona su salsa con sal, le sale sosa.","s"],["El ruin rufián corría raudo.","r"],
  ["Erre con erre, guitarra; erre con erre, barril.","r"],["Mi mamá me mima.","m"],["Pablito clavó un clavito, ¿qué clavito clavó Pablito?","cl"],
  ["En el silencio solo se escuchaba un susurro de abejas que sonaba. (Garcilaso de la Vega)","s"],["Bajo el ala aleve del leve abanico. (Rubén Darío)","l"],
- ["El viento violento vuela veloz.","v"],["Fina, fría y fresca fluye la fuente.","f"],["Pepe pinta pinos pequeños para Paula.","p"],["Lola lava la lana lila.","l"]];
+ ["El viento violento vuela veloz.","v"],["Fina, fría y fresca fluye la fuente.","f"],["Pepe pinta pinos pequeños para Paula.","p"],["Lola lava la lana lila.","l"],
+ ["Rosa rasca la ropa roja.","r"],["Susana sale sola al sol.","s"],["Ramón rema rápido en el río.","r"],["Fede fabrica faroles fantásticos.","f"],
+ ["Paco pide pan para papá.","p"],["Víctor vende vasos verdes.","v"],["Mamá mima a Mimí.","m"],["Tomás toca el tambor todas las tardes.","t"]];
 const REPE = ["Reía y cantaba, cantaba y reía.","Corre, corre, que llegamos tarde.","Te espero, te espero y te espero.","Lluvia, lluvia, lluvia sobre el tejado.",
- "Nunca, nunca, nunca me rendiré.","Ya viene, ya viene el verano.","Cantaba y cantaba sin parar.","Más alto, más lejos, más fuerte."];
+ "Nunca, nunca, nunca me rendiré.","Ya viene, ya viene el verano.","Cantaba y cantaba sin parar.","Más alto, más lejos, más fuerte.",
+ "Mira, mira qué bonito.","Adiós, adiós, amigos.","Despacio, despacio, que te caes.","Sí, sí, sí, ¡lo hemos conseguido!","Agua, agua, quiero agua.","Siempre, siempre estaré contigo."];
 const SOUNDS = ["s","r","m","tr","f","l","cl","v","p","t","n","g"];
 const GEN_LIT = [
   ()=>{ if(Math.random()<.5){ const [s]=pick(ALIT); return {ctx:s,q:"¿Qué recurso literario aparece?",o:["Aliteración","Repetición"],a:0,fixed:true,e:"Se repite un sonido una y otra vez → aliteración."}; }
