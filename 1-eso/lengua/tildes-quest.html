@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Misión Tildes · 1º ESO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff8ec; --ink:#2b2340; --soft:#6b6385; --card:#ffffff;
+  --teal:#1f8a8a; --orange:#f07b2c; --red:#e2474b; --yellow:#ffc53d; --green:#2fa86a; --purple:#7a5cd6; --pink:#e85a9b;
+  --shadow:0 6px 0 rgba(43,35,64,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif}
+body{min-height:100vh;background-image:radial-gradient(circle at 10% 0%,#ffe3c2 0,transparent 40%),radial-gradient(circle at 100% 100%,#d4f1ee 0,transparent 45%)}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 40px}
+h1,h2,h3{font-family:"Baloo 2",cursive;margin:0;line-height:1.1}
+button{font:inherit;cursor:pointer;border:0}
+.hidden{display:none!important}
+
+/* Home */
+.hero{text-align:center;padding:10px 0 18px}
+.hero .badge{display:inline-block;background:var(--teal);color:#fff;border-radius:999px;padding:4px 14px;font-weight:800;font-size:.85rem;letter-spacing:.03em}
+.hero h1{font-size:2.4rem;margin-top:8px;color:var(--ink)}
+.hero h1 span{color:var(--orange)}
+.hero p{color:var(--soft);margin:6px 0 0;font-weight:700}
+.total{display:flex;justify-content:center;gap:10px;margin:12px 0 4px}
+.pill{background:#fff;border-radius:999px;padding:6px 14px;font-weight:800;box-shadow:var(--shadow)}
+.grid{display:grid;gap:12px}
+.mission{display:flex;align-items:center;gap:14px;text-align:left;background:var(--card);border-radius:20px;padding:14px 16px;box-shadow:var(--shadow);border:3px solid transparent;transition:transform .12s}
+.mission:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(43,35,64,.12)}
+.mission .ico{flex:0 0 54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:1.7rem;color:#fff}
+.mission h3{font-size:1.25rem}
+.mission small{display:block;color:var(--soft);font-weight:700;margin-top:2px}
+.mission .stars{margin-left:auto;font-size:1.1rem;letter-spacing:1px;white-space:nowrap}
+.stop{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff}
+.stop small{color:#ffe9dc}
+.stop .ico{background:rgba(255,255,255,.2)!important}
+
+/* Game */
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.back{background:#fff;border-radius:14px;width:44px;height:44px;font-size:1.3rem;box-shadow:var(--shadow)}
+.bar{flex:1;height:14px;background:#eadfcf;border-radius:999px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:999px;transition:width .35s}
+.score{font-weight:800;background:#fff;border-radius:14px;padding:8px 12px;box-shadow:var(--shadow);min-width:64px;text-align:center}
+.timer{font-weight:800;background:var(--red);color:#fff;border-radius:14px;padding:8px 12px;min-width:58px;text-align:center}
+.streak{font-weight:800;color:var(--orange);text-align:right;min-height:1.3em;font-size:.95rem}
+.qcard{background:#fff;border-radius:24px;padding:20px 18px;box-shadow:var(--shadow);margin-top:6px}
+.tag{display:inline-block;font-weight:800;font-size:.78rem;color:#fff;border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.qtext{font-size:1.15rem;font-weight:800;margin:0 0 10px}
+.ctx{font-size:1.2rem;background:#f6f1ff;border-left:6px solid var(--purple);border-radius:12px;padding:12px 14px;margin:0 0 14px;line-height:1.45}
+.ctx mark{background:var(--yellow);border-radius:6px;padding:0 4px;font-weight:800;color:var(--ink)}
+.word{font-family:"Baloo 2";font-size:2.4rem;text-align:center;margin:4px 0 14px;color:var(--purple)}
+.opts{display:grid;gap:10px}
+.opts.cols3{grid-template-columns:repeat(3,1fr)}
+.opts.cols2{grid-template-columns:repeat(2,1fr)}
+.cols2 .opt{text-align:center;padding:16px 8px;font-size:1.15rem}
+.opt{background:#fff;border:3px solid #e6def5;border-radius:16px;padding:13px 14px;text-align:left;font-weight:800;font-size:1rem;color:var(--ink);box-shadow:0 4px 0 #e6def5;transition:transform .1s}
+.cols3 .opt{text-align:center;padding:16px 6px}
+.opt:active{transform:translateY(2px)}
+.opt.ok{background:#e3f7ec;border-color:var(--green);box-shadow:0 4px 0 var(--green)}
+.opt.bad{background:#fde6e7;border-color:var(--red);box-shadow:0 4px 0 var(--red)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:14px;border-radius:16px;padding:14px;font-weight:700;line-height:1.4}
+.fb.ok{background:#e3f7ec;color:#145c39}
+.fb.bad{background:#fde6e7;color:#8a1f22}
+.fb b{font-family:"Baloo 2";font-size:1.15rem;display:block;margin-bottom:2px}
+.next{display:block;width:100%;margin-top:14px;background:var(--teal);color:#fff;font-weight:800;font-size:1.1rem;padding:15px;border-radius:16px;box-shadow:0 5px 0 #136363}
+.next:active{transform:translateY(3px);box-shadow:0 2px 0 #136363}
+
+/* Results */
+.res{text-align:center;background:#fff;border-radius:24px;padding:24px 18px;box-shadow:var(--shadow)}
+.res .big{font-size:3rem;letter-spacing:6px;margin:8px 0}
+.res h2{font-size:2rem}
+.res p{color:var(--soft);font-weight:700}
+.review{text-align:left;margin-top:16px}
+.review h3{font-size:1.2rem;margin-bottom:8px}
+.review li{margin-bottom:10px;line-height:1.35}
+.review li span{color:var(--soft);font-weight:700;display:block;font-size:.92rem}
+.row{display:flex;gap:10px;margin-top:16px}
+.row button{flex:1}
+.ghost{background:#fff;border:3px solid var(--teal);color:var(--teal);font-weight:800;padding:13px;border-radius:16px}
+.tip{background:#fff;border-radius:18px;padding:14px 16px;margin-top:16px;box-shadow:var(--shadow);font-weight:700;color:var(--soft);font-size:.95rem}
+.tip b{color:var(--ink)}
+canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:50}
+@media (max-width:380px){.hero h1{font-size:2rem}.cols3 .opt{font-size:.9rem}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<div class="wrap">
+
+  <!-- HOME -->
+  <section id="home">
+    <div id="homeLink" style="text-align:left;min-height:8px"></div>
+    <div class="hero">
+      <span class="badge">LENGUA · 1.º ESO · ORTOGRAFÍA</span>
+      <h1>Misión <span>Tildes</span></h1>
+      <p>Tilde diacrítica, interrogativos y exclamativos. Supera las 5 misiones y juega al ¡Stop!</p>
+      <div class="total"><span class="pill" id="totalStars">⭐ 0 / 15</span></div>
+    </div>
+    <div class="grid" id="missions"></div>
+    <div class="tip"><b>Cómo se juega:</b> elige la respuesta correcta. Si fallas, lee la explicación: ¡así se aprende! Consigue 3 estrellas acertando casi todas.</div>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="hidden">
+    <div class="top">
+      <button class="back" id="btnBack" aria-label="Volver">←</button>
+      <div class="bar"><i id="prog"></i></div>
+      <div class="timer hidden" id="timer">60</div>
+      <div class="score" id="score">0</div>
+    </div>
+    <div class="streak" id="streak"></div>
+    <div class="qcard">
+      <span class="tag" id="tag"></span>
+      <p class="qtext" id="qtext"></p>
+      <div id="ctx" class="ctx hidden"></div>
+      <div id="word" class="word hidden"></div>
+      <div class="opts" id="opts"></div>
+      <div id="fb" class="fb hidden"></div>
+      <button class="next hidden" id="btnNext">Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="hidden">
+    <div class="res">
+      <h2 id="rTitle">¡Misión cumplida!</h2>
+      <div class="big" id="rStars">⭐⭐⭐</div>
+      <p id="rText"></p>
+      <div class="review hidden" id="rReview"><h3>Para repasar</h3><ul id="rList"></ul></div>
+      <div class="row">
+        <button class="ghost" id="btnHome">Menú</button>
+        <button class="next" style="margin-top:0" id="btnAgain">Otra vez</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ---------- GENERADOR DE PREGUNTAS: tilde diacrítica e interrogativos/exclamativos ---------- */
+const ROUND = 20;
+const rnd = n => Math.floor(Math.random()*n);
+const pick = a => a[rnd(a.length)];
+function sample(a,k){ return shuffle(a).slice(0,k); }
+function mc(q, correct, wrongs, e, ctx){ const w=[...new Set(wrongs.filter(x=>x!==correct))].slice(0,3); return {ctx, q, o:[correct,...w], a:0, e}; }
+const capF = s => s.charAt(0).toUpperCase()+s.slice(1);
+const hasT = s => /[áéíóú]/i.test(s);
+const UNACC = {á:"a",é:"e",í:"i",ó:"o",ú:"u",Á:"A",É:"E",Í:"I",Ó:"O",Ú:"U"};
+const strip = s => s.replace(/[áéíóúÁÉÍÓÚ]/g,c=>UNACC[c]);
+function other(word, pair){ // devuelve la otra forma de la pareja, respetando mayúscula
+  const low = word.toLowerCase(), o = low===pair[0] ? pair[1] : pair[0];
+  return word[0]!==low[0] ? capF(o) : o;
+}
+
+/* ===== TILDE DIACRÍTICA ===== */
+const DIAC = {
+ el:  {p:["él","el"],   t:"Pronombre personal", a:"Artículo",
+       te:"«Él» con tilde es pronombre personal (él come, para él).", ae:"«El» sin tilde es artículo: va delante de un nombre (el perro)."},
+ tu:  {p:["tú","tu"],   t:"Pronombre personal", a:"Determinante posesivo",
+       te:"«Tú» con tilde es pronombre personal (tú vienes).", ae:"«Tu» sin tilde es posesivo: va delante de un nombre (tu casa)."},
+ mi:  {p:["mí","mi"],   t:"Pronombre personal", a:"Determinante posesivo",
+       te:"«Mí» con tilde es pronombre personal, suele ir tras preposición (para mí, a mí).", ae:"«Mi» sin tilde es posesivo (mi libro) o nota musical (mi bemol)."},
+ te:  {p:["té","te"],   t:"Sustantivo (la bebida)", a:"Pronombre personal átono",
+       te:"«Té» con tilde es el sustantivo: la bebida (un té con limón).", ae:"«Te» sin tilde es pronombre personal (te quiero, te llamo)."},
+ se:  {p:["sé","se"],   t:"Verbo (saber o ser)", a:"Pronombre",
+       te:"«Sé» con tilde es verbo: saber (yo sé) o ser (sé bueno).", ae:"«Se» sin tilde es pronombre (se lava, se escondió)."},
+ de:  {p:["dé","de"],   t:"Verbo dar", a:"Preposición",
+       te:"«Dé» con tilde es el verbo dar (que me dé).", ae:"«De» sin tilde es preposición (casa de Ana, vaso de cristal)."},
+ si:  {p:["sí","si"],   t:"Adverbio de afirmación o pronombre", a:"Conjunción (condición o duda)",
+       te:"«Sí» con tilde es adverbio de afirmación (sí, quiero) o pronombre (piensa en sí misma).", ae:"«Si» sin tilde es conjunción: condición (si llueve…) o duda (no sé si…)."},
+ mas: {p:["más","mas"], t:"Adverbio de cantidad", a:"Conjunción (= pero)",
+       te:"«Más» con tilde indica cantidad (quiero más).", ae:"«Mas» sin tilde significa «pero» (lo intenté, mas no pude)."},
+ aun: {p:["aún","aun"], t:"Adverbio (= todavía)", a:"Adverbio (= incluso, hasta)",
+       te:"«Aún» con tilde significa «todavía» (aún no ha llegado).", ae:"«Aun» sin tilde significa «incluso, hasta» (aun así)."}
+};
+const DS = [ // [frase, forma correcta, pareja]
+ ["___ perro de mi vecino ladra mucho.","El","el"],["Ese regalo es para ___.","él","el"],["___ siempre llega puntual a clase.","Él","el"],
+ ["Ayer fuimos a ___ cine con mis primos.","el","el"],["No quiero ir sin ___.","él","el"],["___ y yo somos mejores amigos.","Él","el"],
+ ["Pásame ___ balón, por favor.","el","el"],["Se lo conté a ___ antes que a nadie.","él","el"],
+ ["¿Has traído ___ mochila?","tu","tu"],["___ eres el mejor portero del equipo.","Tú","tu"],["___ hermana canta muy bien.","Tu","tu"],
+ ["Hoy friegas ___ los platos.","tú","tu"],["¿Vienes ___ a la excursión?","tú","tu"],["Me encanta ___ dibujo.","tu","tu"],["Si ___ quieres, vamos juntos.","tú","tu"],
+ ["Este libro es para ___.","mí","mi"],["___ abuela hace las mejores croquetas.","Mi","mi"],["A ___ me encanta el chocolate.","mí","mi"],
+ ["He perdido ___ estuche.","mi","mi"],["¿Lo has hecho por ___?","mí","mi"],["Detrás de ___ había una cola enorme.","mí","mi"],["___ perro se llama Toby.","Mi","mi"],
+ ["___ quiero mucho, mamá.","Te","te"],["Por la tarde tomamos un ___ con pastas.","té","te"],["Mañana ___ llamo.","te","te"],
+ ["El ___ verde está muy caliente.","té","te"],["No ___ olvides de la merienda.","te","te"],["Me gusta el ___ con limón.","té","te"],
+ ["Yo no ___ la respuesta.","sé","se"],["Mi hermano ___ lava los dientes.","se","se"],["___ bueno y recoge tu cuarto.","Sé","se"],
+ ["Ya ___ que mañana hay examen.","sé","se"],["El gato ___ escondió debajo de la cama.","se","se"],["No ___ nadar muy bien.","sé","se"],["Ana ___ peina cada mañana.","se","se"],
+ ["Es la casa ___ mi tía.","de","de"],["Quiero que me ___ su opinión.","dé","de"],["Espero que el profe nos ___ más tiempo.","dé","de"],
+ ["Vengo ___ la biblioteca.","de","de"],["Dile que te ___ el libro.","dé","de"],["Es un vaso ___ cristal.","de","de"],
+ ["___, quiero ir al cine.","Sí","si"],["___ llueve, no saldremos.","Si","si"],["Le pregunté si quería venir y me dijo que ___.","sí","si"],["No sé ___ podré ir.","si","si"],
+ ["Ella solo piensa en ___ misma.","sí","si"],["___ estudias, aprobarás.","Si","si"],["Contestó que ___ con la cabeza.","sí","si"],
+ ["Quiero ___ macarrones, por favor.","más","mas"],["Lo intenté, ___ no lo conseguí.","mas","mas"],["Mi hermano es ___ alto que yo.","más","mas"],
+ ["Corría mucho, ___ no llegó a tiempo.","mas","mas"],["Necesito ___ tiempo para terminar.","más","mas"],
+ ["___ no ha llegado el autobús.","Aún","aun"],["___ así, no pienso rendirme.","Aun","aun"],["¿___ estás en la cama?","Aún","aun"],
+ ["Todos aprobaron, ___ los que no estudiaron.","aun","aun"],["El partido ___ no ha terminado.","aún","aun"]
+];
+const dExp = (w,k) => hasT(w) ? DIAC[k].te : DIAC[k].ae;
+const dRole = (w,k) => hasT(w) ? DIAC[k].t : DIAC[k].a;
+const ALLROLES = [...new Set(Object.values(DIAC).flatMap(d=>[d.t,d.a]))];
+
+const GEN_DIAC = [
+  ()=>{ const [s,w,k]=pick(DS); const o=other(w,DIAC[k].p);
+        return {ctx:s.replace("___","[[___]]"), q:"¿Qué palabra completa la frase?", o:[w,o], a:0, e:dExp(w,k), cols2:true}; },
+  ()=>{ const [s,w,k]=pick(DS); const r=dRole(w,k);
+        return mc("¿Qué clase de palabra es la destacada?", r, sample(ALLROLES.filter(x=>x!==r),3), dExp(w,k), s.replace("___","[["+w+"]]")); },
+  ()=>{ const k=pick(Object.keys(DIAC)); const d=DIAC[k];
+        const tonic = Math.random()<.5, w = tonic?d.p[0]:d.p[1], r = tonic?d.t:d.a;
+        return mc(`«${w}» ${tonic?"con":"sin"} tilde es…`, r, [tonic?d.a:d.t, ...sample(ALLROLES.filter(x=>x!==d.t&&x!==d.a),2)], tonic?d.te:d.ae); }
+];
+const W_DIAC = [6,3,1];
+
+/* ===== INTERROGATIVOS Y EXCLAMATIVOS ===== */
+const INT = {que:["qué","que"],como:["cómo","como"],cuando:["cuándo","cuando"],donde:["dónde","donde"],quien:["quién","quien"],cuanto:["cuánto","cuanto"],cual:["cuál","cual"]};
+const TIPOS = {
+ dir:"Pregunta o exclama de forma directa (va entre ¿? o ¡!): lleva tilde.",
+ ind:"Es una pregunta indirecta (sin signos, tras saber, preguntar, decir, no entender…): también lleva tilde.",
+ rel:"Aquí no pregunta ni exclama: es un relativo o una conjunción, así que va sin tilde.",
+ trick:"¡Trampa! Aunque la frase vaya entre signos, esta palabra no pregunta ni exclama: es relativo o conjunción → sin tilde.",
+ verb:"Aquí «como» es el verbo comer (yo como): sin tilde."
+};
+const TIPO_OPT = {dir:"Pregunta o exclamación directa", ind:"Pregunta indirecta (sin signos)", rel:"No pregunta ni exclama (relativo o conjunción)", trick:"No pregunta ni exclama (relativo o conjunción)", verb:"Es el verbo comer"};
+const IS = [ // [frase, forma correcta, palabra, tipo]
+ ["¿___ hora es?","Qué","que","dir"],["¡___ bonito es tu dibujo!","Qué","que","dir"],["No sé ___ hacer este fin de semana.","qué","que","ind"],
+ ["Dime ___ quieres para cenar.","qué","que","ind"],["Creo ___ mañana lloverá.","que","que","rel"],["El libro ___ me prestaste es genial.","que","que","rel"],
+ ["¿Dices ___ vendrás mañana?","que","que","trick"],["¡___ te mejores pronto!","Que","que","trick"],["¿___ has comprado?","Qué","que","dir"],
+ ["Me preguntó ___ me pasaba.","qué","que","ind"],["¡___ susto me has dado!","Qué","que","dir"],["La película ___ vimos ayer era de miedo.","que","que","rel"],
+ ["¿___ te llamas?","Cómo","como","dir"],["¡___ llueve hoy!","Cómo","como","dir"],["No entiendo ___ funciona esto.","cómo","como","ind"],
+ ["Hazlo ___ te ha dicho la profe.","como","como","rel"],["Corre ___ un guepardo.","como","como","rel"],["Explícame ___ se resuelve el problema.","cómo","como","ind"],
+ ["Hoy ___ macarrones con tomate.","como","como","verb"],["¿___ estás?","Cómo","como","dir"],
+ ["¿___ es tu cumpleaños?","Cuándo","cuando","dir"],["___ llegues a casa, llámame.","Cuando","cuando","rel"],["No sé ___ empieza la película.","cuándo","cuando","ind"],
+ ["Me encanta ___ nieva.","cuando","cuando","rel"],["Pregúntale ___ vuelve de viaje.","cuándo","cuando","ind"],["¿Me avisas ___ termines?","cuando","cuando","trick"],
+ ["¿___ vives?","Dónde","donde","dir"],["Esa es la casa ___ nací.","donde","donde","rel"],["No recuerdo ___ dejé las llaves.","dónde","donde","ind"],
+ ["¿Vamos al parque ___ jugábamos de pequeños?","donde","donde","trick"],["Dime ___ has escondido el regalo.","dónde","donde","ind"],["Iremos ___ tú digas.","donde","donde","rel"],
+ ["¿___ ha llamado?","Quién","quien","dir"],["Fue Lucía ___ me lo contó.","quien","quien","rel"],["No sé ___ ha ganado el partido.","quién","quien","ind"],
+ ["___ mucho abarca, poco aprieta.","Quien","quien","rel"],["¿Con ___ vas a ir al cine?","quién","quien","dir"],["¡___ pudiera volar!","Quién","quien","dir"],
+ ["Pregunta ___ quiere más tarta.","quién","quien","ind"],
+ ["¿___ cuesta este libro?","Cuánto","cuanto","dir"],["¡___ te he echado de menos!","Cuánto","cuanto","dir"],["No sé ___ tiempo queda.","cuánto","cuanto","ind"],
+ ["Come ___ quieras.","cuanto","cuanto","rel"],["___ más estudies, más aprenderás.","Cuanto","cuanto","rel"],
+ ["¿___ es tu color favorito?","Cuál","cual","dir"],["No sé ___ elegir.","cuál","cual","ind"],["Es el motivo por el ___ me fui.","cual","cual","rel"],
+ ["Dime ___ prefieres.","cuál","cual","ind"],["Tengo un amigo, el ___ vive en Roma.","cual","cual","rel"]
+];
+const GEN_INT = [
+  ()=>{ const [s,w,k,t]=pick(IS); return {ctx:s.replace("___","[[___]]"), q:"¿Qué palabra completa la frase?", o:[w,other(w,INT[k])], a:0, e:TIPOS[t], cols2:true}; },
+  ()=>{ const [s,w,k,t]=pick(IS); const r=TIPO_OPT[t];
+        const opts=["Pregunta o exclamación directa","Pregunta indirecta (sin signos)","No pregunta ni exclama (relativo o conjunción)"];
+        if(k==="como") opts.push("Es el verbo comer");
+        return {ctx:s.replace("___","[["+w+"]]"), q:hasT(w)?"¿Por qué lleva tilde la palabra destacada?":"¿Por qué NO lleva tilde la palabra destacada?", o:opts, a:opts.indexOf(r), e:TIPOS[t], fixed:true}; }
+];
+const W_INT = [5,2];
+
+/* ===== ¿TILDE SÍ O NO? ===== */
+const TRAMPAS = [
+ ["Esto es para [[ti]].","«Ti» nunca lleva tilde: es monosílabo y no tiene pareja con la que confundirse."],
+ ["Ayer [[fue]] mi cumpleaños.","«Fue» es monosílabo: los monosílabos no llevan tilde (salvo los de tilde diacrítica)."],
+ ["Mi tía me [[dio]] un regalo.","«Dio» es monosílabo: nunca lleva tilde."],["[[Vio]] una estrella fugaz.","«Vio» es monosílabo: nunca lleva tilde."],
+ ["Tengo [[fe]] en ti.","«Fe» es monosílabo: nunca lleva tilde."],["Me he hecho daño en el [[pie]].","«Pie» es monosílabo: nunca lleva tilde."],
+ ["[[Fui]] a la playa en verano.","«Fui» es monosílabo: nunca lleva tilde."],["[[Su]] perro es enorme.","«Su» es posesivo y nunca lleva tilde."],
+ ["[[Ve]] a tu cuarto ahora mismo.","«Ve» es monosílabo: nunca lleva tilde."],
+ ["[[Solo]] quiero un vaso de agua.","Según la RAE (2010), «solo» se escribe sin tilde, aunque signifique «solamente»."],
+ ["[[Esta]] mochila es mía.","Los demostrativos (este, esta, ese, aquel…) no llevan tilde."],
+ ["Quiero [[ese]], no el otro.","Los demostrativos no llevan tilde, ni siquiera cuando van sin nombre."],
+ ["¿Quieres café [[o]] té?","La conjunción «o» no lleva tilde."],["Tengo 3 [[o]] 4 cromos repetidos.","Desde 2010, la «o» ya no lleva tilde ni siquiera entre números."]
+];
+const GEN_SINO = [
+  ()=>{ const [s,w,k]=pick(DS); const show=strip(w);
+        return {ctx:s.replace("___","[["+show+"]]"), q:"¿La palabra destacada debería llevar tilde?", o:["Sí, lleva tilde","No, está bien así"], a:hasT(w)?0:1, fixed:true, cols2:true,
+                e:(hasT(w)?`Se escribe «${w}». `:"")+dExp(w,k)}; },
+  ()=>{ const [s,w,k,t]=pick(IS); const show=strip(w);
+        return {ctx:s.replace("___","[["+show+"]]"), q:"¿La palabra destacada debería llevar tilde?", o:["Sí, lleva tilde","No, está bien así"], a:hasT(w)?0:1, fixed:true, cols2:true,
+                e:(hasT(w)?`Se escribe «${w}». `:"")+TIPOS[t]}; },
+  ()=>{ const [s,e]=pick(TRAMPAS); return {ctx:s, q:"¿La palabra destacada debería llevar tilde?", o:["Sí, lleva tilde","No, está bien así"], a:1, fixed:true, cols2:true, e}; }
+];
+const W_SINO = [4,4,3];
+
+/* ===== DETECTIVE DE TILDES (¿qué frase está bien escrita?) ===== */
+const DET = [ // {bien|mal}
+ ["{Tu|Tú} hermano {sí|si} que sabe cocinar.","Tu (posesivo) · sí (afirmación)."],
+ ["¿{Qué|Que} quieres que te {dé|de} para merendar?","Qué (pregunta) · dé (verbo dar)."],
+ ["{Él|El} no {se|sé} lo dijo a {mi|mí} hermana.","Él (pronombre) · se (pronombre) · mi (posesivo)."],
+ ["No {sé|se} {dónde|donde} he dejado {mi|mí} mochila.","Sé (verbo saber) · dónde (pregunta indirecta) · mi (posesivo)."],
+ ["{Aún|Aun} no {sé|se} {cuándo|cuando} es el examen.","Aún (= todavía) · sé (verbo saber) · cuándo (pregunta indirecta)."],
+ ["¿{Te|Té} apetece un {té|te}?","Te (pronombre) · té (la bebida)."],
+ ["Este regalo es para {mí|mi}, no para {ti|tí}.","Mí (pronombre) · ti (nunca lleva tilde)."],
+ ["{Si|Sí} quieres {más|mas}, pídelo.","Si (condición) · más (cantidad)."],
+ ["¡{Qué|Que} rápido corre {el|él} caballo!","Qué (exclamación) · el (artículo)."],
+ ["Pregúntale a {él|el} {cómo|como} se llama.","Él (pronombre) · cómo (pregunta indirecta)."],
+ ["{Cuando|Cuándo} llegues, dime {qué|que} tal el viaje.","Cuando (no pregunta) · qué (pregunta indirecta)."],
+ ["La casa {donde|dónde} vivo es {de|dé} {mi|mí} abuela.","Donde (relativo) · de (preposición) · mi (posesivo)."],
+ ["{Tú|Tu} {sí|si} que eres valiente.","Tú (pronombre) · sí (afirmación)."],
+ ["¿{Quién|Quien} {te|té} ha dicho eso?","Quién (pregunta) · te (pronombre)."],
+ ["{Fue|Fué} {él|el} {quien|quién} rompió la ventana.","Fue (monosílabo, sin tilde) · él (pronombre) · quien (relativo, no pregunta)."],
+ ["{Sé|Se} que {tú|tu} puedes hacerlo.","Sé (verbo saber) · tú (pronombre)."],
+ ["{Dio|Dió} un salto y {se|sé} cayó.","Dio (monosílabo, nunca tilde) · se (pronombre)."],
+ ["No {sé|se} {cuánto|cuanto} cuesta {el|él} billete.","Sé (saber) · cuánto (pregunta indirecta) · el (artículo)."],
+ ["Dime {cuál|cual} es {tu|tú} libro favorito.","Cuál (pregunta indirecta) · tu (posesivo)."],
+ ["{Como|Cómo} hacía frío, {él|el} se puso el abrigo.","Como (= porque, no pregunta) · él (pronombre)."],
+ ["{Cuanto|Cuánto} {más|mas} corro, {más|mas} me canso.","Cuanto (no pregunta) · más (cantidad), dos veces."],
+ ["{Vi|Ví} a {tu|tú} prima en el parque.","Vi (monosílabo, nunca tilde) · tu (posesivo)."],
+ ["Lo intentó, {mas|más} no pudo abrir la puerta.","Mas (= pero): une dos ideas que se oponen."],
+ ["¡{Cuánto|Cuanto} {te|té} quiero!","Cuánto (exclamación) · te (pronombre)."],
+ ["{Aun|Aún} así, {él|el} siguió corriendo.","Aun (= incluso) · él (pronombre)."],
+ ["No {sé|se} {si|sí} vendrá {solo|sólo}.","Sé (saber) · si (duda) · solo (sin tilde según la RAE)."]
+];
+function genDet(){
+  const [t,e]=pick(DET); const slots=[...t.matchAll(/\{([^|}]+)\|([^}]+)\}/g)];
+  const build = mask => { let i=0; return t.replace(/\{([^|}]+)\|([^}]+)\}/g,(m,a,b)=>((mask>>(i++))&1)?b:a); };
+  const n=slots.length, masks=[]; for(let m=1;m<(1<<n);m++) masks.push(m);
+  const wr=sample(masks,3).map(build);
+  return mc("¿Qué frase está bien escrita?", build(0), wr, e);
+}
+const GEN_DET = [genDet];
+const W_DET = [1];
+
+/* ===== LAS REGLAS ===== */
+const TEORIA = [
+ ()=>mc("¿Qué es la tilde diacrítica?","La que distingue palabras que se escriben igual pero tienen distinta función o significado",["La que llevan todas las palabras agudas","La que se pone siempre en los hiatos","Una tilde que solo se usa en poesía"],"Ejemplo: el (artículo) / él (pronombre). Misma forma, distinta función."),
+ ()=>mc("Por regla general, los monosílabos…","No llevan tilde",["Siempre llevan tilde","Llevan tilde si acaban en vocal","Llevan tilde si acaban en -n o -s"],"Los monosílabos no llevan tilde (fue, dio, ti, vio), salvo los de tilde diacrítica (él, tú, mí, sé…)."),
+ ()=>mc("¿Cuál de estos monosílabos NUNCA lleva tilde?","ti",["mí","tú","sé"],"«Ti» no tiene pareja: siempre se escribe sin tilde."),
+ ()=>mc("¿Cuál de estos NUNCA lleva tilde?",pick(["fue","dio","vio","fui","fe"]),["él","dé","té"],"Los monosílabos sin pareja (fue, dio, vio, fui, fe) nunca llevan tilde."),
+ ()=>mc("En «Yo sé la lección», «sé» es…","El verbo saber",["Un pronombre","Una preposición","Un sustantivo"],"«Sé» con tilde es verbo: saber (yo sé) o ser (sé bueno)."),
+ ()=>mc("«Mas» sin tilde significa…","Pero",["Más cantidad","Además","Todavía"],"«Lo intenté, mas no pude» = «Lo intenté, pero no pude»."),
+ ()=>mc("«Aún» con tilde significa…","Todavía",["Incluso","Pero","Además"],"«Aún no ha llegado» = «Todavía no ha llegado»."),
+ ()=>mc("«Aun» sin tilde significa…","Incluso, hasta",["Todavía","Pero","Nunca"],"«Aun así, lo haré» = «Incluso así, lo haré»."),
+ ()=>mc("Qué, cómo, cuándo, dónde, quién, cuánto y cuál llevan tilde cuando…","Preguntan o exclaman, de forma directa o indirecta",["Van siempre al principio de la frase","Funcionan como relativos","Van detrás de un verbo"],"¿Dónde vives? (directa) · No sé dónde vives (indirecta) → las dos con tilde."),
+ ()=>mc("¿Cuál es una pregunta INDIRECTA?","No sé dónde vive Marta.",["¿Dónde vive Marta?","La casa donde vive Marta es grande.","Marta vive en Toledo."],"La pregunta indirecta no lleva signos, pero el interrogativo sí lleva tilde."),
+ ()=>mc("¿Cuál es una exclamación directa?","¡Qué frío hace!",["Dice que hace frío.","Hace un frío que pela.","No sé si hará frío."],"Va entre ¡! y exclama: «qué» lleva tilde."),
+ ()=>mc("¿Lleva tilde «solo» según las normas actuales de la RAE?","No, ni siquiera cuando significa «solamente»",["Sí, siempre","Solo cuando significa «solamente»","Solo al principio de la frase"],"Desde 2010 la RAE recomienda escribir «solo» siempre sin tilde."),
+ ()=>mc("¿Llevan tilde los demostrativos (este, esa, aquellos)?","No, nunca",["Sí, siempre","Solo cuando van con un nombre","Solo al final de la frase"],"Desde 2010 los demostrativos se escriben sin tilde: «Quiero ese»."),
+ ()=>mc("¿Lleva tilde la «o» entre números (3 o 4)?","No",["Sí, para no confundirla con el cero","Solo con números grandes","Solo en matemáticas"],"Desde 2010 la «o» nunca lleva tilde."),
+ ()=>mc("En «¿Dices que vendrás?», ¿por qué «que» no lleva tilde?","Porque no pregunta: es una conjunción",["Porque no va al principio","Porque es monosílabo","Porque es una exclamación"],"Lo que se pregunta es «dices»; «que» solo une las dos partes."),
+ ()=>mc("«Té» con tilde es…","Un sustantivo (la bebida)",["Un pronombre","Un verbo","Una preposición"],"«Té» = la bebida. «Te» sin tilde = pronombre (te quiero)."),
+ ()=>mc("«Dé» con tilde es…","Una forma del verbo dar",["Una preposición","Un pronombre","Un artículo"],"«Que me dé» (dar). «De» sin tilde = preposición (casa de Ana)."),
+ ()=>mc("En «Si llueve, me quedo», «si» es…","Una conjunción (condición)",["Un adverbio de afirmación","Un pronombre","Un verbo"],"«Si» sin tilde expresa condición; «sí» con tilde afirma."),
+ ()=>mc("¿Qué pareja está bien explicada?","él (pronombre) / el (artículo)",["él (artículo) / el (pronombre)","tú (posesivo) / tu (pronombre)","mí (posesivo) / mi (pronombre)"],"Él, tú y mí con tilde son pronombres; el es artículo; tu y mi son posesivos."),
+ ()=>mc("¿Qué pareja está bien explicada?","más (cantidad) / mas (pero)",["más (pero) / mas (cantidad)","sé (pronombre) / se (verbo)","dé (preposición) / de (verbo)"],"Más = cantidad; mas = pero. Sé y dé con tilde son verbos.")
+];
+const GEN_TEO = TEORIA;
+const W_TEO = TEORIA.map(()=>1);
+
+function weighted(gens,w){ let t=w.reduce((a,b)=>a+b,0), r=Math.random()*t; for(let i=0;i<gens.length;i++){ r-=w[i]; if(r<0) return gens[i]; } return gens[0]; }
+
+const MISSIONS = [
+ {id:"diac", name:"Tilde diacrítica", sub:"él/el, tú/tu, sé/se, más/mas, aún/aun…", ico:"⚖️", color:"#1f8a8a", gen:()=>weighted(GEN_DIAC,W_DIAC)()},
+ {id:"int", name:"¿Qué? ¡Cómo!", sub:"Interrogativos y exclamativos", ico:"❓", color:"#7a5cd6", gen:()=>weighted(GEN_INT,W_INT)()},
+ {id:"sino", name:"¿Tilde sí o no?", sub:"Cuidado con las trampas", ico:"🎯", color:"#f07b2c", gen:()=>weighted(GEN_SINO,W_SINO)()},
+ {id:"det", name:"Detective de tildes", sub:"¿Qué frase está bien escrita?", ico:"🔍", color:"#e85a9b", gen:()=>weighted(GEN_DET,W_DET)()},
+ {id:"teo", name:"Las reglas", sub:"Repasa la teoría", ico:"📘", color:"#2fa86a", gen:()=>weighted(GEN_TEO,W_TEO)()}
+];
+function sig(q){ return (q.ctx||"")+"|"+(q.w||"")+"|"+q.q+"|"+q.o[q.a]; }
+function buildRound(gens, n){
+  const out=[], seen=new Set(); let tries=0;
+  while(out.length<n && tries<800){ tries++; const g=pick(gens); const q=g.gen(); q._m=g; const s=sig(q); if(seen.has(s)) continue; seen.add(s); out.push(q); }
+  return out;
+}
+const SORTS = {}; const SORTQ = {};
+
+
+/* ---------- ESTADO ---------- */
+const $ = id => document.getElementById(id);
+let best = {};
+try { best = JSON.parse(localStorage.getItem("misionTildes1eso")||"{}"); } catch(e){ best = {}; }
+function saveBest(){ try{ localStorage.setItem("misionTildes1eso", JSON.stringify(best)); }catch(e){} }
+
+let S = null; // partida actual
+
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function esc(s){ return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+function fmtCtx(s){ return esc(s).replace(/\[\[(.+?)\]\]/g,"<mark>$1</mark>"); }
+
+function renderHome(){
+  const box = $("missions"); box.innerHTML = "";
+  let tot = 0;
+  MISSIONS.forEach(m=>{
+    const st = best[m.id]||0; tot += st;
+    const b = document.createElement("button");
+    b.className = "mission";
+    b.innerHTML = `<div class="ico" style="background:${m.color}">${m.ico}</div>
+      <div><h3>${m.name}</h3><small>${m.sub} · ${ROUND} preguntas al azar</small></div>
+      <div class="stars">${"⭐".repeat(st)}${"☆".repeat(3-st)}</div>`;
+    b.onclick = ()=>start(m);
+    box.appendChild(b);
+  });
+  const s = document.createElement("button");
+  s.className = "mission stop";
+  s.innerHTML = `<div class="ico">⏱️</div><div><h3>¡Stop! Contrarreloj</h3><small>60 segundos · preguntas de todas las misiones</small></div><div class="stars">🏆 ${best.stop||0}</div>`;
+  s.onclick = ()=>startStop();
+  box.appendChild(s);
+  $("totalStars").textContent = `⭐ ${tot} / 15`;
+}
+
+function show(id){ ["home","game","results"].forEach(x=>$(x).classList.toggle("hidden", x!==id)); window.scrollTo(0,0); }
+
+function prep(q){
+  if(q.sort){ return {...q, q:SORTQ[q.sort], o:SORTS[q.sort], cols3:true, order:[0,1,2]}; }
+  const order = q.fixed ? q.o.map((_,i)=>i) : shuffle(q.o.map((_,i)=>i));
+  return {...q, order};
+}
+
+function start(m){
+  S = {mode:"mission", m, list:buildRound([m],ROUND).map(prep), i:0, ok:0, pts:0, streak:0, wrong:[]};
+  $("timer").classList.add("hidden");
+  show("game"); renderQ();
+}
+
+function startStop(){
+  S = {mode:"stop", list:buildRound(MISSIONS,40).map(prep), i:0, ok:0, pts:0, streak:0, wrong:[], t:60};
+  $("timer").classList.remove("hidden"); $("timer").textContent = 60;
+  show("game"); renderQ();
+  S.iv = setInterval(()=>{
+    S.t--; $("timer").textContent = S.t;
+    if(S.t<=0){ clearInterval(S.iv); finish(); }
+  },1000);
+}
+
+function renderQ(){
+  const q = S.list[S.i];
+  const m = S.mode==="mission" ? S.m : q._m;
+  $("tag").textContent = m.name; $("tag").style.background = m.color;
+  $("qtext").textContent = q.q;
+  $("ctx").classList.toggle("hidden", !q.ctx);
+  if(q.ctx) $("ctx").innerHTML = fmtCtx(q.ctx);
+  $("word").classList.toggle("hidden", !q.w);
+  if(q.w) $("word").textContent = q.w;
+  const box = $("opts"); box.innerHTML = ""; box.className = "opts"+(q.cols3?" cols3":q.cols2?" cols2":"");
+  q.order.forEach(idx=>{
+    const b = document.createElement("button");
+    b.className = "opt"; b.textContent = q.o[idx];
+    b.onclick = ()=>answer(idx,b);
+    b.dataset.idx = idx;
+    box.appendChild(b);
+  });
+  $("fb").classList.add("hidden"); $("btnNext").classList.add("hidden");
+  const total = S.mode==="mission" ? S.list.length : null;
+  $("prog").style.width = S.mode==="mission" ? (S.i/total*100)+"%" : ((60-S.t)/60*100)+"%";
+  $("score").textContent = S.pts;
+  $("streak").textContent = S.streak>=2 ? `🔥 ¡Racha de ${S.streak}!` : "";
+}
+
+function answer(idx,btn){
+  const q = S.list[S.i];
+  const ok = idx===q.a;
+  [...$("opts").children].forEach(b=>{
+    b.disabled = true;
+    if(+b.dataset.idx===q.a) b.classList.add("ok");
+  });
+  if(!ok) btn.classList.add("bad");
+  if(ok){ S.ok++; S.streak++; S.pts += 10 + (S.streak>=3?5:0); burst(btn); }
+  else { S.streak=0; S.wrong.push(q); }
+  $("score").textContent = S.pts;
+  $("streak").textContent = S.streak>=2 ? `🔥 ¡Racha de ${S.streak}!` : "";
+  if(S.mode==="stop"){
+    // en contrarreloj: feedback breve y sigue solo
+    const fb=$("fb"); fb.className="fb "+(ok?"ok":"bad");
+    fb.innerHTML = ok ? "<b>¡Bien!</b>" : `<b>¡Uy!</b>${esc(q.e)}`;
+    setTimeout(()=>{ if(S && S.mode==="stop" && S.t>0){ S.i++; if(S.i>=S.list.length) S.list.push(...buildRound(MISSIONS,20).map(prep)); renderQ(); } }, ok?550:1800);
+    return;
+  }
+  const fb=$("fb"); fb.className = "fb "+(ok?"ok":"bad");
+  const yay=["¡Genial!","¡Correcto!","¡Muy bien!","¡Eso es!","¡Crack!"];
+  fb.innerHTML = `<b>${ok?yay[Math.floor(Math.random()*yay.length)]:"Casi… ¡fíjate!"}</b>${esc(q.e)}`;
+  $("btnNext").classList.remove("hidden");
+  $("btnNext").textContent = S.i===S.list.length-1 ? "Ver resultado 🏁" : "Siguiente →";
+  $("btnNext").focus({preventScroll:true});
+}
+
+$("btnNext").onclick = ()=>{
+  S.i++;
+  if(S.i>=S.list.length) finish(); else renderQ();
+};
+
+function finish(){
+  if(S.iv) clearInterval(S.iv);
+  const rList=$("rList"); rList.innerHTML="";
+  if(S.mode==="mission"){
+    const n=S.list.length, pct=S.ok/n;
+    const st = pct>=0.9?3: pct>=0.7?2: pct>=0.4?1:0;
+    if(st>(best[S.m.id]||0)){ best[S.m.id]=st; saveBest(); }
+    $("rTitle").textContent = st===3?"¡Misión perfecta!":st>=2?"¡Misión cumplida!":st===1?"¡Buen intento!":"¡A practicar!";
+    $("rStars").textContent = "⭐".repeat(st)+"☆".repeat(3-st);
+    $("rText").textContent = `Has acertado ${S.ok} de ${n} · ${S.pts} puntos`;
+    if(st>=2) confetti();
+  } else {
+    const rec = S.pts>(best.stop||0);
+    if(rec){ best.stop=S.pts; saveBest(); }
+    $("rTitle").textContent = "¡Stop! Se acabó el tiempo";
+    $("rStars").textContent = "🏆";
+    $("rText").textContent = `${S.ok} aciertos · ${S.pts} puntos${rec?" · ¡NUEVO RÉCORD!":` · Récord: ${best.stop}`}`;
+    if(S.ok>=5) confetti();
+  }
+  const uniq=[...new Set(S.wrong)];
+  $("rReview").classList.toggle("hidden", !uniq.length);
+  uniq.forEach(q=>{
+    const li=document.createElement("li");
+    const label = q.w ? `«${q.w}» → ${q.o[q.a]}` : (q.ctx? q.ctx.replace(/\[\[|\]\]/g,"") + " → " : "") + (q.w?"":q.o[q.a]);
+    li.innerHTML = `${esc(label)}<span>${esc(q.e)}</span>`;
+    rList.appendChild(li);
+  });
+  show("results");
+}
+
+$("btnBack").onclick = ()=>{ if(S&&S.iv) clearInterval(S.iv); S=null; renderHome(); show("home"); };
+$("btnHome").onclick = ()=>{ S=null; renderHome(); show("home"); };
+$("btnAgain").onclick = ()=>{ const mode=S.mode, m=S.m; mode==="mission"?start(m):startStop(); };
+
+/* ---------- EFECTOS ---------- */
+const cv=$("fx"), cx=cv.getContext("2d"); let parts=[], raf=null;
+function size(){ cv.width=innerWidth; cv.height=innerHeight; } size(); addEventListener("resize",size);
+const COLS=["#ffc53d","#f07b2c","#1f8a8a","#e85a9b","#7a5cd6","#2fa86a"];
+function add(x,y,n,spread){ for(let i=0;i<n;i++) parts.push({x,y,vx:(Math.random()-.5)*spread,vy:-Math.random()*spread*0.9-2,g:.25,s:4+Math.random()*5,c:COLS[i%COLS.length],r:Math.random()*6,life:70+Math.random()*40}); if(!raf) loop(); }
+function burst(el){ const r=el.getBoundingClientRect(); add(r.left+r.width/2, r.top+r.height/2, 18, 9); }
+function confetti(){ for(let k=0;k<4;k++) setTimeout(()=>add(Math.random()*innerWidth, innerHeight*0.35, 40, 14), k*180); }
+function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts.forEach(p=>{ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.r+=.15; p.life--; cx.save(); cx.translate(p.x,p.y); cx.rotate(p.r); cx.fillStyle=p.c; cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); cx.restore(); });
+  parts=parts.filter(p=>p.life>0 && p.y<cv.height+20);
+  raf = parts.length ? requestAnimationFrame(loop) : null;
+  if(!raf) cx.clearRect(0,0,cv.width,cv.height);
+}
+
+if(/github\.io$/.test(location.hostname)) $("homeLink").innerHTML='<a href="./" style="color:var(--teal);font-weight:800;text-decoration:none">← Juegos de Lengua</a>';
+renderHome();
+</script>
+</body>
+</html>
