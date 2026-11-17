@@ -55,6 +55,17 @@ button{font:inherit;cursor:pointer;border:0}
 .word{font-family:"Baloo 2";font-size:2.4rem;text-align:center;margin:4px 0 14px;color:var(--purple)}
 .opts{display:grid;gap:10px}
 .opts.cols3{grid-template-columns:repeat(3,1fr)}
+.lvls{display:flex;gap:8px;justify-content:center;margin:14px 0 4px}
+.lvl{flex:1;max-width:150px;background:#fff;border:3px solid #e6def5;border-radius:16px;padding:10px 6px;font-weight:800;box-shadow:0 4px 0 #e6def5;color:var(--ink)}
+.lvl small{display:block;font-weight:700;color:var(--soft);font-size:.75rem;margin-top:2px}
+.lvl.on{border-color:var(--orange);box-shadow:0 4px 0 var(--orange);background:#fff3e8}
+.inrow{display:flex;gap:10px}
+.inrow input{flex:1;min-width:0;font:inherit;font-weight:800;font-size:1.3rem;padding:12px 14px;border:3px solid #e6def5;border-radius:16px;text-align:center;color:var(--ink);background:#fff}
+.inrow input:focus{outline:none;border-color:var(--purple)}
+.inrow input.ok{border-color:var(--green);background:#e3f7ec}.inrow input.bad{border-color:var(--red);background:#fde6e7}
+.inrow button{background:var(--purple);color:#fff;font-weight:800;border-radius:16px;padding:0 16px;box-shadow:0 4px 0 #5a40ad}
+.accents{display:flex;gap:6px;margin-top:10px;justify-content:center}
+.accents button{background:#f6f1ff;border-radius:12px;width:44px;height:40px;font-weight:800;font-size:1.1rem;color:var(--ink)}
 .opts.cols2{grid-template-columns:repeat(2,1fr)}
 .cols2 .opt{text-align:center;padding:16px 8px;font-size:1.15rem}
 .opt{background:#fff;border:3px solid #e6def5;border-radius:16px;padding:13px 14px;text-align:left;font-weight:800;font-size:1rem;color:var(--ink);box-shadow:0 4px 0 #e6def5;transition:transform .1s}
@@ -99,10 +110,11 @@ canvas#fx{position:fixed;inset:0;pointer-events:none;z-index:50}
       <span class="badge">LENGUA · 1.º ESO · ORTOGRAFÍA</span>
       <h1>Misión <span>Tildes</span></h1>
       <p>Tilde diacrítica, interrogativos y exclamativos. Supera las 5 misiones y juega al ¡Stop!</p>
+      <div class="lvls" id="lvls"></div>
       <div class="total"><span class="pill" id="totalStars">⭐ 0 / 15</span></div>
     </div>
     <div class="grid" id="missions"></div>
-    <div class="tip"><b>Cómo se juega:</b> elige la respuesta correcta. Si fallas, lee la explicación: ¡así se aprende! Consigue 3 estrellas acertando casi todas.</div>
+    <div class="tip"><b>Cómo se juega:</b> elige nivel y misión. 🌱 <b>Fácil</b>: casos claros, pocas opciones. 🔥 <b>Medio</b>: preguntas indirectas, trampas y «¿qué clase de palabra es?». 🏆 <b>Difícil</b>: escribe tú la palabra, cuenta las tildes que faltan y caza el error. Si fallas, lee la explicación: ¡así se aprende! Consigue 3 estrellas acertando casi todas.</div>
   </section>
 
   <!-- GAME -->
@@ -202,16 +214,31 @@ const dExp = (w,k) => hasT(w) ? DIAC[k].te : DIAC[k].ae;
 const dRole = (w,k) => hasT(w) ? DIAC[k].t : DIAC[k].a;
 const ALLROLES = [...new Set(Object.values(DIAC).flatMap(d=>[d.t,d.a]))];
 
+/* ===== NIVELES DE DIFICULTAD ===== */
+let LVL = 1; try { LVL = +localStorage.getItem("tildesLvl") || 1; } catch(e){}
+const LEVELS = {1:{name:"Fácil",ico:"🌱"},2:{name:"Medio",ico:"🔥"},3:{name:"Difícil",ico:"🏆"}};
+// elige un elemento según el nivel: fácil → solo nivel 1; medio → hasta nivel 2; difícil → todo, con preferencia por lo difícil
+function lvPick(arr, lv){
+  if(LVL===1) return pick(arr.filter(x=>lv(x)===1));
+  if(LVL===2) return pick(arr.filter(x=>lv(x)<=2));
+  const hard=arr.filter(x=>lv(x)>=2); return (hard.length && Math.random()<.6) ? pick(hard) : pick(arr);
+}
+const DS_HARD = new Set(["___ bueno y recoge tu cuarto.","Ella solo piensa en ___ misma.","Detrás de ___ había una cola enorme.","Quiero que me ___ su opinión.",
+ "Espero que el profe nos ___ más tiempo.","Dile que te ___ el libro.","No sé ___ podré ir.","Hoy friegas ___ los platos.","Le pregunté si quería venir y me dijo que ___."]);
+const dLv = ([s,w,k]) => (k==="mas"||k==="aun"||DS_HARD.has(s)) ? 2 : 1;
+const pickDS = () => lvPick(DS, dLv);
+
 const GEN_DIAC = [
-  ()=>{ const [s,w,k]=pick(DS); const o=other(w,DIAC[k].p);
+  ()=>{ const [s,w,k]=pickDS(); const o=other(w,DIAC[k].p);
         return {ctx:s.replace("___","[[___]]"), q:"¿Qué palabra completa la frase?", o:[w,o], a:0, e:dExp(w,k), cols2:true}; },
-  ()=>{ const [s,w,k]=pick(DS); const r=dRole(w,k);
+  ()=>{ const [s,w,k]=pickDS(); const r=dRole(w,k);
         return mc("¿Qué clase de palabra es la destacada?", r, sample(ALLROLES.filter(x=>x!==r),3), dExp(w,k), s.replace("___","[["+w+"]]")); },
-  ()=>{ const k=pick(Object.keys(DIAC)); const d=DIAC[k];
+  ()=>{ const keys=Object.keys(DIAC).filter(k=>LVL>1||(k!=="mas"&&k!=="aun")); const k=pick(keys); const d=DIAC[k];
         const tonic = Math.random()<.5, w = tonic?d.p[0]:d.p[1], r = tonic?d.t:d.a;
-        return mc(`«${w}» ${tonic?"con":"sin"} tilde es…`, r, [tonic?d.a:d.t, ...sample(ALLROLES.filter(x=>x!==d.t&&x!==d.a),2)], tonic?d.te:d.ae); }
+        return mc(`«${w}» ${tonic?"con":"sin"} tilde es…`, r, [tonic?d.a:d.t, ...sample(ALLROLES.filter(x=>x!==d.t&&x!==d.a),2)], tonic?d.te:d.ae); },
+  ()=>{ const [s,w,k]=pickDS(); return {ctx:s.replace("___","[[___]]"), q:`Escribe «${DIAC[k].p[1]}» con o sin tilde, según corresponda:`, input:true, o:[w], a:0, e:dExp(w,k)}; }
 ];
-const W_DIAC = [6,3,1];
+const W_DIAC = {1:[6,0,2,0], 2:[5,3,1,0], 3:[3,3,0,4]};
 
 /* ===== INTERROGATIVOS Y EXCLAMATIVOS ===== */
 const INT = {que:["qué","que"],como:["cómo","como"],cuando:["cuándo","cuando"],donde:["dónde","donde"],quien:["quién","quien"],cuanto:["cuánto","cuanto"],cual:["cuál","cual"]};
@@ -243,14 +270,17 @@ const IS = [ // [frase, forma correcta, palabra, tipo]
  ["¿___ es tu color favorito?","Cuál","cual","dir"],["No sé ___ elegir.","cuál","cual","ind"],["Es el motivo por el ___ me fui.","cual","cual","rel"],
  ["Dime ___ prefieres.","cuál","cual","ind"],["Tengo un amigo, el ___ vive en Roma.","cual","cual","rel"]
 ];
+const iLv = x => ({dir:1, rel:1, ind:2, trick:3, verb:3})[x[3]];
+const pickIS = () => lvPick(IS, iLv);
 const GEN_INT = [
-  ()=>{ const [s,w,k,t]=pick(IS); return {ctx:s.replace("___","[[___]]"), q:"¿Qué palabra completa la frase?", o:[w,other(w,INT[k])], a:0, e:TIPOS[t], cols2:true}; },
-  ()=>{ const [s,w,k,t]=pick(IS); const r=TIPO_OPT[t];
+  ()=>{ const [s,w,k,t]=pickIS(); return {ctx:s.replace("___","[["+"___"+"]]"), q:"¿Qué palabra completa la frase?", o:[w,other(w,INT[k])], a:0, e:TIPOS[t], cols2:true}; },
+  ()=>{ const [s,w,k,t]=pickIS(); const r=TIPO_OPT[t];
         const opts=["Pregunta o exclamación directa","Pregunta indirecta (sin signos)","No pregunta ni exclama (relativo o conjunción)"];
         if(k==="como") opts.push("Es el verbo comer");
-        return {ctx:s.replace("___","[["+w+"]]"), q:hasT(w)?"¿Por qué lleva tilde la palabra destacada?":"¿Por qué NO lleva tilde la palabra destacada?", o:opts, a:opts.indexOf(r), e:TIPOS[t], fixed:true}; }
+        return {ctx:s.replace("___","[["+w+"]]"), q:hasT(w)?"¿Por qué lleva tilde la palabra destacada?":"¿Por qué NO lleva tilde la palabra destacada?", o:opts, a:opts.indexOf(r), e:TIPOS[t], fixed:true}; },
+  ()=>{ const [s,w,k,t]=pickIS(); return {ctx:s.replace("___","[[___]]"), q:`Escribe «${INT[k][1]}» con o sin tilde, según corresponda:`, input:true, o:[w], a:0, e:TIPOS[t]}; }
 ];
-const W_INT = [5,2];
+const W_INT = {1:[1,0,0], 2:[5,2,0], 3:[3,2,3]};
 
 /* ===== ¿TILDE SÍ O NO? ===== */
 const TRAMPAS = [
@@ -265,16 +295,19 @@ const TRAMPAS = [
  ["Quiero [[ese]], no el otro.","Los demostrativos no llevan tilde, ni siquiera cuando van sin nombre."],
  ["¿Quieres café [[o]] té?","La conjunción «o» no lleva tilde."],["Tengo 3 [[o]] 4 cromos repetidos.","Desde 2010, la «o» ya no lleva tilde ni siquiera entre números."]
 ];
+const SINO_Q = "¿La palabra destacada debería llevar tilde?", SINO_O = ["Sí, lleva tilde","No, está bien así"];
 const GEN_SINO = [
-  ()=>{ const [s,w,k]=pick(DS); const show=strip(w);
-        return {ctx:s.replace("___","[["+show+"]]"), q:"¿La palabra destacada debería llevar tilde?", o:["Sí, lleva tilde","No, está bien así"], a:hasT(w)?0:1, fixed:true, cols2:true,
-                e:(hasT(w)?`Se escribe «${w}». `:"")+dExp(w,k)}; },
-  ()=>{ const [s,w,k,t]=pick(IS); const show=strip(w);
-        return {ctx:s.replace("___","[["+show+"]]"), q:"¿La palabra destacada debería llevar tilde?", o:["Sí, lleva tilde","No, está bien así"], a:hasT(w)?0:1, fixed:true, cols2:true,
-                e:(hasT(w)?`Se escribe «${w}». `:"")+TIPOS[t]}; },
-  ()=>{ const [s,e]=pick(TRAMPAS); return {ctx:s, q:"¿La palabra destacada debería llevar tilde?", o:["Sí, lleva tilde","No, está bien así"], a:1, fixed:true, cols2:true, e}; }
+  ()=>{ const [s,w,k]=pickDS(); const show=strip(w);
+        return {ctx:s.replace("___","[["+show+"]]"), q:SINO_Q, o:SINO_O, a:hasT(w)?0:1, fixed:true, cols2:true, e:(hasT(w)?`Se escribe «${w}». `:"")+dExp(w,k)}; },
+  ()=>{ const [s,w,k,t]=pickIS(); const show=strip(w);
+        return {ctx:s.replace("___","[["+show+"]]"), q:SINO_Q, o:SINO_O, a:hasT(w)?0:1, fixed:true, cols2:true, e:(hasT(w)?`Se escribe «${w}». `:"")+TIPOS[t]}; },
+  ()=>{ const [s,e]=pick(LVL===1?TRAMPAS.slice(0,5):TRAMPAS); return {ctx:s, q:SINO_Q, o:SINO_O, a:1, fixed:true, cols2:true, e}; },
+  ()=>{ const [t,e]=pick(DET); let n=0;
+        const s=t.replace(/\{([^|}]+)\|([^}]+)\}/g,(m,a)=>{ if(hasT(a)) n++; return strip(a); });
+        const good=t.replace(/\{([^|}]+)\|([^}]+)\}/g,(m,a)=>a);
+        return {ctx:s, q:"¿Cuántas tildes faltan en esta frase?", o:["0","1","2","3"], a:n, fixed:true, cols2:true, e:`Bien escrita: «${good}» → ${e}`}; }
 ];
-const W_SINO = [4,4,3];
+const W_SINO = {1:[4,3,2,0], 2:[4,4,3,0], 3:[2,3,3,4]};
 
 /* ===== DETECTIVE DE TILDES (¿qué frase está bien escrita?) ===== */
 const DET = [ // {bien|mal}
@@ -305,15 +338,25 @@ const DET = [ // {bien|mal}
  ["{Aun|Aún} así, {él|el} siguió corriendo.","Aun (= incluso) · él (pronombre)."],
  ["No {sé|se} {si|sí} vendrá {solo|sólo}.","Sé (saber) · si (duda) · solo (sin tilde según la RAE)."]
 ];
+const SLOT = /\{([^|}]+)\|([^}]+)\}/g;
+const nSlots = t => [...t.matchAll(SLOT)].length;
+const buildMask = (t,mask) => { let i=0; return t.replace(SLOT,(m,a,b)=>((mask>>(i++))&1)?b:a); };
 function genDet(){
-  const [t,e]=pick(DET); const slots=[...t.matchAll(/\{([^|}]+)\|([^}]+)\}/g)];
-  const build = mask => { let i=0; return t.replace(/\{([^|}]+)\|([^}]+)\}/g,(m,a,b)=>((mask>>(i++))&1)?b:a); };
-  const n=slots.length, masks=[]; for(let m=1;m<(1<<n);m++) masks.push(m);
-  const wr=sample(masks,3).map(build);
-  return mc("¿Qué frase está bien escrita?", build(0), wr, e);
+  const pool = LVL===1 ? DET.filter(d=>nSlots(d[0])<=2) : LVL===3 && Math.random()<.6 ? DET.filter(d=>nSlots(d[0])>=3) : DET;
+  const [t,e]=pick(pool); const n=nSlots(t), masks=[]; for(let m=1;m<(1<<n);m++) masks.push(m);
+  const wr=sample(masks, LVL===1?1:3).map(m=>buildMask(t,m));
+  return mc("¿Qué frase está bien escrita?", buildMask(t,0), wr, e);
 }
-const GEN_DET = [genDet];
-const W_DET = [1];
+function genError(){ // una sola palabra mal escrita (o ninguna): ¿cuál es?
+  const [t,e]=pick(DET); const sl=[...t.matchAll(SLOT)]; const none = Math.random()<.2; const bad = none ? -1 : rnd(sl.length);
+  const s = buildMask(t, none?0:(1<<bad)); const words = sl.map((m,i)=> i===bad ? m[2] : m[1]);
+  const NONE="Ninguna: está bien escrita"; const o=[...new Set(words)];
+  const right = none ? NONE : words[bad];
+  const opts = [right, ...o.filter(x=>x!==right), ...(none?[]:[NONE])];
+  return {ctx:s, q:"¿Qué palabra está mal escrita?", o:opts, a:0, e:`Bien escrita: «${buildMask(t,0)}» → ${e}`};
+}
+const GEN_DET = [genDet, genError];
+const W_DET = {1:[1,0], 2:[3,1], 3:[1,2]};
 
 /* ===== LAS REGLAS ===== */
 const TEORIA = [
@@ -338,10 +381,12 @@ const TEORIA = [
  ()=>mc("¿Qué pareja está bien explicada?","él (pronombre) / el (artículo)",["él (artículo) / el (pronombre)","tú (posesivo) / tu (pronombre)","mí (posesivo) / mi (pronombre)"],"Él, tú y mí con tilde son pronombres; el es artículo; tu y mi son posesivos."),
  ()=>mc("¿Qué pareja está bien explicada?","más (cantidad) / mas (pero)",["más (pero) / mas (cantidad)","sé (pronombre) / se (verbo)","dé (preposición) / de (verbo)"],"Más = cantidad; mas = pero. Sé y dé con tilde son verbos.")
 ];
-const GEN_TEO = TEORIA;
-const W_TEO = TEORIA.map(()=>1);
+const TEO_LV = [1,1,1,1,1,2,1,2,2,2,1,3,3,3,3,1,1,1,1,2];
+const TEO = TEORIA.map((f,i)=>[TEO_LV[i],f]);
+const GEN_TEO = [()=>lvPick(TEO, x=>Math.min(x[0],2))[1]()];
+const W_TEO = {1:[1],2:[1],3:[1]};
 
-function weighted(gens,w){ let t=w.reduce((a,b)=>a+b,0), r=Math.random()*t; for(let i=0;i<gens.length;i++){ r-=w[i]; if(r<0) return gens[i]; } return gens[0]; }
+function weighted(gens,w){ w=w[LVL]; let t=w.reduce((a,b)=>a+b,0), r=Math.random()*t; for(let i=0;i<gens.length;i++){ r-=w[i]; if(r<0) return gens[i]; } return gens[0]; }
 
 const MISSIONS = [
  {id:"diac", name:"Tilde diacrítica", sub:"él/el, tú/tu, sé/se, más/mas, aún/aun…", ico:"⚖️", color:"#1f8a8a", gen:()=>weighted(GEN_DIAC,W_DIAC)()},
@@ -375,7 +420,7 @@ function renderHome(){
   const box = $("missions"); box.innerHTML = "";
   let tot = 0;
   MISSIONS.forEach(m=>{
-    const st = best[m.id]||0; tot += st;
+    const st = best[m.id+"_"+LVL]||0; tot += st;
     const b = document.createElement("button");
     b.className = "mission";
     b.innerHTML = `<div class="ico" style="background:${m.color}">${m.ico}</div>
@@ -386,10 +431,15 @@ function renderHome(){
   });
   const s = document.createElement("button");
   s.className = "mission stop";
-  s.innerHTML = `<div class="ico">⏱️</div><div><h3>¡Stop! Contrarreloj</h3><small>60 segundos · preguntas de todas las misiones</small></div><div class="stars">🏆 ${best.stop||0}</div>`;
+  s.innerHTML = `<div class="ico">⏱️</div><div><h3>¡Stop! Contrarreloj</h3><small>60 segundos · preguntas de todas las misiones</small></div><div class="stars">🏆 ${best["stop_"+LVL]||0}</div>`;
   s.onclick = ()=>startStop();
   box.appendChild(s);
-  $("totalStars").textContent = `⭐ ${tot} / 15`;
+  $("totalStars").textContent = `${LEVELS[LVL].ico} Nivel ${LEVELS[LVL].name} · ⭐ ${tot} / 15`;
+  const lv=$("lvls"); lv.innerHTML="";
+  [1,2,3].forEach(n=>{ const b=document.createElement("button"); b.className="lvl"+(n===LVL?" on":"");
+    const st=MISSIONS.reduce((a,m)=>a+(best[m.id+"_"+n]||0),0);
+    b.innerHTML=`${LEVELS[n].ico} ${LEVELS[n].name}<small>⭐ ${st} / 15</small>`;
+    b.onclick=()=>{ LVL=n; try{localStorage.setItem("tildesLvl",n);}catch(e){} renderHome(); }; lv.appendChild(b); });
 }
 
 function show(id){ ["home","game","results"].forEach(x=>$(x).classList.toggle("hidden", x!==id)); window.scrollTo(0,0); }
@@ -419,13 +469,22 @@ function startStop(){
 function renderQ(){
   const q = S.list[S.i];
   const m = S.mode==="mission" ? S.m : q._m;
-  $("tag").textContent = m.name; $("tag").style.background = m.color;
+  $("tag").textContent = m.name+" · "+LEVELS[LVL].ico+" "+LEVELS[LVL].name; $("tag").style.background = m.color;
   $("qtext").textContent = q.q;
   $("ctx").classList.toggle("hidden", !q.ctx);
   if(q.ctx) $("ctx").innerHTML = fmtCtx(q.ctx);
   $("word").classList.toggle("hidden", !q.w);
   if(q.w) $("word").textContent = q.w;
   const box = $("opts"); box.innerHTML = ""; box.className = "opts"+(q.cols3?" cols3":q.cols2?" cols2":"");
+  if(q.input){
+    box.innerHTML = `<div class="inrow"><input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Escribe aquí"><button id="chk">Comprobar</button></div>
+      <div class="accents">${["á","é","í","ó","ú"].map(c=>`<button data-c="${c}">${c}</button>`).join("")}</div>`;
+    const inp=$("ans");
+    box.querySelectorAll(".accents button").forEach(b=>b.onclick=()=>{ inp.value+=b.dataset.c; inp.focus(); });
+    $("chk").onclick=()=>{ if(inp.value.trim()) answerInput(inp.value); };
+    inp.onkeydown=ev=>{ if(ev.key==="Enter"){ ev.preventDefault(); if(inp.value.trim()) answerInput(inp.value); } };
+    setTimeout(()=>inp.focus({preventScroll:true}),50);
+  } else
   q.order.forEach(idx=>{
     const b = document.createElement("button");
     b.className = "opt"; b.textContent = q.o[idx];
@@ -440,15 +499,25 @@ function renderQ(){
   $("streak").textContent = S.streak>=2 ? `🔥 ¡Racha de ${S.streak}!` : "";
 }
 
-function answer(idx,btn){
+function answerInput(v){
+  const q=S.list[S.i]; const inp=$("ans"); if(inp.disabled) return;
+  const ok = v.trim().toLowerCase()===q.o[0].toLowerCase();
+  inp.disabled=true; $("chk").disabled=true; inp.classList.add(ok?"ok":"bad");
+  $("opts").querySelectorAll(".accents button").forEach(b=>b.disabled=true);
+  if(!ok) q.e = `La respuesta correcta es «${q.o[0]}». `+q.e.replace(/^La respuesta correcta es «[^»]*». /,"");
+  answer(ok?0:-1, inp, true);
+}
+function answer(idx,btn,isInput){
   const q = S.list[S.i];
   const ok = idx===q.a;
-  [...$("opts").children].forEach(b=>{
-    b.disabled = true;
-    if(+b.dataset.idx===q.a) b.classList.add("ok");
-  });
-  if(!ok) btn.classList.add("bad");
-  if(ok){ S.ok++; S.streak++; S.pts += 10 + (S.streak>=3?5:0); burst(btn); }
+  if(!isInput){
+    [...$("opts").children].forEach(b=>{
+      b.disabled = true;
+      if(+b.dataset.idx===q.a) b.classList.add("ok");
+    });
+    if(!ok) btn.classList.add("bad");
+  }
+  if(ok){ S.ok++; S.streak++; S.pts += 10*LVL + (S.streak>=3?5:0); burst(btn); }
   else { S.streak=0; S.wrong.push(q); }
   $("score").textContent = S.pts;
   $("streak").textContent = S.streak>=2 ? `🔥 ¡Racha de ${S.streak}!` : "";
@@ -464,7 +533,7 @@ function answer(idx,btn){
   fb.innerHTML = `<b>${ok?yay[Math.floor(Math.random()*yay.length)]:"Casi… ¡fíjate!"}</b>${esc(q.e)}`;
   $("btnNext").classList.remove("hidden");
   $("btnNext").textContent = S.i===S.list.length-1 ? "Ver resultado 🏁" : "Siguiente →";
-  $("btnNext").focus({preventScroll:true});
+  setTimeout(()=>$("btnNext").focus({preventScroll:true}),0);
 }
 
 $("btnNext").onclick = ()=>{
@@ -478,17 +547,17 @@ function finish(){
   if(S.mode==="mission"){
     const n=S.list.length, pct=S.ok/n;
     const st = pct>=0.9?3: pct>=0.7?2: pct>=0.4?1:0;
-    if(st>(best[S.m.id]||0)){ best[S.m.id]=st; saveBest(); }
+    const bk=S.m.id+"_"+LVL; if(st>(best[bk]||0)){ best[bk]=st; saveBest(); }
     $("rTitle").textContent = st===3?"¡Misión perfecta!":st>=2?"¡Misión cumplida!":st===1?"¡Buen intento!":"¡A practicar!";
     $("rStars").textContent = "⭐".repeat(st)+"☆".repeat(3-st);
     $("rText").textContent = `Has acertado ${S.ok} de ${n} · ${S.pts} puntos`;
     if(st>=2) confetti();
   } else {
-    const rec = S.pts>(best.stop||0);
-    if(rec){ best.stop=S.pts; saveBest(); }
+    const sk="stop_"+LVL, rec = S.pts>(best[sk]||0);
+    if(rec){ best[sk]=S.pts; saveBest(); }
     $("rTitle").textContent = "¡Stop! Se acabó el tiempo";
     $("rStars").textContent = "🏆";
-    $("rText").textContent = `${S.ok} aciertos · ${S.pts} puntos${rec?" · ¡NUEVO RÉCORD!":` · Récord: ${best.stop}`}`;
+    $("rText").textContent = `${S.ok} aciertos · ${S.pts} puntos${rec?" · ¡NUEVO RÉCORD!":` · Récord: ${best["stop_"+LVL]}`}`;
     if(S.ok>=5) confetti();
   }
   const uniq=[...new Set(S.wrong)];
