@@ -140,7 +140,7 @@ body{margin:0}[hidden]{display:none!important}
 <div class="wrap" id="app"></div>
 
 <script>
-// Lista de la página 120 del cuaderno de Pablo: [V1, ipa1, V2, ipa2, V3, ipa3, traducción]
+// Listas de las páginas 120 (1–55) y 121 (56–114) del cuaderno de Pablo: [V1, ipa1, V2, ipa2, V3, ipa3, traducción]
 const RAW = [
  ["be","biː","was / were","wɒz/wɜː","been","biːn","ser, estar"],
  ["beat","biːt","beat","biːt","beaten","ˈbiːtn","golpear"],
@@ -196,7 +196,66 @@ const RAW = [
  ["lay","leɪ","laid","leɪd","laid","leɪd","poner; extender"],
  ["lead","liːd","led","led","led","led","guiar, conducir"],
  ["learn","lɜːn","learnt / learned","lɜːnt/lɜːnd","learnt / learned","lɜːnt/lɜːnd","aprender"],
- ["leave","liːv","left","left","left","left","dejar; irse, salir"]
+ ["leave","liːv","left","left","left","left","dejar; irse, salir"],
+ ["lend","lend","lent","lent","lent","lent","prestar"],
+ ["let","let","let","let","let","let","permitir, dejar"],
+ ["lie","laɪ","lay","leɪ","lain","leɪn","tumbarse, echarse"],
+ ["lie","laɪ","lied","laɪd","lied","laɪd","mentir"],
+ ["light","laɪt","lit","lɪt","lit","lɪt","encender"],
+ ["lose","luːz","lost","lɒst","lost","lɒst","perder"],
+ ["make","meɪk","made","meɪd","made","meɪd","hacer, fabricar"],
+ ["mean","miːn","meant","ment","meant","ment","significar, querer decir"],
+ ["meet","miːt","met","met","met","met","conocer; quedar con"],
+ ["overcome","ˌəʊvəˈkʌm","overcame","ˌəʊvəˈkeɪm","overcome","ˌəʊvəˈkʌm","superar"],
+ ["pay","peɪ","paid","peɪd","paid","peɪd","pagar"],
+ ["put","pʊt","put","pʊt","put","pʊt","poner"],
+ ["quit","kwɪt","quit / quitted","kwɪt/ˈkwɪtɪd","quit / quitted","kwɪt/ˈkwɪtɪd","dejar (de)"],
+ ["read","riːd","read","red","read","red","leer"],
+ ["ride","raɪd","rode","rəʊd","ridden","ˈrɪdn","montar"],
+ ["ring","rɪŋ","rang","ræŋ","rung","rʌŋ","llamar (por teléfono)"],
+ ["rise","raɪz","rose","rəʊz","risen","ˈrɪzn","elevarse, alzarse"],
+ ["run","rʌn","ran","ræn","run","rʌn","correr"],
+ ["say","seɪ","said","sed","said","sed","decir"],
+ ["see","siː","saw","sɔː","seen","siːn","ver"],
+ ["sell","sel","sold","səʊld","sold","səʊld","vender"],
+ ["send","send","sent","sent","sent","sent","enviar"],
+ ["set","set","set","set","set","set","colocar"],
+ ["sew","səʊ","sewed","səʊd","sewn","səʊn","coser"],
+ ["shake","ʃeɪk","shook","ʃʊk","shaken","ˈʃeɪkən","agitar"],
+ ["shine","ʃaɪn","shone","ʃɒn","shone","ʃɒn","brillar"],
+ ["shoot","ʃuːt","shot","ʃɒt","shot","ʃɒt","disparar"],
+ ["show","ʃəʊ","showed","ʃəʊd","shown","ʃəʊn","mostrar, enseñar"],
+ ["shut","ʃʌt","shut","ʃʌt","shut","ʃʌt","cerrar"],
+ ["sing","sɪŋ","sang","sæŋ","sung","sʌŋ","cantar"],
+ ["sink","sɪŋk","sank","sæŋk","sunk","sʌŋk","hundirse"],
+ ["sit","sɪt","sat","sæt","sat","sæt","sentarse"],
+ ["sleep","sliːp","slept","slept","slept","slept","dormir"],
+ ["smell","smel","smelt / smelled","smelt/smeld","smelt / smelled","smelt/smeld","oler"],
+ ["speak","spiːk","spoke","spəʊk","spoken","ˈspəʊkən","hablar"],
+ ["spell","spel","spelt / spelled","spelt/speld","spelt / spelled","spelt/speld","deletrear"],
+ ["spend","spend","spent","spent","spent","spent","gastar; pasar (tiempo)"],
+ ["spill","spɪl","spilt / spilled","spɪlt/spɪld","spilt / spilled","spɪlt/spɪld","derramar(se)"],
+ ["spoil","spɔɪl","spoilt / spoiled","spɔɪlt/spɔɪld","spoilt / spoiled","spɔɪlt/spɔɪld","arruinar, estropear"],
+ ["spread","spred","spread","spred","spread","spred","untar; difundir(se)"],
+ ["spring","sprɪŋ","sprang","spræŋ","sprung","sprʌŋ","saltar"],
+ ["stand","stænd","stood","stʊd","stood","stʊd","estar de pie"],
+ ["steal","stiːl","stole","stəʊl","stolen","ˈstəʊlən","robar"],
+ ["stick","stɪk","stuck","stʌk","stuck","stʌk","pegar"],
+ ["sting","stɪŋ","stung","stʌŋ","stung","stʌŋ","picar (insecto)"],
+ ["swear","sweə","swore","swɔː","sworn","swɔːn","jurar"],
+ ["sweep","swiːp","swept","swept","swept","swept","barrer"],
+ ["swim","swɪm","swam","swæm","swum","swʌm","nadar"],
+ ["take","teɪk","took","tʊk","taken","ˈteɪkən","coger; llevar"],
+ ["teach","tiːtʃ","taught","tɔːt","taught","tɔːt","enseñar"],
+ ["tear","teə","tore","tɔː","torn","tɔːn","romper, desgarrar"],
+ ["tell","tel","told","təʊld","told","təʊld","decir, contar"],
+ ["think","θɪŋk","thought","θɔːt","thought","θɔːt","pensar"],
+ ["throw","θrəʊ","threw","θruː","thrown","θrəʊn","tirar, lanzar"],
+ ["understand","ˌʌndəˈstænd","understood","ˌʌndəˈstʊd","understood","ˌʌndəˈstʊd","comprender, entender"],
+ ["wake up","weɪk ʌp","woke up","wəʊk ʌp","woken up","ˈwəʊkən ʌp","despertar(se)"],
+ ["wear","weə","wore","wɔː","worn","wɔːn","llevar puesto; ponerse"],
+ ["win","wɪn","won","wʌn","won","wʌn","ganar"],
+ ["write","raɪt","wrote","rəʊt","written","ˈrɪtn","escribir"]
 ];
 const V = RAW.map((r,i)=>{
   const alts=s=>s.split('/').map(x=>x.trim().toLowerCase());
@@ -218,7 +277,8 @@ const NOTES={
   dream:"Las dos formas valen. Ojo: dreamt se pronuncia /dremt/, con «e» corta.",
   learn:"Las dos formas valen: learnt es más británico y learned más americano.",
   hang:"hung es colgar un objeto; hanged se usa solo para ahorcar a una persona.",
-  read:"",
+  read:"Se escribe igual en las tres formas, pero suena distinto: read /riːd/ · read /red/ · read /red/.",
+  lie:"Hay dos verbos lie: lie (tumbarse) es irregular, lie · lay · lain; lie (mentir) es regular, lie · lied · lied.",
   lay:"No lo confundas con lie (tumbarse): lay es poner algo, y lleva objeto.",
   lead:"Se escribe lead pero el pasado es led, sin «a».",
   know:"La k no suena: /nəʊ/, /njuː/, /nəʊn/.",
@@ -226,7 +286,36 @@ const NOTES={
   bring:"bring → brought y buy → bought: no los mezcles.",
   catch:"caught y bought riman: los dos suenan /ɔːt/.",
   fight:"fought rima con bought y caught.",
-  think:"",
+  think:"thought rima con bought, caught y taught: todos suenan /ɔːt/.",
+  teach:"taught rima con caught y bought: suena /tɔːt/.",
+  quit:"Las dos formas valen: quit es la más habitual; quitted es más británico.",
+  smell:"Las dos formas valen: smelt es más británico y smelled más americano.",
+  spell:"Las dos formas valen: spelt es más británico y spelled más americano.",
+  spill:"Las dos formas valen: spilt es más británico y spilled más americano.",
+  spoil:"Las dos formas valen: spoilt es más británico y spoiled más americano.",
+  sew:"sew suena /səʊ/, como so. El pasado es regular (sewed) pero el participio es sewn.",
+  show:"El pasado es regular (showed), pero el participio es shown.",
+  sing:"Patrón i · a · u, como drink · drank · drunk.",
+  sink:"Patrón i · a · u, como drink · drank · drunk.",
+  ring:"Patrón i · a · u, como sing · sang · sung.",
+  swim:"Patrón i · a · u, como sing · sang · sung.",
+  spring:"Patrón i · a · u, como ring · rang · rung.",
+  throw:"Patrón ow · ew · own, como grow · grew · grown y know · knew · known.",
+  overcome:"Funciona igual que come: come · came · come.",
+  understand:"Funciona igual que stand: stand · stood · stood.",
+  "wake up":"Es un phrasal verb: cambia wake (woke, woken) y up se queda igual.",
+  lose:"lose suena /luːz/, con z. No lo confundas con loose (suelto).",
+  win:"won se pronuncia /wʌn/, igual que one.",
+  meet:"Patrón ee → e: meet · met, sleep · slept, sweep · swept.",
+  sleep:"Patrón ee → e: sleep · slept, sweep · swept, meet · met.",
+  sweep:"Patrón ee → e: sweep · swept, sleep · slept, keep · kept.",
+  say:"said se pronuncia /sed/, no «seid».",
+  tear:"tear /teə/ es romper. tear /tɪə/ (lágrima) es otra palabra.",
+  put:"No cambia: put · put · put.",
+  let:"No cambia: let · let · let.",
+  set:"No cambia: set · set · set.",
+  shut:"No cambia: shut · shut · shut.",
+  spread:"No cambia: spread · spread · spread.",
   go:"went no se parece nada a go: hay que aprenderlo de memoria.",
   hear:"heard se pronuncia /hɜːd/, distinto de hear /hɪə/.",
   eat:"ate se pronuncia /eɪt/, como el número eight.",
@@ -251,7 +340,7 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(M
 const store={get(k,d){try{const v=localStorage.getItem('vq_'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
              set(k,v){try{localStorage.setItem('vq_'+k,JSON.stringify(v))}catch(e){}}};
 const app=document.getElementById('app');
-const RANGES={a:[1,20,"1–20"],b:[21,40,"21–40"],c:[41,55,"41–55"],all:[1,55,"Todos"]};
+const RANGES={p120:[1,55,"Pág. 120"],p121:[56,114,"Pág. 121"],a:[1,20,"1–20"],b:[21,40,"21–40"],c:[41,55,"41–55"],d:[56,75,"56–75"],e:[76,95,"76–95"],f:[96,114,"96–114"],all:[1,114,"Todos"]};
 let opts={len:store.get('len',10),timer:store.get('timer',true),range:store.get('range','all')};
 if(!RANGES[opts.range])opts.range='all';
 let G=null,tick=null;
@@ -285,7 +374,7 @@ function home(){
   const best=store.get('best',{});
   const n=pool().length;
   app.innerHTML=header(false)+`
-   <p class="lead">Los ${V.length} verbos irregulares de la página 120: <b class="f1">infinitivo</b>, <b class="f2">pasado</b>, <b class="f3">participio</b> y su traducción. Cada acierto rápido suma más puntos.</p>
+   <p class="lead">Los ${V.length} verbos irregulares de las páginas 120 y 121: <b class="f1">infinitivo</b>, <b class="f2">pasado</b>, <b class="f3">participio</b> y su traducción. Cada acierto rápido suma más puntos.</p>
    <div class="row"><span class="lbl">Verbos</span>
      <div class="seg" role="group" aria-label="Verbos que entran">${Object.entries(RANGES).map(([k,r])=>`<button data-range="${k}" aria-pressed="${opts.range===k}">${r[2]}</button>`).join('')}</div></div>
    <div class="row"><span class="lbl">Partida</span>
@@ -313,7 +402,10 @@ function start(mode,review){
 }
 
 // Formas regulares inventadas para usarlas como trampas
+// En los phrasal verbs (wake up) solo cambia la primera palabra
+const ph=(w,f)=>{const[a,...r]=w.split(' ');return[f(a),...r].join(' ')};
 function regular(w){
+  if(/ /.test(w))return ph(w,regular);
   if(/e$/.test(w))return w+'d';
   if(/[^aeiou]y$/.test(w))return w.slice(0,-1)+'ied';
   if(/^[^aeiou]*[aeiou][^aeiouwxy]$/.test(w))return w+w.slice(-1)+'ed';
@@ -323,8 +415,8 @@ function distractors(v,which){
   const correct=which===2?v.a2:v.a3, other=which===2?v.a3:v.a2;
   const c=new Set();
   other.forEach(x=>c.add(x)); c.add(v.v1); c.add(regular(v.v1));
-  if(which===3){c.add(v.a2[0]+'en');c.add(regular(v.a2[0]))}
-  else{c.add(v.a3[0]+'ed')}
+  if(which===3){c.add(ph(v.a2[0],x=>x+'en'));c.add(regular(v.a2[0]))}
+  else{c.add(ph(v.a3[0],x=>x+'ed'))}
   // formas de otros verbos que se parecen (mismo patrón o misma inicial)
   shuffle(V.filter(o=>o.id!==v.id&&o.v1[0]===v.v1[0])).slice(0,3).forEach(o=>c.add(which===2?o.a2[0]:o.a3[0]));
   const out=[...c].filter(x=>!correct.includes(x)&&x!==v.v1||(!correct.includes(x)&&x===v.v1));
@@ -332,6 +424,8 @@ function distractors(v,which){
   // Prioridad: la otra columna (si es distinta), la regular, el infinitivo, y luego el resto
   const pri=[...other.filter(x=>!correct.includes(x)), regular(v.v1), v.v1].filter(x=>!correct.includes(x));
   const pick=[...new Set([...shuffle(pri).slice(0,2),...shuffle(clean)])].slice(0,3);
+  // Si faltan opciones (quit · quit · quit), se completa con formas de otros verbos
+  for(const o of shuffle(V)){if(pick.length>=3)break;const x=which===2?o.a2[0]:o.a3[0];if(!correct.includes(x)&&!pick.includes(x))pick.push(x)}
   return pick;
 }
 function sameMeaning(a,b){return a.esWords.some(w=>b.esWords.includes(w))}
@@ -350,8 +444,8 @@ function ask(){
       <div class="bigverb f1">${v.v1}</div><div class="ipa">/${v.i1}/ · ${esc(v.es)}</div>${sayBtn}`;
     answers=`<div class="names" id="ans">${opts4.map((o,i)=>`<button class="ans" data-i="${i}">${esc(o)}</button>`).join('')}</div>`;
   } else if(Q.type==='meaning'){
-    const others=shuffle(V.filter(o=>o.id!==v.id&&!sameMeaning(o,v))).slice(0,3);
-    Q.options=shuffle([v,...others]).map(o=>o.v1);
+    const others=[];shuffle(V.filter(o=>o.v1!==v.v1&&!sameMeaning(o,v))).forEach(o=>{if(others.length<3&&!others.some(x=>x.v1===o.v1))others.push(o)});
+    Q.optV=shuffle([v,...others]);Q.options=Q.optV.map(o=>o.v1);
     prompt=`<div class="q">¿Qué verbo significa…?</div><div class="bigverb es">${esc(v.es)}</div>`;
     answers=`<div class="names" id="ans">${Q.options.map((o,i)=>`<button class="ans" data-i="${i}">${esc(o)}</button>`).join('')}</div>`;
   } else if(Q.type==='writeRow'){
@@ -442,11 +536,12 @@ function choose(i,ms){
   let extra='';
   if(!ok&&i>=0){
     const pick=Q.options[i];
-    if(Q.type==='meaning'){const o=V.find(x=>x.v1===pick);if(o)extra=`<p class="fact">Has elegido <b>${o.v1}</b>, que significa ${esc(o.es)}.</p>`}
+    if(Q.type==='meaning'){const o=Q.optV[i];if(o)extra=`<p class="fact">Has elegido <b>${o.v1}</b>, que significa ${esc(o.es)}.</p>`}
     else if(pick===v.v1)extra=`<p class="fact">«${pick}» es el infinitivo, no ${Q.type==='past'?'el pasado':'el participio'}.</p>`;
     else if((Q.type==='past'?v.a3:v.a2).includes(pick))extra=`<p class="fact">«${esc(pick)}» es ${Q.type==='past'?'el participio (V3)':'el pasado (V2)'}.</p>`;
-    else if(pick===regular(v.v1))extra=`<p class="fact">«${pick}» no existe: es un verbo irregular, no lleva -ed.</p>`;
-    else {const o=V.find(x=>x.a2.includes(pick)||x.a3.includes(pick));if(o)extra=`<p class="fact">«${esc(pick)}» es una forma de <b>${o.v1}</b> (${esc(o.es)}).</p>`}
+    else {const o=V.find(x=>x.id!==v.id&&(x.a2.includes(pick)||x.a3.includes(pick)));
+      if(o)extra=`<p class="fact">«${esc(pick)}» es una forma de <b>${o.v1}</b> (${esc(o.es)}).</p>`;
+      else if(pick===regular(v.v1))extra=`<p class="fact">«${pick}» no existe: es un verbo irregular, no lleva -ed.</p>`}
   }
   feedback(ok,gained,i===-1?'time':null,extra);
 }
@@ -469,7 +564,9 @@ function written(inputs,ms,skipped,timeout){
       const t=norm(x.value);
       const lab=x.id==='w1'?'el infinitivo':x.id==='w2'?'el pasado':'el participio';
       let why='';
-      if(t===regular(v.v1))why=' Es irregular: no lleva -ed.';
+      const oth=V.find(o=>o.id!==v.id&&o.v1===v.v1&&(o.a2.includes(t)||o.a3.includes(t)));
+      if(oth)why=` Eso es de ${oth.v1} (${oth.es}).`;
+      else if(t===regular(v.v1))why=' Es irregular: no lleva -ed.';
       else if(x.id==='w2'&&v.a3.includes(t))why=' Eso es el participio.';
       else if(x.id==='w3'&&v.a2.includes(t))why=' Eso es el pasado.';
       return `Has escrito «${esc(x.value.trim())}» en ${lab}.${why}`});
