@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Página no encontrada · Juegos de estudio</title>
+<link rel="stylesheet" href="/juegos-estudio/estilos.css">
+<script>
+// Enlaces antiguos (cuando los juegos estaban sueltos en la raíz) → su sitio actual
+const MOVIDOS = {
+  "cuerpo-quest.html":   "6-primaria/ciencias-naturales/cuerpo-quest.html",
+  "elements-quest.html": "1-eso/biologia-geologia/elements-quest.html",
+  "mineral-quest.html":  "1-eso/biologia-geologia/mineral-quest.html",
+  "rocks-quest.html":    "1-eso/biologia-geologia/rocks-quest.html",
+  "verb-quest.html":     "1-eso/ingles/verb-quest.html"
+};
+const base = "/juegos-estudio/";
+const nombre = location.pathname.split("/").pop();
+if (MOVIDOS[nombre]) location.replace(base + MOVIDOS[nombre] + location.hash);
+</script>
+</head>
+<body>
+<div class="wrap">
+<h1>No encuentro esa página</h1>
+<p>Puede que el juego haya cambiado de sitio.</p>
+<a class="course" href="/juegos-estudio/"><span class="n">🏠</span><div><b>Ir a todos los juegos</b><span>Elige curso y asignatura</span></div><em>→</em></a>
+</div>
+</body>
+</html>
