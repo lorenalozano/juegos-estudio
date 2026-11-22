@@ -267,7 +267,7 @@ function writeBox(ph){
     <div class="row"><button type="submit" class="next" style="flex:1">Comprobar</button><button type="button" class="ghost" id="skip" style="padding:14px">No lo sé</button></div>
   </form>`;
 }
-const norm=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z]/g,'');
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z]/g,'');
 const ALT={Aluminium:["aluminum"],Sulfur:["sulphur"],Zinc:["zinc"],Iodine:["iodo"],Cesium:[]};
 function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
   for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
