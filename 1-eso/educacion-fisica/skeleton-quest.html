@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Skeleton Quest 1º ESO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#f1efe9; --surface:#ffffff; --ink:#1d1f24; --muted:#5d6270; --line:#d9d5cb;
+  --bone:#f3ead6; --edge:#8c7b58; --deco:#e2d8c1; --hover:#f0c98a;
+  --hl:#2463c9; --ok:#1d8a4b; --bad:#c2372b; --accent:#c2410c;
+  --okbg:#e2f3e8; --badbg:#fbe5e2; --hlbg:#e3ecfb;
+  --display:"Unbounded",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14161b; --surface:#1e2128; --ink:#eceef2; --muted:#a3a9b6; --line:#343844;
+  --bone:#d8ceb6; --edge:#6e624a; --deco:#4a4639; --hover:#e8b66a;
+  --hl:#6fa0f5; --ok:#3fbf73; --bad:#ec6a5c; --accent:#f08a4b;
+  --okbg:#183526; --badbg:#3d1f1c; --hlbg:#1d2b45; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14161b; --surface:#1e2128; --ink:#eceef2; --muted:#a3a9b6; --line:#343844;
+  --bone:#d8ceb6; --edge:#6e624a; --deco:#4a4639; --hover:#e8b66a;
+  --hl:#6fa0f5; --ok:#3fbf73; --bad:#ec6a5c; --accent:#f08a4b;
+  --okbg:#183526; --badbg:#3d1f1c; --hlbg:#1d2b45; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;
+  padding:12px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));
+  -webkit-tap-highlight-color:transparent}
+.wrap{max-width:860px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-family:var(--display);font-weight:800;font-size:18px}
+.brand small{display:block;font-family:var(--body);font-weight:400;font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.ghost{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:14px;color:inherit;text-decoration:none;white-space:nowrap}
+.lead{color:var(--muted);margin:0;line-height:1.5}
+.modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.mode{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:6px;transition:transform .12s}
+.mode:active{transform:scale(.97)}
+.mode b{font-family:var(--display);font-size:15px}
+.mode span{font-size:14px;color:var(--muted);line-height:1.4}
+.mode i{font-style:normal;font-size:12.5px;font-weight:700;color:var(--accent)}
+.hud{display:flex;gap:12px;align-items:center;font-size:14px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.hud .grow{flex:1}
+.hud b{color:var(--ink)}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar>div{height:100%;background:var(--accent);transition:width .25s}
+.prompt{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.q{font-size:14px;color:var(--muted)}
+.big{font-family:var(--display);font-weight:800;font-size:clamp(24px,7vw,38px);line-height:1.1;word-break:break-word}
+.common{font-weight:700;font-size:16px}
+.es{font-size:14px;color:var(--muted)}
+.say{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;font-size:13px;color:var(--muted);background:var(--surface)}
+.say svg{width:16px;height:16px}
+.small-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.stage{display:flex;justify-content:center;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 4px 6px}
+.view{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1;min-width:0}
+.view svg{width:100%;max-width:230px;height:auto;max-height:58vh;display:block;touch-action:manipulation}
+.view .cap{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.bone .o{fill:none;stroke:var(--edge);stroke-linecap:round;stroke-linejoin:round}
+.bone .f{fill:none;stroke:var(--bone);stroke-linecap:round;stroke-linejoin:round}
+.bone .s{fill:var(--bone);stroke:var(--edge);stroke-width:1.4;stroke-linejoin:round}
+.bone .d{fill:var(--edge);pointer-events:none}
+.bone .dl{fill:none;stroke:var(--edge);stroke-width:1;pointer-events:none}
+.bone .h{fill:none;stroke:transparent;stroke-linecap:round;pointer-events:stroke}
+.deco path,.deco ellipse{fill:var(--deco);stroke:var(--edge);stroke-width:1}
+.deco .ln{fill:none;stroke:var(--edge);stroke-width:2.2;stroke-linecap:round}
+.deco{pointer-events:none}
+.bone .f,.bone .s{transition:fill .15s,stroke .15s}
+.tap .bone{cursor:pointer}
+@media (hover:hover){.tap .bone:hover .f{stroke:var(--hover)}.tap .bone:hover .s{fill:var(--hover)}}
+.bone.hl .f{stroke:var(--hl)}.bone.hl .s{fill:var(--hl)}
+.bone.ok .f{stroke:var(--ok)}.bone.ok .s{fill:var(--ok)}
+.bone.bad .f{stroke:var(--bad)}.bone.bad .s{fill:var(--bad)}
+.bone.seen .f{stroke:#e9d29c}
+.bone.blink .f,.bone.blink .s{animation:blink .9s ease-in-out infinite}
+@keyframes blink{50%{opacity:.45}}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-height:58px;padding:10px;font-family:var(--display);font-weight:700;font-size:16px;box-shadow:inset 0 -3px 0 var(--line);word-break:break-word}
+.opt small{display:block;font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted)}
+.opt.dim{opacity:.35}
+.opt.right{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.right small,.opt.wrong small{color:#fff}
+.opt.wrong{background:var(--bad);border-color:var(--bad);color:#fff}
+.spell{display:flex;gap:8px}
+.spell input{flex:1;min-width:0;font:inherit;font-size:20px;font-family:var(--display);padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--ink);text-transform:uppercase}
+.primary{background:var(--accent);color:#fff;border-radius:12px;padding:12px 18px;font-weight:700;font-size:16px}
+.fb{border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;border:2px solid}
+.fb.good{background:var(--okbg);border-color:var(--ok)}
+.fb.badf{background:var(--badbg);border-color:var(--bad)}
+.fb.info{background:var(--hlbg);border-color:var(--hl)}
+.fb h3{font-size:17px}
+.fb p{margin:0;line-height:1.45}
+.fb .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match .col{display:flex;flex-direction:column;gap:8px}
+.mt{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-height:50px;padding:8px 10px;font-weight:700;font-size:15px;box-shadow:inset 0 -3px 0 var(--line);transition:opacity .25s}
+.mt.en{font-family:var(--display)}
+.mt.sel{background:var(--hl);border-color:var(--hl);color:#fff}
+.mt.done{opacity:.25;pointer-events:none;background:var(--ok);color:#fff}
+.mt.wrong{background:var(--bad);color:#fff}
+.result{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center}
+.stars{font-size:34px;letter-spacing:6px;color:var(--accent)}
+.stars .off{color:var(--line)}
+.miss{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.miss span{background:var(--badbg);border:1px solid var(--bad);border-radius:999px;padding:4px 10px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 10px;font-size:13.5px}
+.chips button.seen{background:var(--hlbg);border-color:var(--hl)}
+.best{font-size:13px;color:var(--muted)}
+@media (max-width:420px){.opt{font-size:14.5px}.mt{font-size:14px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const BONES=[
+ {id:'skull',en:'Skull',c:'',es:'cráneo',tip:'It protects the brain. It is the bony "box" of the head.'},
+ {id:'clavicle',en:'Clavicle',c:'Collar bone',es:'clavícula',tip:'Think of a shirt collar: the clavicle sits right there, between the breastbone and the shoulder.'},
+ {id:'scapula',en:'Scapula',c:'Shoulder blade',es:'escápula / omóplato',tip:'You see it from the BACK. A flat, triangle-shaped bone on the upper back, like a blade.'},
+ {id:'sternum',en:'Sternum',c:'Breastbone',es:'esternón',tip:'A flat bone in the middle of the chest. The ribs join onto it.'},
+ {id:'rib',en:'Rib',c:'',es:'costilla',tip:'We have 12 pairs. They make the rib cage, which protects the heart and lungs.'},
+ {id:'humerus',en:'Humerus',c:'',es:'húmero',tip:'The upper arm bone: it goes from the shoulder to the elbow.'},
+ {id:'vertebrae',en:'Vertebrae',c:'Spine',es:'vértebras (columna)',tip:'One is a "vertebra"; many are "vertebrae". Together they make the spine.'},
+ {id:'ulna',en:'Ulna',c:'',es:'cúbito',tip:'Forearm bone on the LITTLE FINGER side (inside).'},
+ {id:'radius',en:'Radius',c:'',es:'radio',tip:'Forearm bone on the THUMB side (outside). Tip: the radius rotates with your thumb.'},
+ {id:'sacrum',en:'Sacrum',c:'',es:'sacro',tip:'A triangle at the bottom of the spine, between the two hip bones. Easy to see from the back.'},
+ {id:'femur',en:'Femur',c:'Thigh bone',es:'fémur',tip:'The thigh bone: the longest and strongest bone in the body.'},
+ {id:'patella',en:'Patella',c:'Kneecap',es:'rótula',tip:'The kneecap: a little "cap" that covers the front of the knee.'},
+ {id:'tibia',en:'Tibia',c:'Shin bone',es:'tibia',tip:'The shin bone: the THICK bone of the lower leg, at the front and inside.'},
+ {id:'fibula',en:'Fibula',c:'Calf bone',es:'peroné',tip:'The calf bone: the THIN bone of the lower leg, on the outside.'}
+];
+const B=Object.fromEntries(BONES.map(b=>[b.id,b]));
+const ACCEPT={vertebrae:['vertebrae','vertebra','vertebras','spine'],rib:['rib','ribs'],scapula:['scapula','shoulderblade'],clavicle:['clavicle','collarbone'],sternum:['sternum','breastbone'],femur:['femur','thighbone'],patella:['patella','kneecap'],tibia:['tibia','shinbone'],fibula:['fibula','calfbone']};
+
+/* ---------- Skeleton drawing ---------- */
+const MIR='transform="translate(200 0) scale(-1 1)"';
+function ln(d,w){return `<path class="o" d="${d}" stroke-width="${w+2.6}"/><path class="f" d="${d}" stroke-width="${w}"/><path class="h" d="${d}" stroke-width="${Math.max(w+12,18)}"/>`}
+function both(inner){return inner+`<g ${MIR}>${inner}</g>`}
+function g(id,inner){return `<g class="bone" data-b="${id}">${inner}</g>`}
+function ribs(){let s='';for(let i=0;i<7;i++){const y=98+i*11,x=58+Math.max(0,i-3)*2.5;s+=ln(`M97,${y} C80,${y-5} ${x},${y-1} ${x+1},${y+12} C${x+2},${y+18} ${x+6},${y+22} ${x+10},${y+24}`,3)}return both(s)}
+function vert(){let s='';for(let y=68;y<=236;y+=7.4)s+=`<rect class="s" x="94.5" y="${y.toFixed(1)}" width="11" height="5.6" rx="2"/>`;return s+`<path class="h" d="M100,68 V240" stroke-width="16"/>`}
+function skullFront(){return `<path class="s" d="M76,38 C76,18 88,8 100,8 C112,8 124,18 124,38 C124,48 120,54 117,57 L115,68 C112,73 106,75 100,75 C94,75 88,73 85,68 L83,57 C80,54 76,48 76,38Z"/>
+<ellipse class="d" cx="91" cy="38" rx="5.5" ry="5"/><ellipse class="d" cx="109" cy="38" rx="5.5" ry="5"/>
+<path class="d" d="M100,45 L97,52 H103Z"/><path class="dl" d="M89,63 H111 M93,60 V67 M97,60 V67 M101,60 V67 M105,60 V67 M109,61 V66"/>`}
+function skullBack(){return `<path class="s" d="M76,38 C76,18 88,8 100,8 C112,8 124,18 124,38 C124,52 116,64 100,66 C84,64 76,52 76,38Z"/>
+<path class="dl" d="M100,9 V30 L88,44 M100,30 L112,44"/>`}
+const sternum=`<path class="s" d="M95,92 H105 L106,100 L105,148 L100,160 L95,148 L94,100Z"/>`;
+const clav=both(ln('M97,91 C88,86 75,81 62,87',4.5));
+const scap=both(`<path class="s" d="M63,94 C72,92 84,95 93,99 C90,116 86,134 82,150 C76,130 68,112 63,94Z"/><path class="dl" d="M66,100 C74,102 82,104 90,104"/>`);
+const hum=both(ln('M61,95 L54,188',8));
+const rad=both(ln('M50,195 L39,281',4.5));
+const uln=both(ln('M58,195 L49,283',4.5));
+const fem=both(ln('M90,262 Q80,262 80,272 L84,360',8.5));
+const pat=both(`<ellipse class="s" cx="84" cy="368" rx="6.5" ry="7.5"/><path class="h" d="M84,366 v4" stroke-width="20"/>`);
+const tib=both(ln('M88,377 L89,447',7));
+const fib=both(ln('M77,379 L80,445',3.5));
+const sacrumF=`<path class="s" d="M92,240 H108 L105,262 L100,270 L95,262Z"/>`;
+const sacrumB=`<path class="s" d="M90,238 H110 L106,262 L100,272 L94,262Z"/><path class="dl" d="M95,246 H105 M96,253 H104 M97,260 H103"/>`;
+const pelvis=`<g class="deco"><path d="M68,238 C62,252 66,268 80,276 L92,278 L97,262 L100,270 L103,262 L108,278 L120,276 C134,268 138,252 132,238 C122,247 110,246 100,240 C90,246 78,247 68,238Z"/></g>`;
+const hands=`<g class="deco">${both(`<path class="ln" d="M44,286 L36,318 M46,287 L42,322 M48,287 L48,323 M50,286 L53,320 M41,284 L30,304"/><ellipse cx="45" cy="287" rx="7" ry="5"/>`)}</g>`;
+const feet=`<g class="deco">${both(`<path d="M80,449 L94,449 L99,466 Q86,470 72,467 Z"/>`)}</g>`;
+function front(){return `<svg viewBox="0 0 200 474" role="img" aria-label="Skeleton seen from the front">
+${g('vertebrae',vert())}${g('rib',ribs())}${g('sternum',sternum)}${g('clavicle',clav)}${pelvis}${g('sacrum',sacrumF)}
+${g('humerus',hum)}${g('radius',rad)}${g('ulna',uln)}${hands}${g('femur',fem)}${g('fibula',fib)}${g('tibia',tib)}${g('patella',pat)}${feet}${g('skull',skullFront())}</svg>`}
+function back(){return `<svg viewBox="0 0 200 474" role="img" aria-label="Skeleton seen from the back">
+${g('rib',ribs())}${g('vertebrae',vert())}${g('scapula',scap)}${g('clavicle',clav)}${pelvis}${g('sacrum',sacrumB)}
+${g('humerus',hum)}${g('radius',rad)}${g('ulna',uln)}${hands}${g('femur',fem)}${g('fibula',fib)}${g('tibia',tib)}${feet}${g('skull',skullBack())}</svg>`}
+function stage(tap){return `<div class="stage ${tap?'tap':''}" id="stage"><div class="view">${front()}<span class="cap">Front</span></div><div class="view">${back()}<span class="cap">Back</span></div></div>`}
+function mark(id,cls){document.querySelectorAll(`.bone[data-b="${id}"]`).forEach(e=>e.classList.add(cls))}
+function clearMarks(){document.querySelectorAll('.bone').forEach(e=>e.classList.remove('hl','ok','bad','blink'))}
+
+/* ---------- Helpers ---------- */
+const $=id=>document.getElementById(id);
+const app=$('app');
+const ONLINE=/github\.io$/.test(location.hostname);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/^the\s+/,'').replace(/[^a-z]/g,'');
+function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem('skq_'+k)||'null');localStorage.setItem('skq_'+k,JSON.stringify(v))}catch(e){return null}}
+const SPK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>`;
+function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=.85;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function sayBtn(t){return `<button class="say" data-say="${t}">${SPK} Listen</button>`}
+document.addEventListener('click',e=>{const s=e.target.closest('[data-say]');if(s)say(s.dataset.say)});
+function header(back){return `<div class="top"><div class="brand">Skeleton Quest<small>Physical Education · 1º ESO · The skeletal system</small></div><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">${ONLINE?'<a class="ghost" href="./">← All games</a>':''}${back?'<button class="ghost" id="home">Home</button>':''}</div></div>`}
+function bindHome(){const h=$('home');if(h)h.onclick=home}
+function boneName(b){return `<b>${b.en.toUpperCase()}</b>${b.c?` (${b.c})`:''} · Spanish: ${b.es}`}
+
+/* ---------- Home ---------- */
+const MODES=[
+ {k:'learn',t:'1 · Explore',d:'Tap each bone to see its name, its common name and a tip to remember it.',i:'Start here'},
+ {k:'find',t:'2 · Find the bone',d:'I say a bone, you tap it on the skeleton.',i:'14 bones'},
+ {k:'name',t:'3 · Name it',d:'A bone lights up: choose its name.',i:'14 questions'},
+ {k:'match',t:'4 · Matching pairs',d:'Match each bone with its common name or its Spanish name.',i:'2 rounds'},
+ {k:'spell',t:'5 · Spell it',d:'A bone lights up: write its name with no spelling mistakes.',i:'Exam practice'},
+ {k:'exam',t:'6 · Final test',d:'A mix of everything: find, choose, common names and spelling.',i:'15 questions'}
+];
+function home(){
+  const best=store('best')||{};
+  app.innerHTML=header(false)+`
+  <h1 style="font-size:clamp(22px,6vw,30px)">8. The skeletal system</h1>
+  <p class="lead">Learn the 14 bones from your PE worksheet: their scientific name and their common name (<i>thigh bone, kneecap…</i>).</p>
+  <div class="modes">${MODES.map(m=>`<button class="mode" data-m="${m.k}"><b>${m.t}</b><span>${m.d}</span><i>${m.i}</i>${best[m.k]!=null?`<span class="best">Best: ${best[m.k]}%</span>`:''}</button>`).join('')}</div>`;
+  app.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>start(b.dataset.m));
+  window.scrollTo(0,0);
+}
+
+/* ---------- Explore ---------- */
+function learn(){
+  const seen=new Set(store('seen')||[]);
+  app.innerHTML=header(true)+`
+  <div class="prompt" id="info"><div class="q">Tap a bone on the skeleton</div><div class="es">You have discovered <b id="cnt">${seen.size}</b> of 14</div></div>
+  ${stage(true)}
+  <div class="chips" id="chips">${BONES.map(b=>`<button data-c="${b.id}" class="${seen.has(b.id)?'seen':''}">${b.en}</button>`).join('')}</div>`;
+  bindHome();
+  const show=id=>{
+    const b=B[id];clearMarks();mark(id,'hl');seen.add(id);store('seen',[...seen]);
+    $('info').innerHTML=`<div class="big">${b.en}</div>${b.c?`<div class="common">${b.c}</div>`:''}<div class="es">Spanish: <b>${b.es}</b></div><p class="lead" style="max-width:52ch">${b.tip}</p>${sayBtn(b.en+(b.c?'. '+b.c:''))}`;
+    document.querySelector(`[data-c="${id}"]`).classList.add('seen');
+    say(b.en);
+  };
+  $('stage').onclick=e=>{const g=e.target.closest('.bone');if(g)show(g.dataset.b)};
+  $('chips').onclick=e=>{const c=e.target.closest('[data-c]');if(c){show(c.dataset.c);$('info').scrollIntoView({behavior:'smooth',block:'nearest'})}};
+}
+
+/* ---------- Quiz engine ---------- */
+let S;
+function buildQs(mode,only){
+  const pool=only||BONES.map(b=>b.id);
+  if(mode==='find')return shuffle(pool).map(id=>({t:'find',id}));
+  if(mode==='name')return shuffle(pool).map(id=>({t:'mc',id,how:'hl'}));
+  if(mode==='spell')return shuffle(pool).map(id=>({t:'spell',id}));
+  // exam
+  const types=['find','hl','common','es','spell'];
+  let qs=shuffle(pool).concat(shuffle(pool)).slice(0,only?pool.length:15);
+  return qs.map((id,i)=>{let t=types[i%types.length];if(t==='common'&&!B[id].c)t='es';
+    return t==='find'?{t:'find',id}:t==='spell'?{t:'spell',id}:{t:'mc',id,how:t}}).sort(()=>Math.random()-.5);
+}
+function start(mode,only){
+  if(mode==='learn')return learn();
+  if(mode==='match')return match();
+  S={mode,qs:buildQs(mode,only),i:0,score:0,miss:[]};
+  ask();
+}
+function hud(){const n=S.qs.length;return `<div class="hud"><span>Question <b>${S.i+1}</b>/${n}</span><span class="grow"></span><span>Points <b>${S.score}</b></span></div><div class="bar"><div style="width:${S.i/n*100}%"></div></div>`}
+function options(id,label){const others=shuffle(BONES.filter(b=>b.id!==id)).slice(0,3);return shuffle([B[id],...others]).map(b=>`<button class="opt" data-o="${b.id}">${label(b)}</button>`).join('')}
+function ask(){
+  const q=S.qs[S.i],b=B[q.id];q.tries=0;
+  let top='',body='',tap=false;
+  if(q.t==='find'){
+    tap=true;
+    top=`<div class="q">Tap on the skeleton…</div><div class="big">${b.en}</div>${b.c?`<div class="common">${b.c}</div>`:''}<div class="small-btns">${sayBtn(b.en)}<button class="say" id="hint">Spanish hint</button></div><div class="es" id="hinttx"></div>`;
+  }else if(q.t==='mc'){
+    if(q.how==='hl'){top=`<div class="q">What's the name of the <b style="color:var(--hl)">blue</b> bone?</div>`;body=`<div class="opts" id="opts">${options(q.id,x=>x.en)}</div>`}
+    if(q.how==='common'){top=`<div class="q">Which bone is the…</div><div class="big">${b.c}</div>`;body=`<div class="opts" id="opts">${options(q.id,x=>x.en)}</div>`}
+    if(q.how==='es'){top=`<div class="q">What is the English name for…</div><div class="big">${b.es}</div>`;body=`<div class="opts" id="opts">${options(q.id,x=>x.en)}</div>`}
+  }else{
+    top=`<div class="q">Write the name of the <b style="color:var(--hl)">blue</b> bone</div><div class="small-btns"><button class="say" id="letter">Show a letter (−3 points)</button></div><div class="big" id="pre" style="letter-spacing:.12em"></div>`;
+    body=`<form class="spell" id="sp" autocomplete="off"><input id="inp" aria-label="Bone name" autocapitalize="characters" spellcheck="false"><button class="primary">OK</button></form>`;
+  }
+  app.innerHTML=header(true)+hud()+`<div class="prompt">${top}</div>${body}<div id="fb"></div>${stage(tap)}`;
+  bindHome();
+  if(q.t==='spell'||q.how==='hl')mark(q.id,'hl');
+  if(q.t==='find'){
+    $('hint').onclick=()=>{$('hinttx').textContent='Spanish: '+b.es;q.hint=1};
+    $('stage').onclick=e=>{const g=e.target.closest('.bone');if(!g||q.done)return;tapBone(q,g.dataset.b)};
+  }
+  if(q.t==='mc')$('opts').onclick=e=>{const o=e.target.closest('[data-o]');if(o&&!q.done)pick(q,o)};
+  if(q.t==='spell'){
+    q.letters=0;
+    $('letter').onclick=()=>{if(q.letters<b.en.length-1){q.letters++;$('pre').textContent=b.en.slice(0,q.letters).toUpperCase()+'…'}$('inp').focus()};
+    $('sp').onsubmit=e=>{e.preventDefault();if(!q.done)spellCheck(q)};
+    setTimeout(()=>$('inp').focus({preventScroll:true}),50);
+  }
+}
+function tapBone(q,id){
+  const b=B[q.id];
+  clearMarks();
+  if(id===q.id){
+    const pts=q.tries===0?(q.hint?7:10):5;
+    finish(q,true,pts,`<p>${boneName(b)}</p>`);mark(id,'ok');
+  }else{
+    q.tries++;mark(id,'bad');
+    if(q.tries>=2){mark(q.id,'ok');mark(q.id,'blink');finish(q,false,0,`<p>You tapped the <b>${B[id].en}</b>.</p><p>The right bone is flashing green: ${boneName(b)}</p>`)}
+    else $('fb').innerHTML=`<div class="fb badf"><p>That is the <b>${B[id].en}</b>. Try again!</p></div>`;
+  }
+}
+function pick(q,o){
+  const ok=o.dataset.o===q.id;
+  document.querySelectorAll('.opt').forEach(x=>{if(x.dataset.o===q.id)x.classList.add('right');else if(x===o)x.classList.add('wrong');else x.classList.add('dim')});
+  clearMarks();mark(q.id,ok?'ok':'hl');if(!ok)mark(q.id,'blink');
+  finish(q,ok,ok?10:0,`<p>${boneName(B[q.id])}</p>`);
+}
+function spellCheck(q){
+  const b=B[q.id],v=norm($('inp').value);if(!v)return;
+  const okList=ACCEPT[q.id]||[norm(b.en)];
+  const ok=okList.includes(v);
+  q.tries++;
+  if(ok){clearMarks();mark(q.id,'ok');finish(q,true,Math.max(10-q.letters*3,2),`<p>${boneName(b)}</p>${v!==norm(b.en)?`<p>OK, but on the worksheet it is called <b>${b.en}</b>.</p>`:''}`)}
+  else if(q.tries<2){$('fb').innerHTML=`<div class="fb badf"><p>Almost… check the spelling and try again.</p></div>`;$('inp').select()}
+  else{clearMarks();mark(q.id,'hl');finish(q,false,0,`<p>It is spelt: <b style="font-size:20px;letter-spacing:.06em">${b.en.toUpperCase()}</b></p><p>${boneName(b)}</p>`)}
+}
+function finish(q,ok,pts,html){
+  q.done=1;S.score+=pts;if(!ok)S.miss.push(q.id);
+  const last=S.i===S.qs.length-1,b=B[q.id];
+  $('fb').innerHTML=`<div class="fb ${ok?'good':'badf'}"><h3>${ok?'Correct! +'+pts:'Oops! Review this one'}</h3>${html}<p class="es">${b.tip}</p><div class="row">${sayBtn(b.en)}<button class="primary" id="next">${last?'See results':'Next →'}</button></div></div>`;
+  document.querySelectorAll('.hud b')[1].textContent=S.score;
+  $('next').onclick=()=>{if(last)result();else{S.i++;ask()}};
+  $('next').focus({preventScroll:true});
+  $('fb').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function result(){
+  const max=S.qs.length*10,pct=Math.round(S.score/max*100),st=pct>=90?3:pct>=65?2:pct>=40?1:0;
+  const best=store('best')||{};if(best[S.mode]==null||pct>best[S.mode]){best[S.mode]=pct;store('best',best)}
+  const miss=[...new Set(S.miss)];
+  app.innerHTML=header(true)+`<div class="result"><div class="stars">${[0,1,2].map(i=>`<span class="${i<st?'':'off'}">★</span>`).join('')}</div>
+  <h2>${pct}%</h2><p class="lead">${S.score} of ${max} points. ${pct>=90?'You have mastered it!':pct>=65?'Very good! A bit more practice and it will be perfect.':'Keep practising: review your mistakes.'}</p>
+  ${miss.length?`<p class="lead">Bones to review:</p><div class="miss">${miss.map(id=>`<span>${B[id].en} · ${B[id].es}</span>`).join('')}</div>`:''}
+  <div class="small-btns">${miss.length?'<button class="primary" id="redo">Practise mistakes only</button>':''}<button class="ghost" id="again">Play again</button></div></div>`;
+  bindHome();
+  if($('redo'))$('redo').onclick=()=>start(S.mode,miss);
+  $('again').onclick=()=>start(S.mode);
+  window.scrollTo(0,0);
+}
+
+/* ---------- Match ---------- */
+function match(){
+  const rounds=[shuffle(BONES).slice(0,7)];rounds.push(BONES.filter(b=>!rounds[0].includes(b)));
+  let r=0,errors=0;
+  function round(){
+    const set=rounds[r];
+    const right=shuffle(set.map(b=>({id:b.id,tx:Math.random()<.5&&b.c?b.c:b.es})));
+    app.innerHTML=header(true)+`<div class="hud"><span>Round <b>${r+1}</b>/2</span><span class="grow"></span><span>Mistakes <b id="err">${errors}</b></span></div>
+    <div class="prompt"><div class="q">Match each bone with its partner</div><div class="es">Tap a bone on the left, then its partner on the right</div></div>
+    <div class="match"><div class="col">${shuffle(set).map(b=>`<button class="mt en" data-l="${b.id}">${b.en}</button>`).join('')}</div>
+    <div class="col">${right.map(x=>`<button class="mt" data-r="${x.id}">${x.tx}</button>`).join('')}</div></div><div id="fb"></div>`;
+    bindHome();
+    let sel=null,left=set.length;
+    app.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{app.querySelectorAll('[data-l]').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=b;say(B[b.dataset.l].en)});
+    app.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{
+      if(!sel){$('fb').innerHTML='<div class="fb info"><p>First tap a name in the left column.</p></div>';return}
+      if(b.dataset.r===sel.dataset.l){sel.classList.add('done');b.classList.add('done');sel.classList.remove('sel');sel=null;$('fb').innerHTML='';
+        if(--left===0){if(r===0){r=1;$('fb').innerHTML='<div class="fb good"><h3>Round complete!</h3><div class="row"><span></span><button class="primary" id="nr">Round 2 →</button></div></div>';$('nr').onclick=round}
+          else{const pct=Math.max(0,Math.round(100-errors*100/14));const best=store('best')||{};if(best.match==null||pct>best.match){best.match=pct;store('best',best)}
+            $('fb').innerHTML=`<div class="fb good"><h3>All pairs matched! ${errors} mistake${errors===1?'':'s'}</h3><p>Score: ${pct}%</p><div class="row"><button class="ghost" id="ag">Play again</button><button class="primary" id="hm">Menu</button></div></div>`;$('ag').onclick=match;$('hm').onclick=home}}}
+      else{errors++;$('err').textContent=errors;b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),450);$('fb').innerHTML=`<div class="fb badf"><p><b>${B[sel.dataset.l].en}</b> is not "${b.textContent}". Try another one!</p></div>`}
+    });
+  }
+  round();
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&$('next')&&document.activeElement!==$('next')){e.preventDefault();$('next').click()}});
+home();
+</script>
+</body>
+</html>

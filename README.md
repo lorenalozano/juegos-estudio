@@ -17,6 +17,7 @@ estilos.css                 Estilos comunes de todos los menús
   biologia-geologia/        geosphere, mineral, rocks, elements
   lengua/                   tildes-quest.html
   ingles/                   verb-quest.html
+  educacion-fisica/         skeleton-quest.html
 ```
 
 ## Añadir un juego
