@@ -11,6 +11,7 @@ estilos.css                 Estilos comunes de todos los menús
 6-primaria/
   index.html                Menú de asignaturas de 6º
   lengua/                   lengua-tema2-quest.html
+  ingles/                   landscape-explorer.html
   ciencias-naturales/       cuerpo-quest.html
 1-eso/
   index.html                Menú de asignaturas de 1º ESO
