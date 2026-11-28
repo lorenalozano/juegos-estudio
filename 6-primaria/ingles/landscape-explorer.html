@@ -7,12 +7,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap">
 <style>
-/* Layout: an expedition map — home is a grid of "stations", each round is a field-card with a route-progress bar. */
+/* Layout: an expedition map. Home is a grid of "stations"; each round is a field card with a route-progress bar. */
 :root{
   --bg:#eef3ee; --paper:#ffffff; --ink:#1f2e2a; --muted:#5b6b66; --line:#cfdcd5;
   --river:#1d7f86; --river-soft:#d6eeee; --lava:#d9572b; --lava-soft:#fbe3d8;
-  --sand:#e9b949; --sand-soft:#fbf0d2; --leaf:#2f8f4e; --leaf-soft:#dcf1e2;
-  --bad:#c0392b; --bad-soft:#f9dedb;
+  --sand:#b8860b; --sand-soft:#fbf0d2; --leaf:#2f8f4e; --leaf-soft:#dcf1e2;
+  --plum:#7a4fb5; --sky:#2f6fb8; --olive:#6b7a1f;
+  --bad:#c0392b; --bad-soft:#f9dedb; --on:#ffffff;
   --contour:rgba(29,127,134,.08);
   --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
   --body:"Nunito","Segoe UI",system-ui,sans-serif;
@@ -21,65 +22,82 @@
   --bg:#121a18; --paper:#1b2623; --ink:#e7efec; --muted:#9db0aa; --line:#2f3f3a;
   --river:#4fc0c6; --river-soft:#143537; --lava:#f0805a; --lava-soft:#3d2219;
   --sand:#f0c862; --sand-soft:#3a3018; --leaf:#5cc17d; --leaf-soft:#173322;
-  --bad:#ff7a6b; --bad-soft:#3d1c19; --contour:rgba(79,192,198,.07); color-scheme:dark}}
+  --plum:#b896ec; --sky:#7fb2f0; --olive:#bccb5e;
+  --bad:#ff7a6b; --bad-soft:#3d1c19; --on:#10201c; --contour:rgba(79,192,198,.07); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121a18; --paper:#1b2623; --ink:#e7efec; --muted:#9db0aa; --line:#2f3f3a;
   --river:#4fc0c6; --river-soft:#143537; --lava:#f0805a; --lava-soft:#3d2219;
   --sand:#f0c862; --sand-soft:#3a3018; --leaf:#5cc17d; --leaf-soft:#173322;
-  --bad:#ff7a6b; --bad-soft:#3d1c19; --contour:rgba(79,192,198,.07); color-scheme:dark}
+  --plum:#b896ec; --sky:#7fb2f0; --olive:#bccb5e;
+  --bad:#ff7a6b; --bad-soft:#3d1c19; --on:#10201c; --contour:rgba(79,192,198,.07); color-scheme:dark}
 *{box-sizing:border-box}
 body{
-  background:var(--bg); color:var(--ink); font-family:var(--body); font-size:17px; line-height:1.5;
+  margin:0;background:var(--bg); color:var(--ink); font-family:var(--body); font-size:17px; line-height:1.5;
   background-image:repeating-radial-gradient(circle at 15% 20%, transparent 0 22px, var(--contour) 22px 24px),
                    repeating-radial-gradient(circle at 85% 85%, transparent 0 26px, var(--contour) 26px 28px);
   min-height:100vh;
 }
-.wrap{max-width:860px;margin:0 auto;padding-block:24px 48px;
+.wrap{max-width:860px;margin:0 auto;padding-block:20px 48px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
-header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+button{font:inherit}
+.menu{display:inline-block;font-weight:800;color:var(--river);text-decoration:none;margin-bottom:10px}
+.menu:hover{text-decoration:underline}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
 header.top h1{font-size:clamp(2rem,6vw,3rem);font-weight:800;color:var(--river)}
 header.top h1 span{color:var(--lava)}
 .unit{font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:.75rem;color:var(--muted)}
 .total{font-family:var(--display);font-weight:800;background:var(--sand-soft);color:var(--ink);border:2px solid var(--sand);
   border-radius:999px;padding:4px 14px;font-size:1rem}
 .intro{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.label{font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:.75rem;color:var(--muted);margin:20px 0 8px}
 
-.stations{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.station{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:6px;background:var(--paper);
-  border:2px solid var(--line);border-radius:18px;padding:16px 18px;transition:transform .15s,border-color .15s;position:relative}
+.stations{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.station{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:4px;background:var(--paper);
+  border:2px solid var(--line);border-radius:18px;padding:14px 16px;transition:transform .15s,border-color .15s;position:relative}
 .station:hover{transform:translateY(-3px);border-color:var(--c)}
 .station:focus-visible{outline:3px solid var(--c);outline-offset:3px}
-.station .pin{width:38px;height:38px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--c);
+.station .pin{width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--c);
   display:grid;place-items:center;margin-bottom:4px}
-.station .pin b{transform:rotate(45deg);color:var(--paper);font-family:var(--display);font-size:1.1rem}
-.station h3{font-size:1.3rem}
-.station p{margin:0;color:var(--muted);font-size:.95rem}
-.station .best{font-size:.8rem;font-weight:800;color:var(--c);text-transform:uppercase;letter-spacing:.06em}
-.station.big{grid-column:1/-1;flex-direction:row;align-items:center;gap:16px;background:var(--river);border-color:var(--river);color:var(--paper)}
-.station.big p,.station.big .best{color:var(--paper);opacity:.9}
-.station.big .pin{background:var(--sand)}
-.station.big .pin b{color:#1f2e2a}
+.station .pin b{transform:rotate(45deg);color:var(--on);font-family:var(--display);font-size:1rem}
+.station h3{font-size:1.2rem}
+.station p{margin:0;color:var(--muted);font-size:.92rem}
+.station .best{font-size:.78rem;font-weight:800;color:var(--c);text-transform:uppercase;letter-spacing:.06em}
+.featured{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.station.big{background:var(--c);border-color:var(--c);color:var(--on);padding:18px}
+.station.big h3{font-size:1.5rem}
+.station.big p,.station.big .best{color:var(--on);opacity:.92}
+.station.big .pin{background:var(--on)}
+.station.big .pin b{color:var(--c)}
+.station.soft{background:var(--sand-soft);border-color:var(--sand)}
+.station[disabled]{opacity:.55;cursor:default;transform:none}
 
 .rules{margin-top:22px;background:var(--paper);border:2px dashed var(--line);border-radius:18px;padding:16px 18px}
 .rules h2{font-size:1.25rem;color:var(--lava);margin-bottom:8px}
-.rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.rules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
 .rule{background:var(--bg);border-radius:12px;padding:10px 12px;font-size:.92rem}
 .rule strong{display:block;font-family:var(--display);font-size:1rem;color:var(--river)}
 .rule code{font-family:var(--body);font-weight:800;color:var(--lava)}
+.tips{margin:12px 0 0;padding-left:20px;font-size:.95rem}
+.tips li{padding:2px 0}
 
 /* Play screen */
-.bar{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
 .back{all:unset;cursor:pointer;font-weight:800;color:var(--river);padding:6px 10px;border-radius:10px}
 .back:focus-visible,.back:hover{background:var(--river-soft)}
-.route{flex:1;min-width:140px;height:14px;background:var(--line);border-radius:999px;overflow:hidden}
+.route{flex:1;min-width:120px;height:14px;background:var(--line);border-radius:999px;overflow:hidden}
 .route i{display:block;height:100%;background:linear-gradient(90deg,var(--leaf),var(--sand));width:0;transition:width .3s}
 .chip{font-weight:800;font-size:.85rem;padding:4px 10px;border-radius:999px;background:var(--paper);border:2px solid var(--line)}
 .chip.streak{border-color:var(--lava);color:var(--lava)}
 .card{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:22px clamp(16px,4vw,30px)}
 .kind{font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:.75rem;color:var(--c,var(--river))}
-.prompt{font-family:var(--display);font-size:clamp(1.35rem,4vw,1.8rem);font-weight:600;margin:6px 0 4px;text-wrap:pretty}
+.prompt{font-family:var(--display);font-size:clamp(1.3rem,4vw,1.75rem);font-weight:600;margin:6px 0 4px;text-wrap:pretty}
 .prompt .gap{display:inline-block;min-width:4ch;border-bottom:3px solid var(--c,var(--river));color:var(--c,var(--river))}
+.prompt .br{color:var(--muted);font-weight:800}
+.prompt s{text-decoration-color:var(--bad)}
+.passage{font-family:var(--body);font-size:1rem;font-weight:400;background:var(--bg);border-radius:14px;padding:12px 14px;margin-bottom:12px;line-height:1.55}
+.passage h4{font-size:1.1rem;color:var(--lava);margin-bottom:4px}
+.passage p{margin:0}
 .sub{color:var(--muted);margin:0 0 14px}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px}
 .opt{all:unset;cursor:pointer;background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:12px 14px;
@@ -96,222 +114,412 @@ header.top h1 span{color:var(--lava)}
 .typebox input.ok{border-color:var(--leaf);background:var(--leaf-soft)}
 .typebox input.no{border-color:var(--bad);background:var(--bad-soft)}
 .btn{all:unset;cursor:pointer;font-family:var(--display);font-weight:800;font-size:1.1rem;padding:10px 20px;border-radius:14px;
-  background:var(--c,var(--river));color:var(--paper);text-align:center}
+  background:var(--c,var(--river));color:var(--on);text-align:center}
 .btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn[disabled]{opacity:.45;cursor:default}
 .btn.ghost{background:transparent;color:var(--c,var(--river));border:2px solid var(--c,var(--river))}
-.hint{margin-top:10px;font-size:.9rem;color:var(--muted);font-weight:600;letter-spacing:.15em}
+.hint{margin-top:10px;font-size:1rem;color:var(--muted);font-weight:800;letter-spacing:.12em;white-space:pre-wrap}
+.built{min-height:56px;border:2px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.built.ok{border-color:var(--leaf);background:var(--leaf-soft)}
+.built.no{border-color:var(--bad);background:var(--bad-soft)}
+.pool{display:flex;flex-wrap:wrap;gap:8px;min-height:44px}
+.word{all:unset;cursor:pointer;background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:6px 12px;font-weight:800}
+.built .word{background:var(--paper);border-color:var(--c,var(--river))}
+.word:focus-visible{outline:3px solid var(--c,var(--river));outline-offset:2px}
+.word[disabled]{cursor:default}
 .feedback{margin-top:16px;border-radius:14px;padding:12px 14px;font-weight:600}
 .feedback.ok{background:var(--leaf-soft);color:var(--ink);border-left:6px solid var(--leaf)}
 .feedback.no{background:var(--bad-soft);color:var(--ink);border-left:6px solid var(--bad)}
 .feedback b{font-family:var(--display);font-size:1.1rem}
-.next{margin-top:14px;display:flex;justify-content:flex-end}
+.next{margin-top:14px;display:flex;justify-content:flex-end;gap:10px}
 
 .end{text-align:center}
 .stars{font-size:3rem;letter-spacing:.2em;color:var(--sand);margin:8px 0}
 .stars .off{color:var(--line)}
-.end h2{font-size:2rem;color:var(--river)}
-.mist{text-align:left;margin:18px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.end h2{font-size:2.2rem;color:var(--c,var(--river))}
+.mist{text-align:left;margin:12px 0 0;padding:0;list-style:none;display:grid;gap:8px}
 .mist li{background:var(--bg);border-radius:12px;padding:10px 12px;font-size:.95rem}
 .mist li s{color:var(--bad)} .mist li b{color:var(--leaf)}
+.secs{text-align:left;display:grid;gap:8px;margin:16px 0}
+.sec{display:grid;grid-template-columns:minmax(0,9rem) 1fr auto;gap:10px;align-items:center;font-weight:700;font-size:.95rem}
+.sec .meter{height:12px;background:var(--line);border-radius:999px;overflow:hidden}
+.sec .meter i{display:block;height:100%;background:var(--leaf)}
+.sec.weak .meter i{background:var(--lava)}
+.sec span:last-child{font-variant-numeric:tabular-nums}
+.advice{text-align:left;background:var(--sand-soft);border-radius:14px;padding:12px 14px;margin-top:10px}
+.advice ul{margin:6px 0 0;padding-left:20px}
 .endbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .pop{animation:pop .35s ease}
 @keyframes pop{0%{transform:scale(.97)}60%{transform:scale(1.02)}100%{transform:scale(1)}}
-.menu{display:inline-block;font-weight:800;color:var(--river);text-decoration:none;margin-bottom:10px}
-.menu:hover{text-decoration:underline}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 
 <script>
-// ---------- DATA (Unit 2: Why do landscapes change?) ----------
+// ================= DATA · Unit 2: Why do landscapes change? =================
 const VOCAB = [
-  {w:"canyon", es:"cañón", d:"A deep valley with steep, rocky sides. Often a river runs through it."},
-  {w:"desert", es:"desierto", d:"A very dry place that gets little or no rain."},
-  {w:"glacier", es:"glaciar", d:"A huge mass of ice that moves very slowly, like a frozen river."},
-  {w:"mountain range", es:"cordillera / sierra", d:"A long line of mountains, like the Andes."},
-  {w:"rainforest", es:"selva", d:"A thick, wet forest in a hot, tropical place, like the Amazon."},
-  {w:"volcano", es:"volcán", d:"A mountain that can throw out lava, smoke and ash."},
-  {w:"waterfall", es:"cascada / catarata", d:"Water that falls from a high place, like Angel Falls."},
-  {w:"dry", es:"seco", d:"With no water or rain."},
-  {w:"wet", es:"mojado / húmedo", d:"Covered in water or with a lot of rain."},
-  {w:"rocky", es:"rocoso", d:"With a lot of rocks."},
-  {w:"snowstorm", es:"tormenta de nieve", d:"A storm with strong wind and a lot of snow."},
-  {w:"flood", es:"inundación", d:"When a lot of water covers land that is usually dry."},
-  {w:"hurricane", es:"huracán", d:"A very strong storm from the sea with violent winds and heavy rain."},
-  {w:"drought", es:"sequía", d:"A long period of time with no rain."},
-  {w:"glacial", es:"glacial", d:"Extremely cold, with a lot of ice."},
-  {w:"arid", es:"árido", d:"Very dry. Almost no rain falls, so few plants can grow."},
-  {w:"humid", es:"húmedo (aire)", d:"Hot and wet air, like in a tropical place."},
+  {w:"canyon", es:"cañón", d:["A deep valley with steep, rocky sides.","A very deep valley, often with a river at the bottom, like the Grand Canyon."]},
+  {w:"desert", es:"desierto", d:["A very dry place that gets little or no rain.","A place like the Sahara or the Atacama, with almost no rain."]},
+  {w:"glacier", es:"glaciar", d:["A huge mass of ice that moves very slowly.","A frozen river of ice in the mountains or near the poles."]},
+  {w:"mountain range", es:"cordillera / sierra", d:["A long line of mountains, like the Andes.","A group of mountains in a line, like the Pyrenees."]},
+  {w:"rainforest", es:"selva", d:["A thick, wet forest in a hot, tropical place.","A forest like the Amazon, with lots of rain, trees and animals."]},
+  {w:"volcano", es:"volcán", d:["A mountain that can throw out lava, smoke and ash.","A mountain like Mount Teide or Mount Fuji. Some are active."]},
+  {w:"waterfall", es:"cascada / catarata", d:["Water that falls from a high place.","Angel Falls and Niagara Falls are examples of this."]},
+  {w:"dry", es:"seco", d:["With no water or rain.","The opposite of wet."]},
+  {w:"wet", es:"mojado / húmedo", d:["Covered in water or with a lot of rain.","The opposite of dry."]},
+  {w:"rocky", es:"rocoso", d:["With a lot of rocks.","Full of stones and rocks, like a canyon."]},
+  {w:"snowstorm", es:"tormenta de nieve", d:["A storm with strong wind and a lot of snow.","Bad winter weather with lots of snow and wind."]},
+  {w:"flood", es:"inundación", d:["When a lot of water covers land that is usually dry.","This can happen when a river gets too much rain."]},
+  {w:"hurricane", es:"huracán", d:["A very strong storm from the sea with violent winds.","A tropical storm with winds of more than 250 km/h."]},
+  {w:"drought", es:"sequía", d:["A long period of time with no rain.","When it doesn't rain for months and rivers dry up."]},
+  {w:"glacial", es:"glacial", d:["Extremely cold, with a lot of ice.","Describes a climate like in Antarctica: very, very cold."]},
+  {w:"arid", es:"árido", d:["Very dry. Almost no rain falls, so few plants can grow.","Describes a landscape like a desert, with very little water."]},
+  {w:"humid", es:"húmedo (aire)", d:["Hot and wet air, like in a tropical place.","When the air feels wet and heavy, like in the rainforest."]},
+  {w:"landscape", es:"paisaje", d:["Everything you can see in an area: mountains, rivers, forests…","The natural features of a place, like a desert or a coast."]},
+  {w:"climate", es:"clima", d:["The usual weather in a place over many years.","It can be tropical, arid or glacial."]},
+  {w:"natural wonder", es:"maravilla natural", d:["An incredibly beautiful natural place, like Niagara Falls.","An amazing place made by nature, not by people."]},
+  {w:"coast", es:"costa", d:["The land next to the sea.","The part of a country where the land meets the sea."]},
+  {w:"island", es:"isla", d:["Land with water all around it, like Sri Lanka or Tenerife.","A piece of land in the sea or in a lake."]},
 ];
 
-// adjective, superlative, rule key
-const SUP = [
+// adjective → superlative, rule
+const SUPS = [
   ["big","the biggest","double"],["wet","the wettest","double"],["hot","the hottest","double"],["sad","the saddest","double"],
-  ["dry","the driest","y"],["rocky","the rockiest","y"],["windy","the windiest","y"],["sunny","the sunniest","y"],["rainy","the rainiest","y"],["funny","the funniest","y"],
-  ["high","the highest","est"],["long","the longest","est"],["cold","the coldest","est"],["small","the smallest","est"],["deep","the deepest","est"],["fast","the fastest","est"],["strong","the strongest","est"],
+  ["dry","the driest","y"],["rocky","the rockiest","y"],["windy","the windiest","y"],["sunny","the sunniest","y"],["rainy","the rainiest","y"],["funny","the funniest","y"],["snowy","the snowiest","y"],
+  ["high","the highest","est"],["long","the longest","est"],["cold","the coldest","est"],["small","the smallest","est"],["deep","the deepest","est"],
+  ["fast","the fastest","est"],["strong","the strongest","est"],["slow","the slowest","est"],["warm","the warmest","est"],
   ["large","the largest","e"],["nice","the nicest","e"],
   ["good","the best","irr"],["bad","the worst","irr"],
   ["beautiful","the most beautiful","most"],["dangerous","the most dangerous","most"],["colourful","the most colourful","most"],
   ["interesting","the most interesting","most"],["extreme","the most extreme","most"],["arid","the most arid","most"],
-  ["glacial","the most glacial","most"],["incredible","the most incredible","most"],["amazing","the most amazing","most"],["popular","the most popular","most"],
+  ["glacial","the most glacial","most"],["incredible","the most incredible","most"],["amazing","the most amazing","most"],
+  ["popular","the most popular","most"],["famous","the most famous","most"],["exciting","the most exciting","most"],
 ];
+const SUPM = Object.fromEntries(SUPS.map(([a,s,r])=>[a,[s,r]]));
 const RULE = {
-  double:"Corta con vocal + consonante final → se dobla la consonante + est (big → biggest).",
-  y:"Termina en -y → cambia la y por i + est (dry → driest).",
-  est:"Adjetivo corto → the + adjetivo + est (high → highest).",
-  e:"Termina en -e → solo añade -st (large → largest).",
+  double:"Corto con vocal + consonante final: se dobla la consonante y se añade -est (big → the biggest).",
+  y:"Termina en -y: la y cambia a i y se añade -est (dry → the driest).",
+  est:"Adjetivo corto: the + adjetivo + -est (high → the highest).",
+  e:"Termina en -e: solo se añade -st (large → the largest).",
   irr:"¡Irregular! good → the best, bad → the worst.",
-  most:"Adjetivo largo → the most + adjetivo (the most beautiful)."
+  most:"Adjetivo largo: the most + adjetivo (the most beautiful)."
 };
 
-// fact sentences: text with ___, answer, distractors, note
+// sentences for "complete" and "find the mistake" (___ = superlative)
+const SENT = [
+  ["The Atacama is ___ desert in the world.","dry"],
+  ["The Andes is ___ mountain range in the world.","long"],
+  ["Angel Falls is ___ waterfall in the world.","high"],
+  ["The Amazon is ___ rainforest in the world.","big"],
+  ["The Sahara is ___ hot desert in the world.","large"],
+  ["Antarctica is ___ place on Earth.","cold"],
+  ["August is ___ month of the year in Seville.","hot"],
+  ["The Grand Canyon is ___ place I know.","rocky"],
+  ["I think volcanoes are ___ places to visit.","dangerous"],
+  ["The Caribbean is one of ___ regions in the world.","windy"],
+  ["Hurricanes are ___ type of weather for an island.","bad"],
+  ["The west coast is ___ coast. It's very sunny.","good"],
+  ["Puerto Rico is one of ___ places in North America.","wet"],
+  ["Mount Fuji is Japan's ___ natural wonder.","famous"],
+  ["The Northern Lights are ___ lights in the sky.","colourful"],
+  ["Laia is ___ runner in the triathlon.","fast"],
+  ["Pedro is ___ swimmer in the race.","strong"],
+  ["Sloths are one of ___ animals on Earth.","slow"],
+  ["The south of Tenerife is ___ part of the island.","sunny"],
+  ["Lake Baikal is ___ lake in the world.","deep"],
+  ["Antarctica has got ___ climate on Earth.","extreme"],
+  ["My brother tells ___ jokes in my family.","funny"],
+  ["Vatican City is ___ country in the world.","small"],
+  ["The Atacama is ___ place I have ever seen.","arid"],
+  ["December is ___ month in Canada.","snowy"],
+  ["The triathlon was ___ race of the year.","exciting"],
+  ["Our summer holiday was ___ holiday ever.","good"],
+  ["Yesterday was ___ day of the year. It was 42 °C!","hot"],
+  ["That was ___ film I have ever seen. I fell asleep!","bad"],
+  ["The Amazon is one of ___ places on Earth. It rains every day.","rainy"],
+];
+const OPINION_PLACES = [["Torres del Paine","national park","South America"],["Niagara Falls","natural wonder","North America"],
+  ["Sri Lanka","island","Asia"],["Mount Teide","place","Spain"],["Iceland","country","Europe"],["Table Mountain","mountain","South Africa"],
+  ["the Grand Canyon","canyon","the USA"],["Mount Fuji","volcano","Japan"],["the Picos de Europa","mountain range","Spain"]];
+const OPINION_ADJ = ["beautiful","amazing","interesting","incredible","popular","famous","good","exciting"];
+
 const FACTS = [
   ["The Atacama is the ___ desert in the world.","driest",["dryest","most dry"],"Tiene menos de 1 cm de lluvia al año."],
   ["The Amazon is the ___ rainforest in the world.","biggest",["bigest","most big"],"big → biggest (doble g)."],
   ["Angel Falls is the ___ waterfall in the world.","highest",["most high","higher"],"Está en Venezuela."],
   ["The Andes is the ___ mountain range in the world.","longest",["most long","longer"],"Recorre Sudamérica."],
   ["The Sahara is the ___ hot desert in the world.","largest",["largeest","most large"],"large → largest (solo -st)."],
-  ["Antarctica is the ___ cold desert in the world.","biggest",["bigger","most biggest"],"¡Sí, la Antártida es un desierto frío!"],
-  ["Mount Teide is the ___ volcano in Spain.","highest",["highiest","most high"],"Está en Tenerife."],
+  ["Antarctica is the ___ cold desert in the world.","biggest",["bigger","most biggest"],"¡La Antártida es un desierto frío!"],
+  ["Mount Teide is the ___ volcano in Spain.","highest",["highiest","most high"],"Está en Tenerife y mide 3.715 m."],
   ["The Arctic is one of the ___ parts of North America.","coldest",["most cold","colder"],"cold → coldest."],
-  ["Mount Fuji is Japan's ___ famous natural wonder.","most",["more","-est"],"famous es largo → the most famous."],
-  ["Table Mountain is one of South Africa's ___ incredible natural wonders.","most",["more","best"],"incredible es largo → the most incredible."],
+  ["Mount Fuji is Japan's ___ famous natural wonder.","most",["more","-est"],"famous es largo: the most famous."],
+  ["Table Mountain is one of South Africa's ___ incredible natural wonders.","most",["more","best"],"incredible es largo: the most incredible."],
   ["Sloths are one of the ___ mammals on Earth.","slowest",["most slow","slowiest"],"slow → slowest."],
-  ["In the story, Laia is the ___ runner.","fastest",["most fast","fastiest"],"fast → fastest."],
-  ["In the story, Pedro is the ___ swimmer.","strongest",["most strong","strongiest"],"strong → strongest."],
-  ["Where is the ___ glacial climate on Earth?","most",["more","-est"],"glacial → the most glacial."],
-  ["The west coast is the ___ coast. It's very sunny.","best",["goodest","most good"],"good → the best (irregular)."],
-  ["A hurricane is the ___ type of weather for an island.","worst",["baddest","most bad"],"bad → the worst (irregular)."],
+  ["Where is the ___ glacial climate on Earth?","most",["more","-est"],"glacial: the most glacial."],
   ["The Caribbean is one of the ___ regions in the world.","windiest",["windyest","most windy"],"windy → windiest (y → i)."],
-  ["Sri Lanka has the ___ beaches I know.","most beautiful",["beautifulest","more beautiful"],"beautiful es largo."],
+  ["Niagara Falls is on the border of Canada and the ___ .","USA",["UK","Mexico"],"Niagara Falls está entre Canadá y EE. UU."],
+  ["You can see the Northern Lights in the ___ .","sky",["sea","desert"],"Son luces de colores en el cielo."],
+  ["The Nachi Falls are more than ___ metres high.","113",["13","1,113"],"Están en Japón, rodeadas de bosques."],
+  ["The Atacama Desert is in ___ .","Chile",["Peru","Spain"],"Es el desierto cálido más seco."],
+  ["Table Mountain is flat, like a ___ .","table",["chair","bed"],"Por eso se llama Table Mountain."],
 ];
 
-// fix the mistake: wrong, right, distractor, note
-const FIX = [
+const FIXMC = [
   ["The Amazon is the bigest rainforest.","The Amazon is the biggest rainforest.","The Amazon is the most big rainforest.","big → biggest: se dobla la g."],
   ["Hurricanes are the wors type of weather.","Hurricanes are the worst type of weather.","Hurricanes are the baddest type of weather.","bad → the worst (con -t al final)."],
   ["It's the most biutiful place in the world.","It's the most beautiful place in the world.","It's the beautifulest place in the world.","Se escribe b-e-a-u-t-i-f-u-l."],
-  ["The Sahara is the hotest desert.","The Sahara is the hottest desert.","The Sahara is the most hot desert.","hot → hottest: se dobla la t."],
-  ["The Atacama is the dryest desert.","The Atacama is the driest desert.","The Atacama is the most dry desert.","dry → driest: la y cambia a i."],
-  ["Puerto Rico is the wetest place I know.","Puerto Rico is the wettest place I know.","Puerto Rico is the most wet place I know.","wet → wettest: se dobla la t."],
-  ["This is the most good team.","This is the best team.","This is the goodest team.","good → the best (irregular)."],
-  ["The Grand Canyon is the rockyest place.","The Grand Canyon is the rockiest place.","The Grand Canyon is the most rocky place.","rocky → rockiest: y → i."],
-  ["Volcanoes are the dangerousest places.","Volcanoes are the most dangerous places.","Volcanoes are the more dangerous places.","dangerous es largo → the most dangerous."],
-  ["It's the most colerful bird in the rainforest.","It's the most colourful bird in the rainforest.","It's the colourfullest bird in the rainforest.","Se escribe c-o-l-o-u-r-f-u-l (o colorful en EE. UU.)."],
-  ["The Andes is the most long mountain range.","The Andes is the longest mountain range.","The Andes is the longer mountain range.","long es corto → longest."],
-  ["Angel Falls is highest waterfall in the world.","Angel Falls is the highest waterfall in the world.","Angel Falls is most highest waterfall in the world.","¡No olvides the antes del superlativo!"],
+  ["It's the most colerful bird in the rainforest.","It's the most colourful bird in the rainforest.","It's the colourfullest bird in the rainforest.","Se escribe c-o-l-o-u-r-f-u-l (o colorful)."],
+  ["Volcanoes are the most dangerus places.","Volcanoes are the most dangerous places.","Volcanoes are the dangerousest places.","Se escribe d-a-n-g-e-r-o-u-s."],
+  ["The Sahara is the largest hot dessert.","The Sahara is the largest hot desert.","The Sahara is the most large hot desert.","desert (desierto) lleva una s. dessert con ss es «postre»."],
+  ["A huricane is a very strong storm.","A hurricane is a very strong storm.","A hurricain is a very strong storm.","Se escribe h-u-r-r-i-c-a-n-e."],
+  ["The Amazon is the biggest rainforrest.","The Amazon is the biggest rainforest.","The Amazon is the biggest rain forrest.","rainforest: rain + forest, una sola r en forest."],
 ];
 
-// odd one out: items, answer, why
 const ODD = [
   [["volcano","waterfall","canyon","drought"],"drought","drought es un tipo de tiempo extremo; los demás son paisajes."],
   [["snowstorm","hurricane","flood","rainforest"],"rainforest","rainforest es un paisaje; los demás son tiempo extremo."],
   [["the hottest","the wettest","the biggest","the driest"],"the driest","driest cambia y → i; los demás doblan la consonante."],
-  [["the best","the worst","the longest","the most beautiful"],"the longest","Pista: best y worst son irregulares, most beautiful es largo… longest es el único regular corto con -est."],
+  [["the best","the worst","the longest","the most beautiful"],"the longest","longest es el único regular corto con -est. best y worst son irregulares y most beautiful es largo."],
   [["beautiful","dangerous","interesting","cold"],"cold","cold es corto (the coldest); los demás llevan the most."],
   [["glacier","snowstorm","glacial","desert"],"desert","desert normalmente es caliente; los demás tienen hielo o nieve."],
-  [["dry","arid","drought","flood"],"flood","flood significa mucha agua; los demás significan falta de agua."],
-  [["rocky","sunny","windy","large"],"large","large termina en -e (largest); los demás terminan en -y (→ iest)."],
+  [["dry","arid","drought","flood"],"flood","flood significa mucha agua; los demás, falta de agua."],
+  [["rocky","sunny","windy","large"],"large","large termina en -e (the largest); los demás terminan en -y (→ -iest)."],
+  [["the most famous","the most arid","the most big","the most amazing"],"the most big","¡Incorrecto! big es corto: the biggest."],
+  [["Iceland","Sri Lanka","Tenerife","the Andes"],"the Andes","the Andes es una cordillera; los demás son islas."],
+  [["tropical","arid","glacial","waterfall"],"waterfall","waterfall es un paisaje; los demás describen climas."],
 ];
 
-// ---------- HELPERS ----------
+const READS = [
+  {t:"Iceland: ice and fire", p:"Iceland is a small island in the north of Europe. It has got some of the most amazing landscapes in the world. There are more than 100 volcanoes and some of them are active. There are also enormous glaciers. The biggest glacier is called Vatnajökull. In winter it is very cold and there are snowstorms, but you can see the Northern Lights in the sky. In summer the days are very long and it isn't dark at night. Many tourists visit Iceland because its waterfalls are incredible.",
+   q:[["Iceland is in the south of Europe.",false,"It's in the north of Europe."],
+      ["All the volcanoes in Iceland are inactive.",false,"Some of them are active."],
+      ["You can see the Northern Lights in winter.",true,"In winter… you can see the Northern Lights."],
+      ["In summer the nights are very dark.",false,"In summer it isn't dark at night."],
+      ["Vatnajökull is the biggest glacier in Iceland.",true,"The biggest glacier is called Vatnajökull."],
+      ["Why do many tourists visit Iceland?","because its waterfalls are incredible",["because it's very hot","because it has got rainforests"]],
+      ["What is the weather like in winter?","very cold, with snowstorms",["hot and dry","humid and rainy"]]]},
+  {t:"Daniel's country", p:"Hi, I'm Daniel and I'm from Venezuela. In my country there is Angel Falls, the highest waterfall in the world. It is 979 metres high! It is in a national park with rainforests and big rocky mountains called tepuis. The weather there is hot and humid and it rains a lot. My cousin says the Amazon rainforest is the most beautiful place in South America, but I think Angel Falls is more amazing. I'd like to visit the Atacama Desert in Chile because it's the driest desert in the world, but I wouldn't like to go in summer because it's too hot.",
+   q:[["Angel Falls is the highest waterfall in the world.",true,"…Angel Falls, the highest waterfall in the world."],
+      ["The weather near Angel Falls is cold and dry.",false,"It's hot and humid and it rains a lot."],
+      ["Tepuis are rocky mountains.",true,"…big rocky mountains called tepuis."],
+      ["Daniel thinks the Amazon is the most beautiful place.",false,"His cousin thinks that, not Daniel."],
+      ["Where would Daniel like to go?","to the Atacama Desert",["to the Amazon","to Antarctica"]],
+      ["How high is Angel Falls?","979 metres",["113 metres","9,000 metres"]],
+      ["Why wouldn't Daniel like to go to the Atacama in summer?","because it's too hot",["because it's too cold","because there are floods"]]]},
+  {t:"Tenerife and Mount Teide", p:"Tenerife is one of the Canary Islands in Spain. It has got Mount Teide, the highest volcano in Spain. It is 3,715 metres high. Teide is not very active, but it erupted in 1909. In winter there is sometimes snow at the top, but the beaches are warm and sunny. The north of the island is the wettest and greenest part, and the south is the driest and sunniest part. Many people think Tenerife has got the best climate in Europe because it isn't too hot or too cold.",
+   q:[["Mount Teide is the highest volcano in Spain.",true,"…Mount Teide, the highest volcano in Spain."],
+      ["There is never snow on Mount Teide.",false,"In winter there is sometimes snow at the top."],
+      ["The south of Tenerife is the wettest part.",false,"The south is the driest and sunniest part."],
+      ["The north is the greenest part of the island.",true,"The north… is the wettest and greenest part."],
+      ["Why do people think Tenerife has got the best climate?","because it isn't too hot or too cold",["because it rains every day","because there are hurricanes"]],
+      ["When did Teide erupt?","in 1909",["in 2009","never"]],
+      ["What is Tenerife?","an island",["a desert","a mountain range"]]]},
+  {t:"Climate change in North America", p:"North America has got very different landscapes. In the north, the Arctic is one of the coldest places on Earth. Climate change is making the ice melt, so there is less ice every summer. In Colorado, in the centre, there are long periods of drought. The landscape is getting more arid and there are more wildfires. In the south, Puerto Rico has got a tropical climate. Hurricanes there are getting stronger, and they bring heavy rain and floods.",
+   q:[["The Arctic is one of the hottest places on Earth.",false,"It's one of the coldest places on Earth."],
+      ["There is less ice in the Arctic every summer.",true,"…there is less ice every summer."],
+      ["Colorado has got long periods of drought.",true,"In Colorado… there are long periods of drought."],
+      ["Puerto Rico has got a glacial climate.",false,"Puerto Rico has got a tropical climate."],
+      ["What do hurricanes bring?","heavy rain and floods",["snow and ice","droughts"]],
+      ["Why is there less ice in the Arctic?","because of climate change",["because of volcanoes","because of hurricanes"]],
+      ["Where are there more wildfires?","in Colorado",["in the Arctic","in Puerto Rico"]]]},
+];
+
+// sentence builder (writing section)
+const PLACES = [
+  {n:"Iceland", has:["amazing glaciers","incredible waterfalls","active volcanoes"], too:"cold"},
+  {n:"Venezuela", has:["the highest waterfall in the world","beautiful rainforests"], too:"humid"},
+  {n:"Chile", has:["the driest desert in the world","the longest mountain range"], too:"far"},
+  {n:"Antarctica", has:["the biggest cold desert","beautiful glaciers"], too:"cold"},
+  {n:"Brazil", has:["the biggest rainforest in the world","amazing beaches"], too:"hot"},
+  {n:"Japan", has:["Mount Fuji","beautiful waterfalls"], too:"far"},
+  {n:"Sri Lanka", has:["beautiful beaches","amazing mountains"], too:"hot"},
+  {n:"Canada", has:["Niagara Falls","the Rocky Mountains"], too:"cold"},
+  {n:"Tenerife", has:["the highest volcano in Spain","sunny beaches"], too:"crowded"},
+];
+
+// ================= HELPERS =================
 const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const rnd = a => a[Math.floor(Math.random()*a.length)];
 const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; };
 const pick = (a,n) => shuffle(a).slice(0,n);
-const norm = s => s.toLowerCase().replace(/[.!?¡¿]/g,"").replace(/\s+/g," ").trim().replace(/colorful/g,"colourful");
+const norm = s => s.toLowerCase().replace(/[’`´]/g,"'").replace(/[.!?¡¿,]/g,"").replace(/\s+/g," ").trim().replace(/colorful/g,"colourful");
 const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const store = { get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}} };
+const store = { get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},
+                set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}} };
+const cap = s => s[0].toUpperCase()+s.slice(1);
+const gapHTML = (t, br) => esc(t).replace("___",'<span class="gap">&nbsp;?&nbsp;</span>') + (br?` <span class="br">(${esc(br)})</span>`:"");
 
-// ---------- QUESTION BUILDERS ----------
-function qVocab(){
-  const it = VOCAB[Math.floor(Math.random()*VOCAB.length)];
-  const opts = shuffle([it.w, ...pick(VOCAB.filter(v=>v.w!==it.w),3).map(v=>v.w)]);
-  return {kind:"Vocabulary", type:"mc", prompt:esc(it.d), sub:"Which word matches the definition?", opts, ans:it.w,
-          note:`<b>${esc(it.w)}</b> = ${esc(it.es)}`};
-}
-function qSpell(){
-  const it = VOCAB[Math.floor(Math.random()*VOCAB.length)];
-  const hint = it.w.split("").map(c=>c===" "?"  ":"_").join(" ");
-  return {kind:"Spelling", type:"type", prompt:`¿Cómo se dice <span class="gap">${esc(it.es)}</span> en inglés?`, sub:esc(it.d),
-          hint:`${it.w[0]} ${hint.slice(2)}  (${it.w.replace(/ /g,"").length} letras)`, ans:[it.w], show:it.w,
-          note:`Se escribe <b>${esc(it.w)}</b>.`};
-}
-function qSup(){
-  const [adj,sup,rule] = SUP[Math.floor(Math.random()*SUP.length)];
-  if(Math.random()<.5){
-    const base = sup.replace("the ","");
-    let wrong = new Set();
-    if(rule==="most"){ wrong.add("the "+adj+"est"); wrong.add("the more "+adj); wrong.add("the most "+adj+"est"); }
-    else if(rule==="irr"){ wrong.add("the "+adj+(adj.endsWith("d")?"dest":"est")); wrong.add("the most "+adj); wrong.add(adj==="good"?"the better":"the worse"); }
-    else {
-      wrong.add("the most "+adj);
-      if(rule==="double") wrong.add("the "+adj+"est");
-      if(rule==="y") wrong.add("the "+adj+"est");
-      if(rule==="est"||rule==="e") wrong.add("the "+adj+(adj.endsWith("e")?"est":"iest"));
-      wrong.add("the "+base+"est".slice(0,0)+"s"); // e.g. "the biggests"
-      wrong.add("the "+adj+"er");
-    }
-    wrong.delete(sup);
-    const opts = shuffle([sup, ...pick([...wrong],3)]);
-    return {kind:"Superlatives", type:"mc", prompt:`<span class="gap">${esc(adj)}</span> → ?`, sub:"Choose the correct superlative.", opts, ans:sup, note:esc(RULE[rule])};
+function wrongForms(adj){
+  const [sup,rule] = SUPM[adj]; const w = new Set(); const bare = sup.replace(/^the /,"");
+  if(rule==="most"){ w.add("the "+adj+"est"); w.add("the more "+adj); w.add("most "+adj); }
+  else if(rule==="irr"){ if(adj==="good"){ w.add("the goodest"); w.add("the most good"); w.add("the better"); }
+                         else { w.add("the baddest"); w.add("the most bad"); w.add("the wors"); } }
+  else {
+    w.add("the most "+adj); w.add(bare);
+    if(rule==="double"||rule==="y"||rule==="e") w.add("the "+adj+"est");
+    if(rule==="est") w.add("the "+adj+"er");
   }
-  return {kind:"Superlatives", type:"type", prompt:`Write the superlative of <span class="gap">${esc(adj)}</span>`, sub:"Escribe con the delante (the …).",
-          ans:[sup], show:sup, note:esc(RULE[rule])};
+  w.delete(sup); return [...w];
+}
+function sentence(){ // returns [text with ___, adj]
+  if(Math.random()<.3){ const [p,n,r] = rnd(OPINION_PLACES); const a = rnd(OPINION_ADJ);
+    return [`In my opinion, ${p} is ___ ${n} in ${r}.`, a]; }
+  return rnd(SENT);
+}
+
+// ================= QUESTION BUILDERS =================
+function qVocabDef(){
+  const it = rnd(VOCAB), di = Math.floor(Math.random()*it.d.length);
+  return {key:"vd:"+it.w+di, kind:"Vocabulary", type:"mc", prompt:esc(it.d[di]), sub:"Which word matches the definition?",
+          opts:shuffle([it.w, ...pick(VOCAB.filter(v=>v.w!==it.w),3).map(v=>v.w)]), ans:it.w, note:`<b>${esc(it.w)}</b> = ${esc(it.es)}`};
+}
+function qVocabEs(){
+  const it = rnd(VOCAB);
+  return {key:"ve:"+it.w, kind:"Vocabulary", type:"mc", prompt:`What does <span class="gap">${esc(it.w)}</span> mean?`, sub:"Elige la traducción correcta.",
+          opts:shuffle([it.es, ...pick(VOCAB.filter(v=>v.w!==it.w),3).map(v=>v.es)]), ans:it.es, note:esc(it.d[0])};
+}
+function qSpell(withHint, forceEs){
+  const it = rnd(VOCAB);
+  const useEs = withHint || forceEs || Math.random()<.7;
+  const hint = it.w.split(" ").map((p,i)=>(i===0?p[0]:"_")+" _".repeat(p.length-1)).join("     ");
+  return {key:(withHint?"sh:":"sp:")+it.w+(useEs?"":"d"), kind:withHint?"Spelling":"Spelling Pro", type:"type",
+          prompt: useEs ? `¿Cómo se dice <span class="gap">${esc(it.es)}</span> en inglés?` : esc(rnd(it.d)),
+          sub: withHint ? esc(it.d[0]) : (useEs ? "Sin pistas, como en el examen." : "Write the word. No hints!"),
+          hint: withHint ? `${hint}   (${it.w.replace(/ /g,"").length} letters)` : "",
+          ans:[it.w], show:it.w, note:`Se escribe <b>${esc(it.w.split("").join("-").replace(/- -/g,"  "))}</b>.`};
+}
+function qSup(forceType){
+  const [adj,sup,rule] = rnd(SUPS);
+  if(!forceType && Math.random()<.5){
+    return {key:"sm:"+adj, kind:"Superlatives", type:"mc", prompt:`<span class="gap">${esc(adj)}</span> → ?`, sub:"Choose the correct superlative.",
+            opts:shuffle([sup, ...pick(wrongForms(adj),3)]), ans:sup, note:esc(RULE[rule])};
+  }
+  return {key:"st:"+adj, kind:"Superlatives", type:"type", sup:true, prompt:`Write the superlative of <span class="gap">${esc(adj)}</span>`,
+          sub:"Escribe también the (the …).", ans:[sup], show:sup, note:esc(RULE[rule])};
+}
+function qComplete(){
+  const [t,adj] = sentence(); const [sup,rule] = SUPM[adj];
+  return {key:"co:"+t+adj, kind:"Complete the sentence", type:"type", sup:true, prompt:gapHTML(t,adj),
+          sub:"Write the superlative of the adjective in brackets (with the).", ans:[sup], show:sup,
+          note:esc(RULE[rule]), full:t.replace("___",sup)};
 }
 function qFact(){
-  const [t,a,d,n] = FACTS[Math.floor(Math.random()*FACTS.length)];
-  return {kind:"Amazing facts", type:"mc", prompt:esc(t).replace("___",'<span class="gap">&nbsp;?&nbsp;</span>'), sub:"Complete the sentence.",
+  const [t,a,d,n] = rnd(FACTS);
+  return {key:"fa:"+t, kind:"Amazing facts", type:"mc", prompt:gapHTML(t), sub:"Complete the sentence.",
           opts:shuffle([a,...d]), ans:a, note:esc(n), full:t.replace("___",a)};
 }
-function qFix(){
-  const [w,r,d,n] = FIX[Math.floor(Math.random()*FIX.length)];
-  return {kind:"Fix the mistake", type:"mc", prompt:`<s>${esc(w)}</s>`, sub:"This sentence has a mistake. Which one is correct?",
+function qFixMC(){
+  const [w,r,d,n] = rnd(FIXMC);
+  return {key:"fm:"+w, kind:"Find the mistake", type:"mc", prompt:`<s>${esc(w)}</s>`, sub:"This sentence has a mistake. Which one is correct?",
           opts:shuffle([r,d]), ans:r, note:esc(n)};
 }
+function qFixType(){
+  const [t,adj] = sentence(); const [sup,rule] = SUPM[adj]; const wrong = rnd(wrongForms(adj));
+  let shown = t.replace("___", wrong); if(/^[a-z]/.test(shown)) shown = cap(shown);
+  return {key:"ft:"+t+wrong, kind:"Find the mistake", type:"type", sup:true, prompt:`<s>${esc(shown)}</s>`,
+          sub:"Write the correct superlative.", ans:[sup], show:sup,
+          note:`Lo correcto es <b>${esc(t.replace("___",sup))}</b> ${esc(RULE[rule])}`, full:shown};
+}
 function qOdd(){
-  const [items,a,why] = ODD[Math.floor(Math.random()*ODD.length)];
-  return {kind:"Odd one out", type:"mc", prompt:"Which one is different?", sub:"Find the word that doesn't belong in the group.",
+  const [items,a,why] = rnd(ODD);
+  return {key:"od:"+a, kind:"Odd one out", type:"mc", prompt:"Which one is different?", sub:"Find the one that doesn't belong in the group.",
           opts:shuffle(items), ans:a, note:esc(why)};
 }
+function qRead(ti, used){
+  ti = ti ?? Math.floor(Math.random()*READS.length); const R = READS[ti];
+  let qi; const free = R.q.map((_,i)=>i).filter(i=>!(used&&used.has(i)));
+  qi = rnd(free.length?free:R.q.map((_,i)=>i)); if(used) used.add(qi);
+  const [stem,a,b] = R.q[qi]; const passage = `<div class="passage"><h4>${esc(R.t)}</h4><p>${esc(R.p)}</p></div>`;
+  if(typeof a==="boolean"){
+    return {key:"rd:"+ti+":"+qi, kind:"Reading", type:"mc", prompt:passage+esc(stem), sub:"True or false?",
+            opts:["True","False"], ans:a?"True":"False", note:`En el texto: <i>${esc(b)}</i>`, full:stem};
+  }
+  return {key:"rd:"+ti+":"+qi, kind:"Reading", type:"mc", prompt:passage+esc(stem), sub:"Choose the correct answer.",
+          opts:shuffle([a,...b]), ans:a, note:"Busca la respuesta en el texto antes de elegir.", full:stem};
+}
+function qOrder(){
+  const P = rnd(PLACES); const f = Math.floor(Math.random()*4); let chunks, note;
+  if(f===0){ chunks=["I'd like","to visit",P.n,"because","it has got",rnd(P.has)+"."]; note="<b>because</b> sirve para dar la razón."; }
+  else if(f===1){ chunks=["I wouldn't like","to visit",P.n,"in winter","because","it's too "+P.too+"."]; note="<b>I wouldn't like</b> + <b>because</b>: decir lo que no te gustaría y por qué."; }
+  else if(f===2){ chunks=[P.n,"is amazing,","but","it's too",P.too,"for me."]; note="<b>but</b> sirve para contrastar algo positivo con algo negativo."; }
+  else { const a=rnd(["beautiful","interesting","amazing","incredible"]); chunks=["I think",P.n,"is","the most "+a,"place","in the world."]; note="Adjetivo largo: <b>the most</b> + adjetivo."; }
+  if(f===1 && P.too!=="cold") chunks.splice(3,1); // "in winter" only makes sense for cold places
+  return {key:"or:"+chunks.join(" "), kind:"Writing: sentence builder", type:"order", prompt:"Put the words in order to make a sentence.",
+          sub:"Toca las palabras en el orden correcto. Toca una palabra de arriba para quitarla.",
+          chunks:shuffle(chunks), ans:chunks.join(" "), show:chunks.join(" "), note};
+}
 
+// ================= MODES =================
 const MODES = {
-  vocab:{name:"Landscape Words", desc:"Read the definition and find the word.", c:"var(--leaf)", n:"1", make:qVocab},
-  spell:{name:"Spelling Peak", desc:"Write the English word. Watch every letter!", c:"var(--river)", n:"2", make:qSpell},
-  sup:{name:"Superlative Volcano", desc:"big → the biggest, beautiful → the most beautiful.", c:"var(--lava)", n:"3", make:qSup},
-  fact:{name:"Amazing Facts", desc:"The driest desert, the highest waterfall…", c:"var(--sand)", n:"4", make:qFact},
-  fix:{name:"Mistake Canyon", desc:"Find the correct sentence.", c:"var(--bad)", n:"5", make:qFix},
-  odd:{name:"Odd One Out", desc:"Which word doesn't belong?", c:"var(--muted)", n:"6", make:qOdd},
+  vocab:{name:"Landscape Words", desc:"Definitions and meanings of the unit words.", c:"var(--leaf)", n:"1", make:()=>Math.random()<.6?qVocabDef():qVocabEs()},
+  spell:{name:"Spelling Peak", desc:"Write the word in English. With letter hints.", c:"var(--river)", n:"2", make:()=>qSpell(true)},
+  spellpro:{name:"Spelling Pro", desc:"Write the word with no hints, like in the exam.", c:"var(--sky)", n:"3", make:()=>qSpell(false)},
+  sup:{name:"Superlative Volcano", desc:"big → the biggest, beautiful → the most beautiful.", c:"var(--lava)", n:"4", make:()=>Math.random()<.5?qSup():qComplete()},
+  fact:{name:"Amazing Facts", desc:"The driest desert, the highest waterfall…", c:"var(--sand)", n:"5", make:qFact},
+  fix:{name:"Mistake Canyon", desc:"Find the mistake and write it correctly.", c:"var(--bad)", n:"6", make:()=>Math.random()<.35?qFixMC():qFixType()},
+  odd:{name:"Odd One Out", desc:"Which one doesn't belong?", c:"var(--olive)", n:"7", make:qOdd},
+  read:{name:"Reading Rainforest", desc:"Read a text: true or false and questions.", c:"var(--plum)", n:"8", make:()=>qRead()},
+  order:{name:"Sentence Builder", desc:"Build sentences with because and but.", c:"var(--muted)", n:"9", make:qOrder},
 };
-const ROUND = 10;
+const ALL_MAKERS = [()=>qVocabDef(),()=>qVocabEs(),()=>qSpell(true),()=>qSpell(false),()=>qSpell(false),()=>qSup(),()=>qSup(true),
+  ()=>qComplete(),()=>qComplete(),()=>qFact(),()=>qFixMC(),()=>qFixType(),()=>qOdd(),()=>qRead(),()=>qOrder()];
+const EXAM = [ // mirrors the paper exam: 20 questions × 0.5 = 10
+  {sec:"Vocabulary", n:4, make:()=>Math.random()<.5?qVocabDef():qVocabEs(), tip:"Juega en Landscape Words."},
+  {sec:"Spelling", n:3, make:()=>qSpell(false,true), tip:"Practica en Spelling Pro, sin pistas."},
+  {sec:"Superlatives", n:3, make:()=>qSup(true), tip:"Repasa las reglas de la mochila y juega en Superlative Volcano."},
+  {sec:"Complete", n:3, make:qComplete, tip:"No olvides the y juega en Superlative Volcano."},
+  {sec:"Find the mistake", n:2, make:qFixType, tip:"Juega en Mistake Canyon."},
+  {sec:"Reading", n:3, make:null, tip:"Lee despacio y busca la frase en el texto. Juega en Reading Rainforest."},
+  {sec:"Writing", n:2, make:qOrder, tip:"Practica because y but en Sentence Builder."},
+];
 
-// ---------- STATE ----------
+// ================= STATE =================
 let S = null;
-let totalStars = store.get("le_total") || 0;
+let RECENT = new Set(store.get("le_recent", []));
+const bank = () => store.get("le_bank", []);
+
+function gen(make, seen){
+  let q;
+  for(let t=0;t<30;t++){ q = make(); if(!seen.has(q.key) && (t>15 || !RECENT.has(q.key))) break; }
+  seen.add(q.key); return q;
+}
 
 function home(){
   S = null;
-  const best = store.get("le_best") || {};
+  const best = store.get("le_best", {}); const total = store.get("le_total", 0); const nb = bank().length;
+  const bestTxt = k => best[k]==null ? "Not explored yet" : typeof best[k]==="number" ? `Best: ${best[k]}/10` : `Best: ${best[k]}`;
   const cards = Object.entries(MODES).map(([k,m])=>`
     <button class="station" style="--c:${m.c}" data-mode="${k}">
-      <span class="pin"><b>${m.n}</b></span>
-      <h3>${m.name}</h3><p>${m.desc}</p>
-      <span class="best">${best[k]!=null?`Best: ${best[k]}/${ROUND}`:"Not explored yet"}</span>
+      <span class="pin"><b>${m.n}</b></span><h3>${m.name}</h3><p>${m.desc}</p><span class="best">${bestTxt(k)}</span>
     </button>`).join("");
   $("#app").innerHTML = `
     <a class="menu" href="./">← English · 6º Primaria</a>
     <header class="top">
       <div><div class="unit">English · Unit 2 · Why do landscapes change?</div>
       <h1>Landscape <span>Explorer</span></h1>
-      <p class="intro">Choose a station on the map. Each expedition has ${ROUND} questions about landscapes, extreme weather and superlatives.</p></div>
-      <div class="total" title="Stars collected">★ ${totalStars} stars</div>
+      <p class="intro">The questions change every time you play. Practise each station, then try the exam simulation.</p></div>
+      <div class="total" title="Stars collected">★ ${total} stars</div>
     </header>
-    <div class="stations">
+    <div class="featured">
       <button class="station big" style="--c:var(--river)" data-mode="mix">
-        <span class="pin"><b>★</b></span>
-        <div><h3>Grand Expedition</h3><p>Questions from every station, all mixed. The best practice before the exam!</p>
-        <span class="best">${best.mix!=null?`Best: ${best.mix}/${ROUND}`:"Not explored yet"}</span></div>
+        <span class="pin"><b>★</b></span><h3>Todo variado</h3>
+        <p>20 questions of every type, all mixed: vocabulary, spelling, superlatives, reading and writing.</p>
+        <span class="best">${bestTxt("mix")}</span>
+      </button>
+      <button class="station big" style="--c:var(--lava)" data-mode="exam">
+        <span class="pin"><b>10</b></span><h3>Simulacro de examen</h3>
+        <p>Same sections as the exam. You get a mark out of 10 and advice on what to review.</p>
+        <span class="best">${best.exam!=null?`Best mark: ${best.exam} / 10`:"Not tried yet"}</span>
+      </button>
+    </div>
+    <div class="label">Stations</div>
+    <div class="stations">
+      <button class="station soft" style="--c:var(--sand)" data-mode="review" ${nb?"":"disabled"}>
+        <span class="pin"><b>↻</b></span><h3>Mis fallos</h3>
+        <p>${nb?`${nb} question${nb>1?"s":""} you got wrong. Answer correctly to clear them.`:"No mistakes saved yet. Your wrong answers will appear here."}</p>
       </button>
       ${cards}
     </div>
@@ -319,117 +527,167 @@ function home(){
       <h2>Grammar backpack: superlatives</h2>
       <div class="rules-grid">
         <div class="rule"><strong>Short: + est</strong>high → <code>the highest</code><br>long → <code>the longest</code></div>
-        <div class="rule"><strong>Ends in -e: + st</strong>large → <code>the largest</code></div>
+        <div class="rule"><strong>Ends in -e: + st</strong>large → <code>the largest</code><br>nice → <code>the nicest</code></div>
         <div class="rule"><strong>Double the letter</strong>big → <code>the biggest</code><br>wet → <code>the wettest</code><br>hot → <code>the hottest</code></div>
         <div class="rule"><strong>-y → -iest</strong>dry → <code>the driest</code><br>rocky → <code>the rockiest</code></div>
         <div class="rule"><strong>Long: the most</strong><code>the most beautiful</code><br><code>the most dangerous</code></div>
         <div class="rule"><strong>Irregular</strong>good → <code>the best</code><br>bad → <code>the worst</code></div>
       </div>
+      <h2 style="margin-top:16px">Consejos para sacar un 10</h2>
+      <ul class="tips">
+        <li>Escribe siempre <b>the</b> delante del superlativo: <i>the driest</i>, no <i>driest</i>.</li>
+        <li>Revisa las letras dobles: bi<b>gg</b>est, we<b>tt</b>est, ho<b>tt</b>est. Pero dry → dr<b>i</b>est.</li>
+        <li>Cuidado con: <b>desert</b> (una s), <b>hurricane</b> (rr), <b>beautiful</b>, <b>the worst</b> (con t).</li>
+        <li>En el reading, busca la frase en el texto antes de decidir True o False.</li>
+        <li>En el writing usa <b>because</b> para dar razones, <b>but</b> para algo negativo y dos superlativos.</li>
+      </ul>
     </section>`;
-  document.querySelectorAll(".station").forEach(b=>b.onclick=()=>start(b.dataset.mode));
+  $$(".station").forEach(b=>b.onclick=()=>{ if(!b.disabled) start(b.dataset.mode); });
 }
 
 function start(mode){
-  const makers = mode==="mix" ? Object.values(MODES).map(m=>m.make) : [MODES[mode].make];
-  const qs = []; const seen = new Set(); let guard=0;
-  while(qs.length<ROUND && guard++<300){
-    const q = makers[qs.length % makers.length]();
-    const key = q.prompt + q.ans;
-    if(seen.has(key)) continue; seen.add(key); qs.push(q);
+  const seen = new Set(); let qs = [];
+  if(mode==="exam"){
+    const ti = Math.floor(Math.random()*READS.length), used = new Set();
+    EXAM.forEach(s=>{ for(let i=0;i<s.n;i++){ const q = s.make ? gen(s.make, seen) : qRead(ti, used); q.sec = s.sec; qs.push(q); } });
+  } else if(mode==="review"){
+    qs = shuffle(bank()).slice(0,10);
+  } else if(mode==="mix"){
+    let pool = []; while(pool.length<20) pool = pool.concat(shuffle(ALL_MAKERS));
+    qs = pool.slice(0,20).map(m=>gen(m, seen));
+  } else {
+    for(let i=0;i<10;i++) qs.push(gen(MODES[mode].make, seen));
   }
-  S = {mode, qs:mode==="mix"?shuffle(qs):qs, i:0, score:0, streak:0, mistakes:[], answered:false};
+  if(!qs.length) return home();
+  S = {mode, qs, i:0, score:0, streak:0, mistakes:[], answered:false};
   render();
 }
 
-function color(){ return S.mode==="mix" ? "var(--river)" : MODES[S.mode].c; }
+function color(){ return S.mode==="mix"?"var(--river)":S.mode==="exam"?"var(--lava)":S.mode==="review"?"var(--sand)":MODES[S.mode].c; }
 
 function render(){
-  const q = S.qs[S.i];
-  S.answered = false;
-  const body = q.type==="mc"
-    ? `<div class="opts">${q.opts.map((o,k)=>`<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div>`
-    : `<form class="typebox" id="tf" autocomplete="off"><input id="ti" aria-label="Your answer" autocapitalize="off" spellcheck="false" placeholder="Type here…"><button class="btn" type="submit">Check</button></form>
+  const q = S.qs[S.i]; S.answered = false; const N = S.qs.length;
+  let body;
+  if(q.type==="mc") body = `<div class="opts">${q.opts.map((o,k)=>`<button class="opt" data-k="${k}">${esc(o)}</button>`).join("")}</div>`;
+  else if(q.type==="type") body = `<form class="typebox" id="tf" autocomplete="off"><input id="ti" aria-label="Your answer" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Type here…"><button class="btn" type="submit">Check</button></form>
        ${q.hint?`<div class="hint">${esc(q.hint)}</div>`:""}`;
+  else { S.ord = []; body = `<div class="built" id="built" aria-label="Your sentence"></div><div class="pool" id="pool"></div>
+       <div class="next"><button class="btn ghost" id="clr" type="button">Clear</button><button class="btn" id="chk" type="button" disabled>Check</button></div>`; }
   $("#app").innerHTML = `
     <div class="bar" style="--c:${color()}">
       <button class="back" id="back">← Map</button>
-      <div class="route" aria-label="Progress"><i style="width:${S.i/ROUND*100}%"></i></div>
-      <span class="chip">${S.i+1}/${ROUND}</span>
-      <span class="chip">✓ ${S.score}</span>
-      ${S.streak>=2?`<span class="chip streak">${S.streak} in a row!</span>`:""}
+      <div class="route" aria-label="Progress"><i style="width:${S.i/N*100}%"></i></div>
+      <span class="chip">${S.i+1}/${N}</span>
+      ${S.mode==="exam"?"":`<span class="chip">✓ ${S.score}</span>`}
+      ${S.streak>=3 && S.mode!=="exam"?`<span class="chip streak">${S.streak} in a row!</span>`:""}
     </div>
     <div class="card pop" style="--c:${color()}">
-      <div class="kind">${q.kind}</div>
+      <div class="kind">${S.mode==="exam"?`Exam · ${q.sec}`:q.kind}</div>
       <div class="prompt">${q.prompt}</div>
       <p class="sub">${q.sub}</p>
       ${body}
       <div id="fb"></div>
     </div>`;
   $("#back").onclick = home;
-  if(q.type==="mc"){
-    document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answerMC(b));
-  } else {
-    const inp = $("#ti"); inp.focus();
-    $("#tf").onsubmit = e=>{e.preventDefault(); if(!S.answered && inp.value.trim()) answerType(inp);};
-  }
+  if(q.type==="mc") $$(".opt").forEach(b=>b.onclick=()=>answerMC(b));
+  else if(q.type==="type"){ const inp=$("#ti"); inp.focus({preventScroll:true});
+    $("#tf").onsubmit = e=>{ e.preventDefault(); if(!S.answered && inp.value.trim()) answerType(inp); }; }
+  else drawOrder();
+}
+
+function drawOrder(){
+  const q = S.qs[S.i];
+  $("#built").innerHTML = S.ord.map((ci,pos)=>`<button class="word" data-pos="${pos}" ${S.answered?"disabled":""}>${esc(q.chunks[ci])}</button>`).join("");
+  $("#pool").innerHTML = q.chunks.map((c,ci)=>S.ord.includes(ci)?"":`<button class="word" data-ci="${ci}" ${S.answered?"disabled":""}>${esc(c)}</button>`).join("");
+  $$("#pool .word").forEach(b=>b.onclick=()=>{ S.ord.push(+b.dataset.ci); drawOrder(); });
+  $$("#built .word").forEach(b=>b.onclick=()=>{ S.ord.splice(+b.dataset.pos,1); drawOrder(); });
+  const chk = $("#chk"), clr = $("#clr");
+  if(chk){ chk.disabled = S.ord.length!==q.chunks.length;
+    chk.onclick = ()=>{ if(S.answered) return; S.answered = true;
+      const built = S.ord.map(i=>q.chunks[i]).join(" "); const ok = norm(built)===norm(q.ans);
+      $("#built").classList.add(ok?"ok":"no"); chk.remove(); clr.remove(); drawOrder(); finish(ok, built); };
+    clr.onclick = ()=>{ S.ord = []; drawOrder(); }; }
 }
 
 function answerMC(btn){
   if(S.answered) return; S.answered = true;
   const q = S.qs[S.i]; const val = q.opts[+btn.dataset.k]; const ok = val===q.ans;
-  document.querySelectorAll(".opt").forEach(b=>{ b.disabled=true; if(q.opts[+b.dataset.k]===q.ans) b.classList.add("ok"); });
+  $$(".opt").forEach(b=>{ b.disabled=true; if(q.opts[+b.dataset.k]===q.ans) b.classList.add("ok"); });
   if(!ok) btn.classList.add("no");
   finish(ok, val);
 }
 function answerType(inp){
   S.answered = true;
-  const q = S.qs[S.i]; let v = norm(inp.value);
-  const goods = q.ans.map(norm);
-  let ok = goods.includes(v);
-  // superlatives: accept the answer without "the" but remind
-  let missingThe = false;
-  if(!ok && q.kind==="Superlatives" && goods.includes("the "+v)){ ok = true; missingThe = true; }
-  inp.classList.add(ok?"ok":"no"); inp.disabled = true;
-  document.querySelector("#tf .btn").remove();
-  finish(ok, inp.value, missingThe);
+  const q = S.qs[S.i]; const v = norm(inp.value); const goods = q.ans.map(norm);
+  const ok = goods.includes(v);
+  const missingThe = !ok && q.sup && goods.includes("the "+v);
+  inp.classList.add(ok?"ok":"no"); inp.disabled = true; $("#tf .btn").remove();
+  finish(ok, inp.value.trim(), missingThe);
 }
 function finish(ok, given, missingThe){
-  const q = S.qs[S.i];
+  const q = S.qs[S.i]; const N = S.qs.length;
   if(ok){ S.score++; S.streak++; } else { S.streak=0; S.mistakes.push({q, given}); }
-  const praise = ["Great!","Excellent!","Well done!","Brilliant!","Perfect!"][Math.floor(Math.random()*5)];
-  const right = q.show || q.ans;
-  $("#fb").innerHTML = `
-    <div class="feedback ${ok?"ok":"no"}">
-      <b>${ok?praise:"Not quite."}</b> ${ok?"":`The answer is <b>${esc(right)}</b>. `}${missingThe?"Recuerda poner <b>the</b> delante. ":""}${q.note}
-    </div>
-    <div class="next"><button class="btn" id="nx" style="--c:${color()}">${S.i+1<ROUND?"Next →":"See results"}</button></div>`;
-  const nx = $("#nx"); nx.focus();
-  nx.onclick = ()=>{ S.i++; S.i<ROUND ? render() : end(); };
+  // mistake bank: add wrong answers, clear when answered correctly
+  let b = bank().filter(x=>x.key!==q.key);
+  if(!ok){ const copy = {...q}; delete copy.sec; b.unshift(copy); }
+  store.set("le_bank", b.slice(0,40));
+  const praise = rnd(["Great!","Excellent!","Well done!","Brilliant!","Perfect!"]);
+  let msg;
+  if(ok) msg = `<b>${praise}</b> ${q.note}`;
+  else if(missingThe) msg = `<b>Almost!</b> Falta <b>the</b>: la respuesta es <b>${esc(q.show)}</b>. En el examen te lo quitarían.`;
+  else msg = `<b>Not quite.</b> The answer is <b>${esc(q.show||q.ans)}</b>. ${q.note}`;
+  $("#fb").innerHTML = `<div class="feedback ${ok?"ok":"no"}" role="status">${msg}</div>
+    <div class="next"><button class="btn" id="nx">${S.i+1<N?"Next →":"See results"}</button></div>`;
+  const nx = $("#nx"); nx.focus({preventScroll:true}); nx.scrollIntoView({block:"nearest",behavior:"smooth"});
+  nx.onclick = ()=>{ S.i++; S.i<N ? render() : end(); };
 }
 
 function end(){
-  const sc = S.score; const stars = sc>=9?3:sc>=7?2:sc>=5?1:0;
-  totalStars += stars; store.set("le_total", totalStars);
-  const best = store.get("le_best") || {}; if(best[S.mode]==null || sc>best[S.mode]) best[S.mode]=sc; store.set("le_best", best);
-  const msg = stars===3?"Expert explorer!":stars===2?"Great expedition!":stars===1?"Good try, keep exploring!":"Let's practise this station again.";
+  const N = S.qs.length, sc = S.score;
+  // remember what was asked so the next rounds prefer new questions
+  const rec = [...S.qs.map(q=>q.key), ...store.get("le_recent", [])].filter((k,i,a)=>a.indexOf(k)===i).slice(0,150);
+  store.set("le_recent", rec); RECENT = new Set(rec);
+  const pct = sc/N; const stars = pct>=.9?3:pct>=.7?2:pct>=.5?1:0;
+  store.set("le_total", store.get("le_total",0)+stars);
+  const best = store.get("le_best", {});
+  let head, extra = "";
+  if(S.mode==="exam"){
+    const mark = sc*0.5;
+    if(best.exam==null || mark>best.exam) best.exam = mark;
+    head = `<h2>${String(mark).replace(".",",")} / 10</h2><p class="sub">${mark===10?"¡Un 10! You are ready for the exam!":mark>=9?"Excellent! Almost perfect.":mark>=7?"Very good! Review the orange sections.":mark>=5?"You passed. Review the orange sections and try again.":"Keep practising the stations and try again."}</p>`;
+    const rows = EXAM.map(s=>{ const qs=S.qs.filter(q=>q.sec===s.sec); const okN = qs.length - S.mistakes.filter(m=>m.q.sec===s.sec).length;
+      return {s, okN, n:qs.length}; });
+    extra = `<div class="secs">${rows.map(r=>`<div class="sec ${r.okN<r.n?"weak":""}"><span>${r.s.sec}</span><div class="meter"><i style="width:${r.okN/r.n*100}%"></i></div><span>${(r.okN*0.5).toString().replace(".",",")} / ${(r.n*0.5).toString().replace(".",",")}</span></div>`).join("")}</div>`;
+    const weak = rows.filter(r=>r.okN<r.n);
+    if(weak.length) extra += `<div class="advice"><b>Qué repasar:</b><ul>${weak.map(r=>`<li><b>${r.s.sec}:</b> ${r.s.tip}</li>`).join("")}</ul></div>`;
+  } else {
+    const label = `${sc}/${N}`;
+    if(S.mode!=="review"){ const prev = best[S.mode];
+      const ratio = p => typeof p==="number" ? p/10 : (typeof p==="string" && p.includes("/")) ? (+p.split("/")[0])/(+p.split("/")[1]) : -1;
+      if(sc/N > ratio(prev)) best[S.mode]=label; }
+    head = `<h2>${sc} / ${N}</h2><p class="sub">${stars===3?"Expert explorer!":stars===2?"Great expedition!":stars===1?"Good try, keep exploring!":"Let's practise this station again."}</p>`;
+  }
+  store.set("le_best", best);
   const mist = S.mistakes.map(({q,given})=>{
-    const promptTxt = q.full || q.prompt.replace(/<[^>]+>/g,"");
-    return `<li>${q.kind}: ${esc(promptTxt.length>90?promptTxt.slice(0,90)+"…":promptTxt)}<br>You said <s>${esc(given)}</s> → <b>${esc(q.show||q.ans)}</b></li>`;
+    const txt = (q.full || q.prompt.replace(/<div class="passage">[\s\S]*?<\/div>/,"").replace(/<[^>]+>/g,"")).replace(/&nbsp;/g," ");
+    return `<li><b style="color:var(--muted)">${esc(q.kind)}</b> · ${esc(txt.length>110?txt.slice(0,110)+"…":txt)}<br>You said <s>${esc(given)}</s> → <b>${esc(q.show||q.ans)}</b></li>`;
   }).join("");
   $("#app").innerHTML = `
     <div class="card end pop" style="--c:${color()}">
-      <div class="kind">Expedition complete</div>
+      <div class="kind">${S.mode==="exam"?"Exam simulation":"Expedition complete"}</div>
       <div class="stars">${[0,1,2].map(i=>`<span class="${i<stars?"":"off"}">★</span>`).join("")}</div>
-      <h2>${sc} / ${ROUND}</h2>
-      <p class="sub">${msg}</p>
-      ${S.mistakes.length?`<h3 style="text-align:left;margin-top:12px">Review your mistakes</h3><ul class="mist">${mist}</ul>`:`<p>No mistakes. Amazing!</p>`}
+      ${head}${extra}
+      ${S.mistakes.length?`<h3 style="text-align:left;margin-top:14px">Review your mistakes</h3><ul class="mist">${mist}</ul>
+        <p class="sub" style="margin-top:10px">Your mistakes are saved in <b>Mis fallos</b> so you can practise them again.</p>`:`<p>No mistakes. Amazing!</p>`}
       <div class="endbtns">
-        <button class="btn" id="again">Play again</button>
+        <button class="btn" id="again">${S.mode==="review"?"Practise mistakes again":"Play again (new questions)"}</button>
         <button class="btn ghost" id="map">Back to the map</button>
       </div>
     </div>`;
-  $("#again").onclick = ()=>start(S.mode);
+  const mode = S.mode;
+  $("#again").onclick = ()=> (mode==="review" && !bank().length) ? home() : start(mode);
   $("#map").onclick = home;
+  window.scrollTo({top:0});
 }
 
 home();
